@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apsis - Optimal Control Theory Workbench</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body);"></script>
+
+</head>
+<body>
+    <div id="three-canvas"></div>
+
+    <div class="container">
+        <header class="panel header-panel">
+            <h1>APSIS</h1>
+            <p>Optimal Control Theory Workbench</p>
+        </header>
+
+        <div class="grid-layout">
+            <!-- PMP Panel -->
+            <section class="panel pmp-panel">
+                <h2>Pontryagin Maximum Principle</h2>
+                <div class="math-block">
+                    $$ \dot{x} = Ax + Bu $$
+                    $$ J = \int_0^{t_f} \frac{1}{2}(x^TQx + u^TRu) dt $$
+                </div>
+                <div class="input-group">
+                    <label>Initial State (x0)</label>
+                    <input type="text" id="pmp-x0" class="ui-input" value="[1.0, 0.0]">
+                </div>
+                <div class="input-group">
+                    <label>Target State (xf)</label>
+                    <input type="text" id="pmp-xf" class="ui-input" value="[0.0, 0.0]">
+                </div>
+                <div class="input-group">
+                    <label>Final Time (tf)</label>
+                    <input type="text" id="pmp-tf" class="ui-input" value="10.0">
+                </div>
+                <button class="ui-btn" onclick="solvePMP()">Solve PMP</button>
+                <div class="chart-container" id="pmp-chart"></div>
+            </section>
+
+            <!-- LQR Panel -->
+            <section class="panel lqr-panel">
+                <h2>Linear Quadratic Optimization</h2>
+                <div class="math-block">
+                    $$ u = -Kx $$
+                    $$ 0 = A^TX + XA - XBR^{-1}B^TX + Q $$
+                </div>
+                <div class="input-group">
+                    <label>System A Matrix</label>
+                    <input type="text" id="lqr-A" class="ui-input" value="[[0, 1], [-1, -1]]">
+                </div>
+                <div class="input-group">
+                    <label>Input B Matrix</label>
+                    <input type="text" id="lqr-B" class="ui-input" value="[[0], [1]]">
+                </div>
+                <div class="input-group">
+                    <label>State Cost Q Matrix</label>
+                    <input type="text" id="lqr-Q" class="ui-input" value="[[1, 0], [0, 1]]">
+                </div>
+                <div class="input-group">
+                    <label>Input Cost R Matrix</label>
+                    <input type="text" id="lqr-R" class="ui-input" value="[[1]]">
+                </div>
+                <button class="ui-btn" onclick="solveLQR()">Synthesize LQR</button>
+                <div class="output-block" id="lqr-output">
+                    <p>Gain K: <span id="lqr-k-val">...</span></p>
+                    <p>Closed-loop Poles: <span id="lqr-poles-val">...</span></p>
+                </div>
+            </section>
+
+            <!-- MPC Panel -->
+            <section class="panel mpc-panel">
+                <h2>Model Predictive Control</h2>
+                <div class="math-block">
+                    $$ \min_u \sum_{k=0}^{N-1} (x_k^TQx_k + u_k^TRu_k) $$
+                </div>
+                <div class="input-group">
+                    <label>Horizon Steps (N)</label>
+                    <input type="text" id="mpc-N" class="ui-input" value="20">
+                </div>
+                <div class="input-group">
+                    <label>Time Step (dt)</label>
+                    <input type="text" id="mpc-dt" class="ui-input" value="0.5">
+                </div>
+                <div class="input-group">
+                    <label>Input Bounds (u_min, u_max)</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="mpc-umin" class="ui-input" value="[-1.0]">
+                        <input type="text" id="mpc-umax" class="ui-input" value="[1.0]">
+                    </div>
+                </div>
+                <button class="ui-btn" onclick="solveMPC()">Simulate MPC</button>
+                <div class="chart-container" id="mpc-chart"></div>
+            </section>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

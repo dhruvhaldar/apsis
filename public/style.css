@@ -1,0 +1,191 @@
+:root {
+    --bg-color: #0b0c10; /* Darker space background */
+    --text-color: #c5c6c7;
+    --accent-color: #66fcf1;
+    --accent-dark: #45a29e;
+
+    --panel-bg-color: rgba(31, 40, 51, 0.85); /* Semi-transparent panel */
+    --input-bg-color: rgba(11, 12, 16, 0.6);
+}
+
+@keyframes gradientAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    min-height: 100vh;
+}
+
+#three-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+.grid-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.panel {
+    border-radius: 20px;
+    padding: 30px;
+    /* Dynamic gradient background */
+    background: linear-gradient(-45deg, rgba(23, 37, 42, 0.9), rgba(31, 40, 51, 0.9), rgba(43, 122, 120, 0.2), rgba(58, 175, 169, 0.1));
+    background-size: 400% 400%;
+    animation: gradientAnimation 15s ease infinite;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(102, 252, 241, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.panel:hover {
+    transform: translateY(-5px);
+    border-color: rgba(102, 252, 241, 0.3);
+}
+
+.header-panel {
+    text-align: center;
+    margin-bottom: 20px;
+    background: transparent;
+    animation: none;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+}
+
+.header-panel h1 {
+    font-size: 3rem;
+    margin: 0;
+    letter-spacing: 5px;
+    color: var(--accent-color);
+    text-shadow: 0 0 15px rgba(102, 252, 241, 0.5);
+}
+
+.header-panel p {
+    color: var(--accent-dark);
+    margin-top: 10px;
+    font-size: 1.2rem;
+}
+
+h2 {
+    color: var(--accent-color);
+    margin-top: 0;
+    border-bottom: 2px solid rgba(102, 252, 241, 0.2);
+    padding-bottom: 10px;
+    text-shadow: 0 0 5px rgba(102, 252, 241, 0.3);
+}
+
+.math-block {
+    background-color: var(--input-bg-color);
+    border: 1px solid rgba(102, 252, 241, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+    overflow-x: auto;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: var(--accent-dark);
+}
+
+.ui-input {
+    width: 100%;
+    background-color: var(--input-bg-color);
+    border: 1px solid rgba(102, 252, 241, 0.2);
+    padding: 12px 15px;
+    border-radius: 10px;
+    color: var(--text-color);
+    font-family: monospace;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.ui-input:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 10px rgba(102, 252, 241, 0.2);
+    background-color: rgba(11, 12, 16, 0.8);
+}
+
+.ui-btn {
+    width: 100%;
+    background: linear-gradient(90deg, var(--accent-dark), rgba(43, 122, 120, 0.8));
+    border: 1px solid var(--accent-color);
+    padding: 15px;
+    border-radius: 10px;
+    color: #fff;
+    font-weight: bold;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    outline: none;
+    margin-bottom: 20px;
+    text-shadow: 0 0 5px rgba(0,0,0,0.5);
+}
+
+.ui-btn:hover {
+    background: linear-gradient(90deg, var(--accent-color), var(--accent-dark));
+    box-shadow: 0 0 15px rgba(102, 252, 241, 0.4);
+    transform: scale(1.02);
+}
+
+.ui-btn:active {
+    transform: scale(0.98);
+}
+
+.output-block {
+    background-color: var(--input-bg-color);
+    border: 1px solid rgba(102, 252, 241, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+    font-family: monospace;
+}
+
+.output-block p {
+    margin: 5px 0;
+    word-break: break-all;
+    color: var(--accent-color);
+}
+
+.chart-container {
+    width: 100%;
+    height: 300px;
+    background-color: var(--input-bg-color);
+    border: 1px solid rgba(102, 252, 241, 0.1);
+    border-radius: 10px;
+    padding: 10px;
+    box-sizing: border-box;
+    position: relative;
+}
