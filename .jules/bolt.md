@@ -1,0 +1,3 @@
+## 2024-05-24 - NumPy Vectorization for Grid-Based PDE Solvers
+**Learning:** For dynamic programming and PDE solvers like HJB that operate over grids, Python-level nested loops iterating over state spaces (`x`) and control spaces (`u`) create massive performance bottlenecks (e.g. 1.4s for a 50x50x50 grid).
+**Action:** Always refactor such numerical grid-based operations using `np.meshgrid` to broadcast and vectorially evaluate functions (like cost and dynamics) simultaneously across the entire state and control space, followed by `np.argmin` to select optimal controls. This achieved a ~50x speedup while producing identical numerical results.
