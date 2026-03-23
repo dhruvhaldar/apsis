@@ -1,0 +1,4 @@
+## 2024-05-28 - Denial of Service via Unbounded API Inputs
+**Vulnerability:** The API endpoints (`/api/lqr`, `/api/pmp`, `/api/mpc`) accepted complex mathematical matrices and parameters (like grid sizes or horizons) without limits, allowing malicious users to exhaust server resources by supplying huge matrices or astronomical simulation lengths.
+**Learning:** In a computationally heavy application (like an optimal control workbench using numerical solvers), user input isn't just a database risk; it directly controls CPU and memory allocation. A missing boundary check can instantly lock up the process.
+**Prevention:** Always use input validation frameworks (like Pydantic `Field`) to place strict upper and lower bounds on all numerical inputs and enforce maximum sizes for lists/matrices sent to mathematical solvers.
