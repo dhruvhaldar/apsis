@@ -40,15 +40,15 @@
                     $$ J = \int_0^{t_f} \frac{1}{2}(x^TQx + u^TRu) dt $$
                 </div>
                 <div class="input-group">
-                    <label>Initial State (x0)</label>
+                    <label for="pmp-x0">Initial State (x0)</label>
                     <input type="text" id="pmp-x0" class="ui-input" value="[1.0, 0.0]">
                 </div>
                 <div class="input-group">
-                    <label>Target State (xf)</label>
+                    <label for="pmp-xf">Target State (xf)</label>
                     <input type="text" id="pmp-xf" class="ui-input" value="[0.0, 0.0]">
                 </div>
                 <div class="input-group">
-                    <label>Final Time (tf)</label>
+                    <label for="pmp-tf">Final Time (tf)</label>
                     <input type="text" id="pmp-tf" class="ui-input" value="10.0">
                 </div>
                 <button class="ui-btn" onclick="solvePMP()">Solve PMP</button>
@@ -63,19 +63,19 @@
                     $$ 0 = A^TX + XA - XBR^{-1}B^TX + Q $$
                 </div>
                 <div class="input-group">
-                    <label>System A Matrix</label>
+                    <label for="lqr-A">System A Matrix</label>
                     <input type="text" id="lqr-A" class="ui-input" value="[[0, 1], [-1, -1]]">
                 </div>
                 <div class="input-group">
-                    <label>Input B Matrix</label>
+                    <label for="lqr-B">Input B Matrix</label>
                     <input type="text" id="lqr-B" class="ui-input" value="[[0], [1]]">
                 </div>
                 <div class="input-group">
-                    <label>State Cost Q Matrix</label>
+                    <label for="lqr-Q">State Cost Q Matrix</label>
                     <input type="text" id="lqr-Q" class="ui-input" value="[[1, 0], [0, 1]]">
                 </div>
                 <div class="input-group">
-                    <label>Input Cost R Matrix</label>
+                    <label for="lqr-R">Input Cost R Matrix</label>
                     <input type="text" id="lqr-R" class="ui-input" value="[[1]]">
                 </div>
                 <button class="ui-btn" onclick="solveLQR()">Synthesize LQR</button>
@@ -92,20 +92,20 @@
                     $$ \min_u \sum_{k=0}^{N-1} (x_k^TQx_k + u_k^TRu_k) $$
                 </div>
                 <div class="input-group">
-                    <label>Horizon Steps (N)</label>
+                    <label for="mpc-N">Horizon Steps (N)</label>
                     <input type="text" id="mpc-N" class="ui-input" value="20">
                 </div>
                 <div class="input-group">
-                    <label>Time Step (dt)</label>
+                    <label for="mpc-dt">Time Step (dt)</label>
                     <input type="text" id="mpc-dt" class="ui-input" value="0.5">
                 </div>
-                <div class="input-group">
-                    <label>Input Bounds (u_min, u_max)</label>
+                <fieldset class="input-group" style="border: none; padding: 0; margin: 0; margin-bottom: 20px;">
+                    <legend style="display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--accent-dark);">Input Bounds (u_min, u_max)</legend>
                     <div style="display: flex; gap: 10px;">
-                        <input type="text" id="mpc-umin" class="ui-input" value="[-1.0]">
-                        <input type="text" id="mpc-umax" class="ui-input" value="[1.0]">
+                        <input type="text" id="mpc-umin" class="ui-input" aria-label="Minimum input bound" value="[-1.0]">
+                        <input type="text" id="mpc-umax" class="ui-input" aria-label="Maximum input bound" value="[1.0]">
                     </div>
-                </div>
+                </fieldset>
                 <button class="ui-btn" onclick="solveMPC()">Simulate MPC</button>
                 <div class="chart-container" id="mpc-chart"></div>
             </section>
