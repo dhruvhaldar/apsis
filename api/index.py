@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from typing import List, Optional
+from pydantic import BaseModel, Field
+from typing import List, Optional, Annotated
 
 from apsis.calculus_of_variations import solve_pmp_linear_quadratic
 from apsis.lqr import solve_lqr
@@ -12,37 +12,40 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+Row = Annotated[List[float], Field(max_length=20)]
+Matrix = Annotated[List[Row], Field(max_length=20)]
+
 class LQRRequest(BaseModel):
-    A: List[List[float]]
-    B: List[List[float]]
-    Q: List[List[float]]
-    R: List[List[float]]
+    A: Matrix
+    B: Matrix
+    Q: Matrix
+    R: Matrix
 
 class PMPRequest(BaseModel):
-    A: List[List[float]]
-    B: List[List[float]]
-    Q: List[List[float]]
-    R: List[List[float]]
-    x0: List[float]
-    xf: List[float]
-    tf: float
-    num_points: int = 100
+    A: Matrix
+    B: Matrix
+    Q: Matrix
+    R: Matrix
+    x0: Row
+    xf: Row
+    tf: float = Field(..., gt=0, le=1000)
+    num_points: int = Field(100, ge=2, le=1000)
 
 class MPCRequest(BaseModel):
-    A: List[List[float]]
-    B: List[List[float]]
-    Q: List[List[float]]
-    R: List[List[float]]
-    x0: List[float]
-    N_horizon: int
-    dt: float
-    u_min: Optional[List[float]] = None
-    u_max: Optional[List[float]] = None
+    A: Matrix
+    B: Matrix
+    Q: Matrix
+    R: Matrix
+    x0: Row
+    N_horizon: int = Field(..., gt=0, le=200)
+    dt: float = Field(..., gt=0, le=100)
+    u_min: Optional[Row] = None
+    u_max: Optional[Row] = None
 
 @app.post("/api/lqr")
 def lqr_endpoint(req: LQRRequest):
