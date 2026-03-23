@@ -23,14 +23,23 @@ def solve_hjb(L, f, x_grid, u_grid, t_grid):
     # Pre-compute a meshgrid for vectorized evaluation over all x and u combinations
     X, U = np.meshgrid(x_grid, u_grid, indexing='ij')
 
+    # ⚡ Bolt Optimization:
+    # 1. Pre-allocate arrays that are re-used in the loop (`dVdx`)
+    # 2. Pre-compute constants for spatial differences to replace division with multiplication
+    # 3. Pre-allocate index arrays for slicing to avoid `np.arange(nx)` in the hot loop
+    dVdx = np.empty(nx)
+    inv_dx = 1.0 / dx
+    inv_2dx = 1.0 / (2.0 * dx)
+    idx_arange = np.arange(nx)
+
     # Backward value iteration
     for k in range(nt - 2, -1, -1):
         # Estimate spatial derivative dV/dx using central difference for all x simultaneously
-        dVdx = np.empty(nx)
-        dVdx[0] = (V[1, k+1] - V[0, k+1]) / dx
-        dVdx[-1] = (V[-1, k+1] - V[-2, k+1]) / dx
+        V_next = V[:, k+1]
+        dVdx[0] = (V_next[1] - V_next[0]) * inv_dx
+        dVdx[-1] = (V_next[-1] - V_next[-2]) * inv_dx
         if nx > 2:
-            dVdx[1:-1] = (V[2:, k+1] - V[:-2, k+1]) / (2 * dx)
+            dVdx[1:-1] = (V_next[2:] - V_next[:-2]) * inv_2dx
 
         t_val = t_grid[k]
 
@@ -44,10 +53,10 @@ def solve_hjb(L, f, x_grid, u_grid, t_grid):
 
         # Find the minimum value and corresponding control along the 'u' axis (axis=1)
         min_indices = np.argmin(vals, axis=1)
-        min_val = vals[np.arange(nx), min_indices]
+        min_val = vals[idx_arange, min_indices]
 
         u_opt[:, k] = u_grid[min_indices]
         # Update V(x, t) = V(x, t+dt) + dt * min_u [ L + dV/dx * f ]
-        V[:, k] = V[:, k+1] + dt * min_val
+        V[:, k] = V_next + dt * min_val
 
     return V, u_opt
