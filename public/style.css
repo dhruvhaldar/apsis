@@ -165,6 +165,15 @@ h2 {
     transform: scale(0.98);
 }
 
+.ui-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: linear-gradient(90deg, rgba(43, 122, 120, 0.8), rgba(43, 122, 120, 0.8));
+    border-color: rgba(102, 252, 241, 0.2);
+    box-shadow: none;
+    transform: none;
+}
+
 .output-block {
     background-color: var(--input-bg-color);
     border: 1px solid rgba(102, 252, 241, 0.1);

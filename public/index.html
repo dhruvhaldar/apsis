@@ -51,7 +51,7 @@
                     <label for="pmp-tf">Final Time (tf)</label>
                     <input type="text" id="pmp-tf" class="ui-input" value="10.0">
                 </div>
-                <button class="ui-btn" onclick="solvePMP()">Solve PMP</button>
+                <button id="btn-pmp" class="ui-btn" onclick="solvePMP()">Solve PMP</button>
                 <div class="chart-container" id="pmp-chart"></div>
             </section>
 
@@ -78,7 +78,7 @@
                     <label for="lqr-R">Input Cost R Matrix</label>
                     <input type="text" id="lqr-R" class="ui-input" value="[[1]]">
                 </div>
-                <button class="ui-btn" onclick="solveLQR()">Synthesize LQR</button>
+                <button id="btn-lqr" class="ui-btn" onclick="solveLQR()">Synthesize LQR</button>
                 <div class="output-block" id="lqr-output">
                     <p>Gain K: <span id="lqr-k-val">...</span></p>
                     <p>Closed-loop Poles: <span id="lqr-poles-val">...</span></p>
@@ -106,7 +106,7 @@
                         <input type="text" id="mpc-umax" class="ui-input" aria-label="Maximum input bound" value="[1.0]">
                     </div>
                 </fieldset>
-                <button class="ui-btn" onclick="solveMPC()">Simulate MPC</button>
+                <button id="btn-mpc" class="ui-btn" onclick="solveMPC()">Simulate MPC</button>
                 <div class="chart-container" id="mpc-chart"></div>
             </section>
         </div>
