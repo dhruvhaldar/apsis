@@ -1,11 +1,14 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+import logging
 from pydantic import BaseModel, Field
 from typing import List, Optional, Annotated
 
 from apsis.calculus_of_variations import solve_pmp_linear_quadratic
 from apsis.lqr import solve_lqr
 from apsis.mpc import solve_mpc
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
@@ -57,7 +60,8 @@ def lqr_endpoint(req: LQRRequest):
             "eigvals": [complex(e).real for e in eigvals] # Returning real parts for simplicity or parse complex
         }
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        logger.error(f"LQR Error: {e}")
+        raise HTTPException(status_code=400, detail="An error occurred during LQR computation")
 
 @app.post("/api/pmp")
 def pmp_endpoint(req: PMPRequest):
@@ -72,7 +76,8 @@ def pmp_endpoint(req: PMPRequest):
             "lambda": lam_sol.tolist()
         }
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        logger.error(f"PMP Error: {e}")
+        raise HTTPException(status_code=400, detail="An error occurred during PMP computation")
 
 @app.post("/api/mpc")
 def mpc_endpoint(req: MPCRequest):
@@ -86,4 +91,5 @@ def mpc_endpoint(req: MPCRequest):
             "u": u_sol.tolist()
         }
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        logger.error(f"MPC Error: {e}")
+        raise HTTPException(status_code=400, detail="An error occurred during MPC computation")
