@@ -56,6 +56,12 @@ function parseFloatInput(id) {
 
 // 1. Solve PMP
 async function solvePMP() {
+    const btn = document.getElementById('btn-pmp');
+    const originalText = btn.innerText;
+    btn.disabled = true;
+    btn.setAttribute('aria-busy', 'true');
+    btn.innerText = '⏳ Solving...';
+
     try {
         const payload = {
             A: [[0, 1], [-1, -1]], // Hardcoded linear system for now
@@ -96,11 +102,21 @@ async function solvePMP() {
     } catch (err) {
         console.error(err);
         alert('Failed to solve PMP: ' + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.removeAttribute('aria-busy');
+        btn.innerText = originalText;
     }
 }
 
 // 2. Solve LQR
 async function solveLQR() {
+    const btn = document.getElementById('btn-lqr');
+    const originalText = btn.innerText;
+    btn.disabled = true;
+    btn.setAttribute('aria-busy', 'true');
+    btn.innerText = '⏳ Synthesizing...';
+
     try {
         const payload = {
             A: parseInput('lqr-A'),
@@ -124,11 +140,21 @@ async function solveLQR() {
     } catch (err) {
         console.error(err);
         alert('Failed to synthesize LQR: ' + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.removeAttribute('aria-busy');
+        btn.innerText = originalText;
     }
 }
 
 // 3. Solve MPC
 async function solveMPC() {
+    const btn = document.getElementById('btn-mpc');
+    const originalText = btn.innerText;
+    btn.disabled = true;
+    btn.setAttribute('aria-busy', 'true');
+    btn.innerText = '⏳ Simulating...';
+
     try {
         const payload = {
             A: [[0, 1], [-1, -1]], // Continuous time system matching the backend
@@ -184,6 +210,10 @@ async function solveMPC() {
     } catch (err) {
         console.error(err);
         alert('Failed to simulate MPC: ' + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.removeAttribute('aria-busy');
+        btn.innerText = originalText;
     }
 }
 
