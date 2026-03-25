@@ -12,13 +12,31 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
+# 🛡️ Sentinel Security Fix: Restrict CORS to specific origins and methods
+# Overly permissive CORS ("*") allows any domain to make requests to the API.
+# In a serverless setup like Vercel, the frontend and API share the same origin,
+# so CORS is only strictly needed for local development.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:8000",
+        "http://127.0.0.1:8000"
+    ],
     allow_credentials=False,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["POST", "OPTIONS"],
+    allow_headers=["Content-Type"],
 )
+
+# 🛡️ Sentinel Security Enhancement: Add essential security headers
+@app.middleware("http")
+async def add_security_headers(request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    return response
 
 Row = Annotated[List[float], Field(max_length=20)]
 Matrix = Annotated[List[Row], Field(max_length=20)]
