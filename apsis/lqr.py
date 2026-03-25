@@ -13,10 +13,12 @@ def solve_lqr(A, B, Q, R):
     # Solve continuous algebraic Riccati equation
     X = scipy.linalg.solve_continuous_are(A, B, Q, R)
 
-    # Compute optimal feedback gain
-    K = np.linalg.inv(R) @ B.T @ X
+    # ⚡ Bolt Optimization: Use scipy.linalg.solve instead of np.linalg.inv
+    # for better numerical stability and speed. assume_a='pos' is used since R
+    # must be positive definite in a well-posed LQR problem.
+    K = scipy.linalg.solve(R, B.T @ X, assume_a='pos')
 
     # Compute closed-loop poles
-    eigvals = np.linalg.eigvals(A - B @ K)
+    eigvals = scipy.linalg.eigvals(A - B @ K)
 
     return K, X, eigvals
