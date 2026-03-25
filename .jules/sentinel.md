@@ -1,4 +1,4 @@
-## 2024-05-28 - Denial of Service via Unbounded API Inputs
-**Vulnerability:** The API endpoints (`/api/lqr`, `/api/pmp`, `/api/mpc`) accepted complex mathematical matrices and parameters (like grid sizes or horizons) without limits, allowing malicious users to exhaust server resources by supplying huge matrices or astronomical simulation lengths.
-**Learning:** In a computationally heavy application (like an optimal control workbench using numerical solvers), user input isn't just a database risk; it directly controls CPU and memory allocation. A missing boundary check can instantly lock up the process.
-**Prevention:** Always use input validation frameworks (like Pydantic `Field`) to place strict upper and lower bounds on all numerical inputs and enforce maximum sizes for lists/matrices sent to mathematical solvers.
+## 2024-05-20 - Serverless Same-Origin CORS
+**Vulnerability:** Overly permissive CORS configuration (`allow_origins=["*"]`) combined with missing security headers.
+**Learning:** In serverless deployments (like Vercel) where the static frontend (`/public`) and the API (`/api/index.py`) are served from the same domain, wildcard CORS is an unnecessary attack surface. CORS is only required for local development when the frontend dev server and API run on different ports.
+**Prevention:** Avoid `allow_origins=["*"]`. Hardcode the specific `localhost` ports used during local development. Additionally, add a custom HTTP middleware to inject basic security headers like `X-Content-Type-Options` and `X-Frame-Options` for defense in depth.
