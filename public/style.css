@@ -165,6 +165,12 @@ h2 {
     transform: scale(0.98);
 }
 
+.ui-btn:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 4px;
+    box-shadow: 0 0 15px rgba(102, 252, 241, 0.4);
+}
+
 .ui-btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
