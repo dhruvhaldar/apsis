@@ -52,7 +52,12 @@
                     <input type="text" id="pmp-tf" class="ui-input" value="10.0">
                 </div>
                 <button id="btn-pmp" class="ui-btn" onclick="solvePMP()">Solve PMP</button>
-                <div class="chart-container" id="pmp-chart"></div>
+                <div class="chart-container" id="pmp-chart">
+                    <div class="empty-state">
+                        <div>🚀</div>
+                        <div>Configure parameters and solve to view trajectory</div>
+                    </div>
+                </div>
             </section>
 
             <!-- LQR Panel -->
@@ -79,7 +84,7 @@
                     <input type="text" id="lqr-R" class="ui-input" value="[[1]]">
                 </div>
                 <button id="btn-lqr" class="ui-btn" onclick="solveLQR()">Synthesize LQR</button>
-                <div class="output-block" id="lqr-output">
+                <div class="output-block" id="lqr-output" aria-live="polite">
                     <p>Gain K: <span id="lqr-k-val">...</span></p>
                     <p>Closed-loop Poles: <span id="lqr-poles-val">...</span></p>
                 </div>
@@ -107,7 +112,12 @@
                     </div>
                 </fieldset>
                 <button id="btn-mpc" class="ui-btn" onclick="solveMPC()">Simulate MPC</button>
-                <div class="chart-container" id="mpc-chart"></div>
+                <div class="chart-container" id="mpc-chart">
+                    <div class="empty-state">
+                        <div>🔮</div>
+                        <div>Configure horizon and simulate to view predictions</div>
+                    </div>
+                </div>
             </section>
         </div>
     </div>
