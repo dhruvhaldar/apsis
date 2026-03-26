@@ -203,4 +203,15 @@ h2 {
     padding: 10px;
     box-sizing: border-box;
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.empty-state {
+    text-align: center;
+    color: var(--accent-dark);
+    font-size: 1.1rem;
+    opacity: 0.7;
+    pointer-events: none;
 }
