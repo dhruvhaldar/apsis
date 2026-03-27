@@ -39,19 +39,21 @@
                     $$ \dot{x} = Ax + Bu $$
                     $$ J = \int_0^{t_f} \frac{1}{2}(x^TQx + u^TRu) dt $$
                 </div>
-                <div class="input-group">
-                    <label for="pmp-x0">Initial State (x0)</label>
-                    <input type="text" id="pmp-x0" class="ui-input" value="[1.0, 0.0]">
-                </div>
-                <div class="input-group">
-                    <label for="pmp-xf">Target State (xf)</label>
-                    <input type="text" id="pmp-xf" class="ui-input" value="[0.0, 0.0]">
-                </div>
-                <div class="input-group">
-                    <label for="pmp-tf">Final Time (tf)</label>
-                    <input type="text" id="pmp-tf" class="ui-input" value="10.0">
-                </div>
-                <button id="btn-pmp" class="ui-btn" onclick="solvePMP()">Solve PMP</button>
+                <form onsubmit="event.preventDefault(); solvePMP();">
+                    <div class="input-group">
+                        <label for="pmp-x0">Initial State (x0)</label>
+                        <input type="text" id="pmp-x0" class="ui-input" value="[1.0, 0.0]">
+                    </div>
+                    <div class="input-group">
+                        <label for="pmp-xf">Target State (xf)</label>
+                        <input type="text" id="pmp-xf" class="ui-input" value="[0.0, 0.0]">
+                    </div>
+                    <div class="input-group">
+                        <label for="pmp-tf">Final Time (tf)</label>
+                        <input type="text" id="pmp-tf" class="ui-input" value="10.0">
+                    </div>
+                    <button id="btn-pmp" class="ui-btn" type="submit">Solve PMP</button>
+                </form>
                 <div class="chart-container" id="pmp-chart">
                     <div class="empty-state">
                         <div>🚀</div>
@@ -67,23 +69,25 @@
                     $$ u = -Kx $$
                     $$ 0 = A^TX + XA - XBR^{-1}B^TX + Q $$
                 </div>
-                <div class="input-group">
-                    <label for="lqr-A">System A Matrix</label>
-                    <input type="text" id="lqr-A" class="ui-input" value="[[0, 1], [-1, -1]]">
-                </div>
-                <div class="input-group">
-                    <label for="lqr-B">Input B Matrix</label>
-                    <input type="text" id="lqr-B" class="ui-input" value="[[0], [1]]">
-                </div>
-                <div class="input-group">
-                    <label for="lqr-Q">State Cost Q Matrix</label>
-                    <input type="text" id="lqr-Q" class="ui-input" value="[[1, 0], [0, 1]]">
-                </div>
-                <div class="input-group">
-                    <label for="lqr-R">Input Cost R Matrix</label>
-                    <input type="text" id="lqr-R" class="ui-input" value="[[1]]">
-                </div>
-                <button id="btn-lqr" class="ui-btn" onclick="solveLQR()">Synthesize LQR</button>
+                <form onsubmit="event.preventDefault(); solveLQR();">
+                    <div class="input-group">
+                        <label for="lqr-A">System A Matrix</label>
+                        <input type="text" id="lqr-A" class="ui-input" value="[[0, 1], [-1, -1]]">
+                    </div>
+                    <div class="input-group">
+                        <label for="lqr-B">Input B Matrix</label>
+                        <input type="text" id="lqr-B" class="ui-input" value="[[0], [1]]">
+                    </div>
+                    <div class="input-group">
+                        <label for="lqr-Q">State Cost Q Matrix</label>
+                        <input type="text" id="lqr-Q" class="ui-input" value="[[1, 0], [0, 1]]">
+                    </div>
+                    <div class="input-group">
+                        <label for="lqr-R">Input Cost R Matrix</label>
+                        <input type="text" id="lqr-R" class="ui-input" value="[[1]]">
+                    </div>
+                    <button id="btn-lqr" class="ui-btn" type="submit">Synthesize LQR</button>
+                </form>
                 <div class="output-block" id="lqr-output" aria-live="polite">
                     <p>Gain K: <span id="lqr-k-val">...</span></p>
                     <p>Closed-loop Poles: <span id="lqr-poles-val">...</span></p>
@@ -96,22 +100,24 @@
                 <div class="math-block">
                     $$ \min_u \sum_{k=0}^{N-1} (x_k^TQx_k + u_k^TRu_k) $$
                 </div>
-                <div class="input-group">
-                    <label for="mpc-N">Horizon Steps (N)</label>
-                    <input type="text" id="mpc-N" class="ui-input" value="20">
-                </div>
-                <div class="input-group">
-                    <label for="mpc-dt">Time Step (dt)</label>
-                    <input type="text" id="mpc-dt" class="ui-input" value="0.5">
-                </div>
-                <fieldset class="input-group" style="border: none; padding: 0; margin: 0; margin-bottom: 20px;">
-                    <legend style="display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--accent-dark);">Input Bounds (u_min, u_max)</legend>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="text" id="mpc-umin" class="ui-input" aria-label="Minimum input bound" value="[-1.0]">
-                        <input type="text" id="mpc-umax" class="ui-input" aria-label="Maximum input bound" value="[1.0]">
+                <form onsubmit="event.preventDefault(); solveMPC();">
+                    <div class="input-group">
+                        <label for="mpc-N">Horizon Steps (N)</label>
+                        <input type="text" id="mpc-N" class="ui-input" value="20">
                     </div>
-                </fieldset>
-                <button id="btn-mpc" class="ui-btn" onclick="solveMPC()">Simulate MPC</button>
+                    <div class="input-group">
+                        <label for="mpc-dt">Time Step (dt)</label>
+                        <input type="text" id="mpc-dt" class="ui-input" value="0.5">
+                    </div>
+                    <fieldset class="input-group" style="border: none; padding: 0; margin: 0; margin-bottom: 20px;">
+                        <legend style="display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--accent-dark);">Input Bounds (u_min, u_max)</legend>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="mpc-umin" class="ui-input" aria-label="Minimum input bound" value="[-1.0]">
+                            <input type="text" id="mpc-umax" class="ui-input" aria-label="Maximum input bound" value="[1.0]">
+                        </div>
+                    </fieldset>
+                    <button id="btn-mpc" class="ui-btn" type="submit">Simulate MPC</button>
+                </form>
                 <div class="chart-container" id="mpc-chart">
                     <div class="empty-state">
                         <div>🔮</div>
