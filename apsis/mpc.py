@@ -58,9 +58,13 @@ def solve_mpc(A, B, Q, R, x0, N_horizon, dt, u_min=None, u_max=None):
     m.options.NODES = 3 # Collocation nodes
     m.options.SOLVER = 3 # IPOPT
 
-    m.solve(disp=False)
+    try:
+        m.solve(disp=False)
 
-    x_sol = np.array([xi.value for xi in x])
-    u_sol = np.array([ui.value for ui in u])
+        x_sol = np.array([xi.value for xi in x])
+        u_sol = np.array([ui.value for ui in u])
 
-    return m.time, x_sol, u_sol
+        return m.time, x_sol, u_sol
+    finally:
+        # 🛡️ Sentinel Security Enhancement: Prevent resource exhaustion by ensuring GEKKO temporary files are cleaned up
+        m.cleanup()
