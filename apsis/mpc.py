@@ -5,11 +5,13 @@ def solve_mpc(A, B, Q, R, x0, N_horizon, dt, u_min=None, u_max=None):
     """
     Solves a model predictive control (MPC) problem using GEKKO over a finite horizon.
     """
-    A = np.array(A, dtype=float)
-    B = np.array(B, dtype=float)
-    Q = np.array(Q, dtype=float)
-    R = np.array(R, dtype=float)
-    x0 = np.array(x0, dtype=float)
+    # ⚡ Bolt Optimization: Use np.asarray() to avoid redundant memory copying
+    # if the inputs are already correctly typed NumPy arrays.
+    A = np.asarray(A, dtype=float)
+    B = np.asarray(B, dtype=float)
+    Q = np.asarray(Q, dtype=float)
+    R = np.asarray(R, dtype=float)
+    x0 = np.asarray(x0, dtype=float)
 
     n_x = A.shape[0]
     n_u = B.shape[1]
