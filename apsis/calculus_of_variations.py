@@ -8,12 +8,14 @@ def solve_pmp_linear_quadratic(A, B, Q, R, x0, xf, tf, num_points=100):
 
     H(x, u, lambda) = 0.5*(x^T Q x + u^T R u) + lambda^T (Ax + Bu)
     """
-    A = np.array(A, dtype=float)
-    B = np.array(B, dtype=float)
-    Q = np.array(Q, dtype=float)
-    R = np.array(R, dtype=float)
-    x0 = np.array(x0, dtype=float)
-    xf = np.array(xf, dtype=float)
+    # ⚡ Bolt Optimization: Use np.asarray() to avoid redundant memory copying
+    # if the inputs are already correctly typed NumPy arrays.
+    A = np.asarray(A, dtype=float)
+    B = np.asarray(B, dtype=float)
+    Q = np.asarray(Q, dtype=float)
+    R = np.asarray(R, dtype=float)
+    x0 = np.asarray(x0, dtype=float)
+    xf = np.asarray(xf, dtype=float)
 
     n_states = A.shape[0]
 
