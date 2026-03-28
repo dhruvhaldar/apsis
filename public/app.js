@@ -235,9 +235,35 @@ async function solveMPC() {
     }
 }
 
-// Initial render
-window.onload = () => {
-    // Optionally trigger default solves
-    // solvePMP();
-    // solveLQR();
-};
+// Initialize events and rendering once DOM is loaded
+window.addEventListener('DOMContentLoaded', () => {
+    // Initialize KaTeX
+    if (typeof renderMathInElement === 'function') {
+        renderMathInElement(document.body);
+    }
+
+    // Attach form submit listeners
+    const pmpForm = document.getElementById('pmp-form');
+    if (pmpForm) {
+        pmpForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            solvePMP();
+        });
+    }
+
+    const lqrForm = document.getElementById('lqr-form');
+    if (lqrForm) {
+        lqrForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            solveLQR();
+        });
+    }
+
+    const mpcForm = document.getElementById('mpc-form');
+    if (mpcForm) {
+        mpcForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            solveMPC();
+        });
+    }
+});
