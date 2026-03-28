@@ -18,8 +18,7 @@
     <!-- KaTeX -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
-            onload="renderMathInElement(document.body);"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
 
 </head>
 <body>
@@ -39,7 +38,7 @@
                     $$ \dot{x} = Ax + Bu $$
                     $$ J = \int_0^{t_f} \frac{1}{2}(x^TQx + u^TRu) dt $$
                 </div>
-                <form onsubmit="event.preventDefault(); solvePMP();">
+                <form id="pmp-form">
                     <div class="input-group">
                         <label for="pmp-x0">Initial State (x0)</label>
                         <input type="text" id="pmp-x0" class="ui-input" value="[1.0, 0.0]">
@@ -69,7 +68,7 @@
                     $$ u = -Kx $$
                     $$ 0 = A^TX + XA - XBR^{-1}B^TX + Q $$
                 </div>
-                <form onsubmit="event.preventDefault(); solveLQR();">
+                <form id="lqr-form">
                     <div class="input-group">
                         <label for="lqr-A">System A Matrix</label>
                         <input type="text" id="lqr-A" class="ui-input" value="[[0, 1], [-1, -1]]">
@@ -100,7 +99,7 @@
                 <div class="math-block">
                     $$ \min_u \sum_{k=0}^{N-1} (x_k^TQx_k + u_k^TRu_k) $$
                 </div>
-                <form onsubmit="event.preventDefault(); solveMPC();">
+                <form id="mpc-form">
                     <div class="input-group">
                         <label for="mpc-N">Horizon Steps (N)</label>
                         <input type="text" id="mpc-N" class="ui-input" value="20">
