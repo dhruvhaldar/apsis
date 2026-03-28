@@ -139,6 +139,11 @@ h2 {
     background-color: rgba(11, 12, 16, 0.8);
 }
 
+.ui-input:invalid {
+    border-color: #e24a4a;
+    box-shadow: 0 0 10px rgba(226, 74, 74, 0.4);
+}
+
 .ui-btn {
     width: 100%;
     background: linear-gradient(90deg, var(--accent-dark), rgba(43, 122, 120, 0.8));
