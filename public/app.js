@@ -42,17 +42,35 @@ const API_BASE = window.location.origin.includes('localhost') ? 'http://localhos
 
 // Utility to parse JSON array strings safely
 function parseInput(id) {
+    const el = document.getElementById(id);
     try {
-        return JSON.parse(document.getElementById(id).value);
+        return JSON.parse(el.value);
     } catch (e) {
-        alert(`Invalid format in ${id}. Please use valid JSON array format, e.g., [1, 0] or [[1,0],[0,1]]`);
+        el.setCustomValidity('Invalid format. Please use valid JSON array format, e.g., [1, 0] or [[1,0],[0,1]]');
+        el.reportValidity();
+        el.focus();
         throw e;
     }
 }
 
 function parseFloatInput(id) {
-    return parseFloat(document.getElementById(id).value);
+    const el = document.getElementById(id);
+    const val = parseFloat(el.value);
+    if (isNaN(val)) {
+        el.setCustomValidity('Please enter a valid number.');
+        el.reportValidity();
+        el.focus();
+        throw new Error(`Invalid number in ${id}`);
+    }
+    return val;
 }
+
+// Clear validation errors when user types
+document.addEventListener('input', (e) => {
+    if (e.target && e.target.classList.contains('ui-input')) {
+        e.target.setCustomValidity('');
+    }
+});
 
 // 1. Solve PMP
 async function solvePMP() {
