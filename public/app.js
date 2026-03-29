@@ -70,11 +70,24 @@ document.addEventListener('input', (e) => {
     if (e.target && e.target.classList.contains('ui-input')) {
         e.target.setCustomValidity('');
     }
+    // Clear form submit button validity on input change to allow retry
+    const form = e.target.closest('form');
+    if (form) {
+        const btn = form.querySelector('button[type="submit"]');
+        if (btn) btn.setCustomValidity('');
+    }
+});
+
+// Clear submit button validity on click to allow immediate retry
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[type="submit"]');
+    if (btn) btn.setCustomValidity('');
 });
 
 // 1. Solve PMP
 async function solvePMP() {
     const btn = document.getElementById('btn-pmp');
+    btn.setCustomValidity('');
     const originalText = btn.innerText;
     btn.disabled = true;
     btn.setAttribute('aria-busy', 'true');
@@ -119,7 +132,8 @@ async function solvePMP() {
 
     } catch (err) {
         console.error(err);
-        alert('Failed to solve PMP: ' + err.message);
+        btn.setCustomValidity('Failed to solve PMP: ' + err.message);
+        btn.reportValidity();
     } finally {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
@@ -130,6 +144,7 @@ async function solvePMP() {
 // 2. Solve LQR
 async function solveLQR() {
     const btn = document.getElementById('btn-lqr');
+    btn.setCustomValidity('');
     const originalText = btn.innerText;
     btn.disabled = true;
     btn.setAttribute('aria-busy', 'true');
@@ -157,7 +172,8 @@ async function solveLQR() {
 
     } catch (err) {
         console.error(err);
-        alert('Failed to synthesize LQR: ' + err.message);
+        btn.setCustomValidity('Failed to synthesize LQR: ' + err.message);
+        btn.reportValidity();
     } finally {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
@@ -168,6 +184,7 @@ async function solveLQR() {
 // 3. Solve MPC
 async function solveMPC() {
     const btn = document.getElementById('btn-mpc');
+    btn.setCustomValidity('');
     const originalText = btn.innerText;
     btn.disabled = true;
     btn.setAttribute('aria-busy', 'true');
@@ -227,7 +244,8 @@ async function solveMPC() {
 
     } catch (err) {
         console.error(err);
-        alert('Failed to simulate MPC: ' + err.message);
+        btn.setCustomValidity('Failed to simulate MPC: ' + err.message);
+        btn.reportValidity();
     } finally {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
