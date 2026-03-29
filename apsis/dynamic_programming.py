@@ -24,13 +24,14 @@ def solve_hjb(L, f, x_grid, u_grid, t_grid):
     X, U = np.meshgrid(x_grid, u_grid, indexing='ij')
 
     # ⚡ Bolt Optimization:
-    # 1. Pre-allocate arrays that are re-used in the loop (`dVdx`)
+    # 1. Pre-allocate arrays that are re-used in the loop (`dVdx`, `vals`)
     # 2. Pre-compute constants for spatial differences to replace division with multiplication
     # 3. Pre-allocate index arrays for slicing to avoid `np.arange(nx)` in the hot loop
     dVdx = np.empty(nx)
     inv_dx = 1.0 / dx
     inv_2dx = 1.0 / (2.0 * dx)
     idx_arange = np.arange(nx)
+    vals = np.empty((nx, nu))
 
     # Backward value iteration
     for k in range(nt - 2, -1, -1):
@@ -48,8 +49,10 @@ def solve_hjb(L, f, x_grid, u_grid, t_grid):
         dyn = f(X, U, t_val)
 
         # Evaluate HJB RHS for all combinations of (x, u)
-        # dVdx is (nx,), we add a new axis to broadcast with (nx, nu) matrices
-        vals = cost + dVdx[:, np.newaxis] * dyn
+        # ⚡ Bolt Optimization: Use in-place np.multiply and np.add with pre-allocated
+        # `vals` array to avoid allocating intermediate (nx, nu) arrays in every iteration.
+        np.multiply(dVdx[:, np.newaxis], dyn, out=vals)
+        np.add(cost, vals, out=vals)
 
         # Find the minimum value and corresponding control along the 'u' axis (axis=1)
         min_indices = np.argmin(vals, axis=1)
