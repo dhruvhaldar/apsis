@@ -35,13 +35,19 @@ def solve_mpc(A, B, Q, R, x0, N_horizon, dt, u_min=None, u_max=None):
             if u_max is not None:
                 ui.UPPER = u_max[i]
 
+        # ⚡ Bolt Optimization: Skip zero entries when building GEKKO expressions.
+        # GEKKO builds internal expression trees for every algebraic operation.
+        # Adding zero elements (e.g., `0 + 0*x_1 + 1*x_2`) creates massive formulation
+        # overhead for sparse matrices commonly found in state-space and LQR models.
         # System equations x_dot = Ax + Bu
         for i in range(n_x):
             eq = 0
             for j in range(n_x):
-                eq += A[i, j] * x[j]
+                if A[i, j] != 0:
+                    eq += A[i, j] * x[j]
             for j in range(n_u):
-                eq += B[i, j] * u[j]
+                if B[i, j] != 0:
+                    eq += B[i, j] * u[j]
             m.Equation(x[i].dt() == eq)
 
         # Objective function
@@ -49,11 +55,13 @@ def solve_mpc(A, B, Q, R, x0, N_horizon, dt, u_min=None, u_max=None):
         obj = 0
         for i in range(n_x):
             for j in range(n_x):
-                obj += x[i] * Q[i, j] * x[j]
+                if Q[i, j] != 0:
+                    obj += x[i] * Q[i, j] * x[j]
 
         for i in range(n_u):
             for j in range(n_u):
-                obj += u[i] * R[i, j] * u[j]
+                if R[i, j] != 0:
+                    obj += u[i] * R[i, j] * u[j]
 
         m.Obj(m.integral(obj))
 
