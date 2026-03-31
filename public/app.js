@@ -167,6 +167,10 @@ async function solveLQR() {
         if (!response.ok) throw new Error(await response.text());
         const data = await response.json();
 
+        // Hide empty state and show output block
+        document.getElementById('lqr-empty').style.display = 'none';
+        document.getElementById('lqr-output').style.display = 'block';
+
         document.getElementById('lqr-k-val').innerText = JSON.stringify(data.K.map(row => row.map(val => val.toFixed(4))));
         document.getElementById('lqr-poles-val').innerText = JSON.stringify(data.eigvals.map(val => val.toFixed(4)));
 

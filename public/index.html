@@ -55,7 +55,7 @@
                 </form>
                 <div class="chart-container" id="pmp-chart">
                     <div class="empty-state">
-                        <div>🚀</div>
+                        <div aria-hidden="true">🚀</div>
                         <div>Configure parameters and solve to view trajectory</div>
                     </div>
                 </div>
@@ -87,7 +87,13 @@
                     </div>
                     <button id="btn-lqr" class="ui-btn" type="submit">Synthesize LQR</button>
                 </form>
-                <div class="output-block" id="lqr-output" aria-live="polite">
+                <div class="output-block" id="lqr-empty">
+                    <div class="empty-state">
+                        <div aria-hidden="true">🎵</div>
+                        <div>Synthesize to view gain and poles</div>
+                    </div>
+                </div>
+                <div class="output-block" id="lqr-output" aria-live="polite" style="display: none;">
                     <p>Gain K: <span id="lqr-k-val">...</span></p>
                     <p>Closed-loop Poles: <span id="lqr-poles-val">...</span></p>
                 </div>
@@ -119,7 +125,7 @@
                 </form>
                 <div class="chart-container" id="mpc-chart">
                     <div class="empty-state">
-                        <div>🔮</div>
+                        <div aria-hidden="true">🔮</div>
                         <div>Configure horizon and simulate to view predictions</div>
                     </div>
                 </div>
