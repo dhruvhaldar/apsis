@@ -70,6 +70,11 @@ def solve_mpc(A, B, Q, R, x0, N_horizon, dt, u_min=None, u_max=None):
         m.options.NODES = 3 # Collocation nodes
         m.options.SOLVER = 3 # IPOPT
 
+        # 🛡️ Sentinel Security Enhancement: Prevent CPU exhaustion (DoS)
+        # by enforcing a strict time limit and maximum iterations on the solver.
+        m.options.MAX_TIME = 10.0
+        m.options.MAX_ITER = 250
+
         m.solve(disp=False)
 
         x_sol = np.array([xi.value for xi in x])

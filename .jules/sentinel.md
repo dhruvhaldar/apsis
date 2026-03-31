@@ -19,3 +19,7 @@
 **Vulnerability:** A `try...finally` block intended to clean up temporary files in `GEKKO(remote=False)` was placed incorrectly, leaving initialization logic unprotected. If an exception occurred during the model setup, the `try` block was bypassed and `m.cleanup()` was not executed, allowing an attacker to cause disk resource exhaustion by intentionally failing the model setup logic.
 **Learning:** For a `try...finally` block to effectively provide resource cleanup (like closing files, DB connections, or clearing temporary directories), the `try:` statement must *immediately* follow the resource instantiation. Any logic that could raise an exception between the instantiation and the start of the `try` block represents a resource leak vulnerability.
 **Prevention:** Ensure the `try:` block encompasses all operations performed on a resource from the moment it is instantiated up to the final cleanup in the `finally:` block.
+## 2024-05-24 - Unbounded Solver Execution (Resource Exhaustion) in GEKKO
+**Vulnerability:** The MPC endpoint utilizing `GEKKO(remote=False)` was missing a timeout (`m.options.MAX_TIME`) configuration.
+**Learning:** By providing inputs that require extensive computational time or do not converge, an attacker can cause the local GEKKO solver to run indefinitely. This consumes CPU resources and blocks worker threads, leading to a Denial of Service (DoS) attack.
+**Prevention:** Always enforce strict execution limits when using numerical solvers on user-provided inputs by setting `m.options.MAX_TIME` and `m.options.MAX_ITER`.
