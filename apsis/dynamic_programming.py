@@ -21,7 +21,10 @@ def solve_hjb(L, f, x_grid, u_grid, t_grid):
     V[:, -1] = 0
 
     # Pre-compute a meshgrid for vectorized evaluation over all x and u combinations
-    X, U = np.meshgrid(x_grid, u_grid, indexing='ij')
+    # ⚡ Bolt Optimization: Use `sparse=True` to prevent allocating full (nx, nu) matrices.
+    # NumPy's broadcasting handles the expansion implicitly during algebraic operations,
+    # drastically reducing memory consumption and improving cache locality for large grids.
+    X, U = np.meshgrid(x_grid, u_grid, indexing='ij', sparse=True)
 
     # ⚡ Bolt Optimization:
     # 1. Pre-allocate arrays that are re-used in the loop (`dVdx`, `vals`)
