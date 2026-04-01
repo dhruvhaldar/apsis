@@ -22,7 +22,7 @@
 
 </head>
 <body>
-    <div id="three-canvas"></div>
+    <div id="three-canvas" aria-hidden="true"></div>
 
     <div class="container">
         <header class="panel header-panel">
@@ -30,7 +30,7 @@
             <p>Optimal Control Theory Workbench</p>
         </header>
 
-        <div class="grid-layout">
+        <main class="grid-layout">
             <!-- PMP Panel -->
             <section class="panel pmp-panel">
                 <h2>Pontryagin Maximum Principle</h2>
@@ -38,7 +38,7 @@
                     $$ \dot{x} = Ax + Bu $$
                     $$ J = \int_0^{t_f} \frac{1}{2}(x^TQx + u^TRu) dt $$
                 </div>
-                <form id="pmp-form">
+                <form id="pmp-form" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="none">
                     <div class="input-group">
                         <label for="pmp-x0">Initial State (x0)</label>
                         <input type="text" id="pmp-x0" class="ui-input" value="[1.0, 0.0]">
@@ -68,7 +68,7 @@
                     $$ u = -Kx $$
                     $$ 0 = A^TX + XA - XBR^{-1}B^TX + Q $$
                 </div>
-                <form id="lqr-form">
+                <form id="lqr-form" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="none">
                     <div class="input-group">
                         <label for="lqr-A">System A Matrix</label>
                         <input type="text" id="lqr-A" class="ui-input" value="[[0, 1], [-1, -1]]">
@@ -105,7 +105,7 @@
                 <div class="math-block">
                     $$ \min_u \sum_{k=0}^{N-1} (x_k^TQx_k + u_k^TRu_k) $$
                 </div>
-                <form id="mpc-form">
+                <form id="mpc-form" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="none">
                     <div class="input-group">
                         <label for="mpc-N">Horizon Steps (N)</label>
                         <input type="text" id="mpc-N" class="ui-input" value="20">
@@ -130,7 +130,7 @@
                     </div>
                 </div>
             </section>
-        </div>
+        </main>
     </div>
 
     <script src="app.js"></script>
