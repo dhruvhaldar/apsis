@@ -39,7 +39,12 @@ async def add_security_headers(request, call_next):
     response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' https://cdn.plot.ly https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src https://cdn.jsdelivr.net; img-src 'self' data:; connect-src 'self' http://localhost:8000;"
     return response
 
-Row = Annotated[List[float], Field(max_length=20)]
+# 🛡️ Sentinel Security Fix: Prevent NaN/Inf injection
+# Pydantic v2 float types allow NaN/Inf by default. These values propagate into
+# underlying numerical solvers (like SciPy and GEKKO), causing internal exceptions,
+# infinite loops, or crashes. Enforce strict numeric validation for mathematical inputs.
+SafeFloat = Annotated[float, Field(allow_inf_nan=False)]
+Row = Annotated[List[SafeFloat], Field(max_length=20)]
 Matrix = Annotated[List[Row], Field(max_length=20)]
 
 class LQRRequest(BaseModel):
@@ -55,7 +60,7 @@ class PMPRequest(BaseModel):
     R: Matrix
     x0: Row
     xf: Row
-    tf: float = Field(..., gt=0, le=1000)
+    tf: SafeFloat = Field(..., gt=0, le=1000)
     num_points: int = Field(100, ge=2, le=1000)
 
 class MPCRequest(BaseModel):
@@ -65,7 +70,7 @@ class MPCRequest(BaseModel):
     R: Matrix
     x0: Row
     N_horizon: int = Field(..., gt=0, le=200)
-    dt: float = Field(..., gt=0, le=100)
+    dt: SafeFloat = Field(..., gt=0, le=100)
     u_min: Optional[Row] = None
     u_max: Optional[Row] = None
 

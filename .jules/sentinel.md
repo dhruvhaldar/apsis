@@ -23,3 +23,7 @@
 **Vulnerability:** The MPC endpoint utilizing `GEKKO(remote=False)` was missing a timeout (`m.options.MAX_TIME`) configuration.
 **Learning:** By providing inputs that require extensive computational time or do not converge, an attacker can cause the local GEKKO solver to run indefinitely. This consumes CPU resources and blocks worker threads, leading to a Denial of Service (DoS) attack.
 **Prevention:** Always enforce strict execution limits when using numerical solvers on user-provided inputs by setting `m.options.MAX_TIME` and `m.options.MAX_ITER`.
+## 2024-05-25 - Numerical Solver Input Validation (NaN/Inf)
+**Vulnerability:** API endpoints accepted `NaN` and `Infinity` values in mathematical arrays (like state/cost matrices), bypassing Pydantic's default float validation.
+**Learning:** Pydantic v2 allows `NaN` and `Inf` by default for `float` types. When exposed via an API, these values propagate into underlying numerical solvers (SciPy, GEKKO), causing internal exceptions, undefined behavior, or solver crashes.
+**Prevention:** Always enforce strict numeric validation for mathematical APIs by explicitly disabling non-finite numbers using a custom float type, e.g., `SafeFloat = Annotated[float, Field(allow_inf_nan=False)]`.
