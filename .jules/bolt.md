@@ -29,3 +29,7 @@
 ## 2026-04-01 - Avoid `np.concatenate` in Hot Loops
 **Learning:** `np.concatenate` internally performs heavy Python C-API calls to allocate new arrays and handle arbitrary argument lengths, resulting in high overhead when placed inside a tight optimization loop (like SciPy's `solve_bvp` Jacobian perturbation which calls `bvp_bc` thousands of times).
 **Action:** Replace `np.concatenate((a, b))` inside solver hot loops with pre-allocating an empty array and direct slice assignment: `res = np.empty(size); res[:n] = a; res[n:] = b;`. This avoids C-API overhead and creates a ~20% performance improvement in boundary evaluation routines.
+
+## 2024-05-29 - Defer Heavy External Scripts in HTML
+**Learning:** In vanilla HTML setups, including large CDN scripts (like Plotly, Chart.js, Three.js) in the `<head>` without the `defer` attribute blocks the HTML parser. The browser stops rendering to download and execute each script, significantly degrading First Contentful Paint (FCP) and overall load performance.
+**Action:** Always add the `defer` attribute to heavy external `<script>` tags. This allows them to download in parallel while executing sequentially in document order without blocking the DOM parser. Also ensure dependent scripts (like `app.js`) are deferred so they execute *after* the external dependencies are ready.
