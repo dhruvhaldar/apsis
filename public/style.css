@@ -133,6 +133,11 @@ h2 {
     outline: none;
 }
 
+.ui-input::placeholder {
+    color: rgba(197, 198, 199, 0.6);
+    opacity: 1; /* Firefox sets a lower default opacity */
+}
+
 .ui-input:focus {
     border-color: var(--accent-color);
     box-shadow: 0 0 10px rgba(102, 252, 241, 0.2);
