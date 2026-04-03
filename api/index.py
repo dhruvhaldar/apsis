@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 import logging
 from pydantic import BaseModel, Field
@@ -29,9 +29,20 @@ app.add_middleware(
     allow_headers=["Content-Type"],
 )
 
+# 🛡️ Sentinel Security Enhancement: Prevent DoS via large request payloads
+# FastAPI/Starlette reads the entire request body into memory by default.
+# Enforcing a strict content-length limit prevents attackers from causing
+# Out-Of-Memory (OOM) crashes by sending massive payloads.
+@app.middleware("http")
+async def limit_request_size(request: Request, call_next):
+    content_length = request.headers.get("content-length")
+    if content_length and int(content_length) > 1048576: # 1MB limit
+        return Response(content="Payload Too Large", status_code=413)
+    return await call_next(request)
+
 # 🛡️ Sentinel Security Enhancement: Add essential security headers
 @app.middleware("http")
-async def add_security_headers(request, call_next):
+async def add_security_headers(request: Request, call_next):
     response = await call_next(request)
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
