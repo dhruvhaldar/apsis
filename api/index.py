@@ -1,4 +1,5 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import logging
 from pydantic import BaseModel, Field
@@ -11,6 +12,22 @@ from apsis.mpc import solve_mpc
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
+
+# 🛡️ Sentinel Security Fix: Prevent DoS via memory exhaustion
+# FastAPI buffers the entire request body in memory by default. Enforce a strict
+# payload size limit to prevent memory exhaustion attacks.
+MAX_PAYLOAD_SIZE = 1 * 1024 * 1024  # 1MB
+
+@app.middleware("http")
+async def limit_payload_size(request: Request, call_next):
+    content_length = request.headers.get("content-length")
+    if content_length:
+        if int(content_length) > MAX_PAYLOAD_SIZE:
+            return JSONResponse(
+                status_code=413,
+                content={"detail": "Payload too large"}
+            )
+    return await call_next(request)
 
 # 🛡️ Sentinel Security Fix: Restrict CORS to specific origins and methods
 # Overly permissive CORS ("*") allows any domain to make requests to the API.
