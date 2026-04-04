@@ -41,11 +41,11 @@
                 <form id="pmp-form" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="none">
                     <div class="input-group">
                         <label for="pmp-x0">Initial State (x0)</label>
-                        <input type="text" id="pmp-x0" class="ui-input" value="[1.0, 0.0]" required>
+                        <input type="text" id="pmp-x0" class="ui-input" value="[1.0, 0.0]" placeholder="e.g. [1.0, 0.0]" required>
                     </div>
                     <div class="input-group">
                         <label for="pmp-xf">Target State (xf)</label>
-                        <input type="text" id="pmp-xf" class="ui-input" value="[0.0, 0.0]" required>
+                        <input type="text" id="pmp-xf" class="ui-input" value="[0.0, 0.0]" placeholder="e.g. [0.0, 0.0]" required>
                     </div>
                     <div class="input-group">
                         <label for="pmp-tf">Final Time (tf)</label>
@@ -71,19 +71,19 @@
                 <form id="lqr-form" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="none">
                     <div class="input-group">
                         <label for="lqr-A">System A Matrix</label>
-                        <input type="text" id="lqr-A" class="ui-input" value="[[0, 1], [-1, -1]]" required>
+                        <input type="text" id="lqr-A" class="ui-input" value="[[0, 1], [-1, -1]]" placeholder="e.g. [[0, 1], [-1, -1]]" required>
                     </div>
                     <div class="input-group">
                         <label for="lqr-B">Input B Matrix</label>
-                        <input type="text" id="lqr-B" class="ui-input" value="[[0], [1]]" required>
+                        <input type="text" id="lqr-B" class="ui-input" value="[[0], [1]]" placeholder="e.g. [[0], [1]]" required>
                     </div>
                     <div class="input-group">
                         <label for="lqr-Q">State Cost Q Matrix</label>
-                        <input type="text" id="lqr-Q" class="ui-input" value="[[1, 0], [0, 1]]" required>
+                        <input type="text" id="lqr-Q" class="ui-input" value="[[1, 0], [0, 1]]" placeholder="e.g. [[1, 0], [0, 1]]" required>
                     </div>
                     <div class="input-group">
                         <label for="lqr-R">Input Cost R Matrix</label>
-                        <input type="text" id="lqr-R" class="ui-input" value="[[1]]" required>
+                        <input type="text" id="lqr-R" class="ui-input" value="[[1]]" placeholder="e.g. [[1]]" required>
                     </div>
                     <button id="btn-lqr" class="ui-btn" type="submit">Synthesize LQR</button>
                 </form>
@@ -117,8 +117,8 @@
                     <fieldset class="input-group" style="border: none; padding: 0; margin: 0; margin-bottom: 20px;">
                         <legend style="display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--accent-dark);">Input Bounds (u_min, u_max)</legend>
                         <div style="display: flex; gap: 10px;">
-                            <input type="text" id="mpc-umin" class="ui-input" aria-label="Minimum input bound" value="[-1.0]" required>
-                            <input type="text" id="mpc-umax" class="ui-input" aria-label="Maximum input bound" value="[1.0]" required>
+                            <input type="text" id="mpc-umin" class="ui-input" aria-label="Minimum input bound" value="[-1.0]" placeholder="e.g. [-1.0]" required>
+                            <input type="text" id="mpc-umax" class="ui-input" aria-label="Maximum input bound" value="[1.0]" placeholder="e.g. [1.0]" required>
                         </div>
                     </fieldset>
                     <button id="btn-mpc" class="ui-btn" type="submit">Simulate MPC</button>
