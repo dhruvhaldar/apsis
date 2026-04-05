@@ -37,3 +37,7 @@
 ## 2024-05-19 - Scalar Math Parameters and Form Validation
 **Learning:** Using `type="text"` for scalar mathematical inputs (like time horizons or steps) in an otherwise array-heavy form prevents mobile browsers from natively opening the numeric keypad, making data entry cumbersome. Furthermore, relying entirely on JS parsing for validation can allow invalid states (like empty fields or negative time) to be submitted unnecessarily.
 **Action:** Always use `type="number"` for scalar numerical inputs, and apply precise `min` and `step` attributes alongside the `required` attribute. This delegates immediate validation to the browser's native capabilities, prevents simple user errors before JS execution, and significantly improves mobile UX.
+
+## 2026-04-05 - Programmatic Input Placeholders
+**Learning:** For inputs expecting non-prose programmatic structures (like JSON arrays or matrices), if a user deletes the default value, the expected formatting context is entirely lost. This leads to validation errors and poor UX.
+**Action:** Always provide persistent `placeholder` attributes with clear structural examples alongside default values. This ensures the expected format remains visible even when the field is empty, acting as a continuous hint and preventing user formatting errors.
