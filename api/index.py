@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import logging
 from pydantic import BaseModel, Field
@@ -28,6 +29,18 @@ app.add_middleware(
     allow_methods=["POST", "OPTIONS"],
     allow_headers=["Content-Type"],
 )
+
+# 🛡️ Sentinel Security Enhancement: Prevent Memory Exhaustion DoS
+@app.middleware("http")
+async def limit_payload_size(request, call_next):
+    content_length = request.headers.get('content-length')
+    if content_length:
+        length = int(content_length)
+        # Limit to 1MB (1048576 bytes)
+        if length > 1048576:
+            return JSONResponse(status_code=413, content={"detail": "Payload too large"})
+    response = await call_next(request)
+    return response
 
 # 🛡️ Sentinel Security Enhancement: Add essential security headers
 @app.middleware("http")

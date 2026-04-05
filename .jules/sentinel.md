@@ -27,3 +27,7 @@
 **Vulnerability:** API endpoints accepted `NaN` and `Infinity` values in mathematical arrays (like state/cost matrices), bypassing Pydantic's default float validation.
 **Learning:** Pydantic v2 allows `NaN` and `Inf` by default for `float` types. When exposed via an API, these values propagate into underlying numerical solvers (SciPy, GEKKO), causing internal exceptions, undefined behavior, or solver crashes.
 **Prevention:** Always enforce strict numeric validation for mathematical APIs by explicitly disabling non-finite numbers using a custom float type, e.g., `SafeFloat = Annotated[float, Field(allow_inf_nan=False)]`.
+## 2024-05-26 - Payload Memory Exhaustion DoS
+**Vulnerability:** The API allowed incoming requests with arbitrarily large payloads, which could lead to memory exhaustion as the framework buffers the entire request body in memory by default.
+**Learning:** To prevent Denial of Service (DoS) attacks via memory exhaustion in environments like FastAPI/Starlette, it is essential to enforce request payload size limits. The application layer handles request buffering natively. Without a limitation, large requests can consume excessive server memory.
+**Prevention:** Add an HTTP middleware that checks the `Content-Length` header of incoming requests and rejects the request if it exceeds a predefined safe threshold (e.g., 1MB) by returning a `413 Payload Too Large` status.
