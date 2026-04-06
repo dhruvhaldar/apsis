@@ -1,4 +1,5 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import logging
 from pydantic import BaseModel, Field
@@ -29,9 +30,27 @@ app.add_middleware(
     allow_headers=["Content-Type"],
 )
 
+# 🛡️ Sentinel Security Fix: Prevent memory exhaustion (DoS) by limiting request size.
+# FastAPI buffers the entire request body in memory by default. An attacker could
+# send a massive payload to crash the server. We enforce a 2MB limit.
+MAX_PAYLOAD_SIZE = 2 * 1024 * 1024 # 2MB
+
+@app.middleware("http")
+async def limit_payload_size(request: Request, call_next):
+    if "content-length" in request.headers:
+        try:
+            content_length = int(request.headers["content-length"])
+        except ValueError:
+            return JSONResponse(status_code=400, content={"detail": "Invalid Content-Length header"})
+
+        if content_length > MAX_PAYLOAD_SIZE:
+            return JSONResponse(status_code=413, content={"detail": "Payload too large"})
+
+    return await call_next(request)
+
 # 🛡️ Sentinel Security Enhancement: Add essential security headers
 @app.middleware("http")
-async def add_security_headers(request, call_next):
+async def add_security_headers(request: Request, call_next):
     response = await call_next(request)
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
