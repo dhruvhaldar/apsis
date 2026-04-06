@@ -45,13 +45,28 @@ def solve_pmp_linear_quadratic(A, B, Q, R, x0, xf, tf, num_points=100):
         res[n_states:] = yb[:n_states] - xf
         return res
 
+    # ⚡ Bolt Optimization: Provide analytical Jacobians to avoid costly finite
+    # difference approximations in SciPy's internal solver loops, since the PMP
+    # for LQR produces entirely linear dynamics and boundary conditions.
+    def fun_jac(t, y):
+        # Return Jacobian of dynamics w.r.t y: shape (n, n, m)
+        return np.repeat(M[:, :, np.newaxis], t.shape[0], axis=2)
+
+    def bc_jac(ya, yb):
+        # Return Jacobian of boundary conditions w.r.t ya and yb: shape (n, n)
+        dya = np.zeros((2 * n_states, 2 * n_states))
+        dyb = np.zeros((2 * n_states, 2 * n_states))
+        dya[:n_states, :n_states] = np.eye(n_states)
+        dyb[n_states:, :n_states] = np.eye(n_states)
+        return dya, dyb
+
     t = np.linspace(0, tf, num_points)
 
     # ⚡ Bolt Optimization: Fast vectorized linear interpolation to replace Python loop
     y_guess = np.zeros((2 * n_states, num_points))
     y_guess[:n_states, :] = np.linspace(x0, xf, num_points).T
 
-    res = solve_bvp(bvp_system, bvp_bc, t, y_guess)
+    res = solve_bvp(bvp_system, bvp_bc, t, y_guess, fun_jac=fun_jac, bc_jac=bc_jac)
 
     if res.success:
         x_sol = res.y[:n_states, :]
