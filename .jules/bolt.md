@@ -33,3 +33,7 @@
 ## 2026-04-02 - Render Blocking External Scripts
 **Learning:** External `<script>` tags without `defer` or `async` block HTML parsing and delay DOM rendering. In a vanilla HTML setup without a bundler, heavy libraries like Plotly.js, Chart.js, and Three.js will block the entire UI from loading until they are fully downloaded and executed.
 **Action:** Apply the `defer` attribute to heavy external CDN `<script>` tags to optimize frontend performance and prevent render-blocking. Also apply `defer` to local dependent scripts (like `app.js`) to guarantee they execute sequentially in DOM order after the external libraries, preventing `ReferenceError`s.
+
+## 2026-04-03 - SciPy solve_bvp Analytical Jacobians
+**Learning:** `scipy.integrate.solve_bvp` relies heavily on Jacobian computations for its damped Newton method. By default, if Jacobians are not provided, it estimates them via internal forward finite differences, which involves repeatedly calling the system dynamics and boundary conditions with perturbed states. For linear or analytically differentiable systems (e.g., LQR via Pontryagin Maximum Principle where system dynamics are `M @ y`), this implicit fallback is computationally wasteful.
+**Action:** When using `scipy.integrate.solve_bvp` for analytically differentiable systems, always supply exact analytical Jacobians (`fun_jac` and `bc_jac`) to completely bypass these costly finite-difference approximations. This yields a measurable reduction in solver execution time.
