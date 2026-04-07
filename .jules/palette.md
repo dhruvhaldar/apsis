@@ -41,3 +41,7 @@
 ## 2024-04-06 - Structural Placeholders
 **Learning:** Programmatic inputs expecting strict structures (like JSON arrays or matrices) lose their structural context when the input field is emptied by the user, leading to potential formatting errors.
 **Action:** Always provide persistent `placeholder` attributes with clear examples alongside default values for programmatic inputs. This ensures the expected structural context remains visible when the field is empty, preventing user formatting errors.
+
+## 2026-04-07 - Screen Reader Redundancy for Required Indicators
+**Learning:** Adding a visual asterisk (*) to labels for required fields is helpful for sighted users, but if not hidden, screen readers will read "star" out loud. This is redundant and noisy if the underlying `<input>` already has the `required` attribute.
+**Action:** Always wrap visual required indicators in `<span aria-hidden="true">*</span>` to keep the UI clean for screen reader users while maintaining visual cues.
