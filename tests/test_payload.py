@@ -29,3 +29,16 @@ def test_valid_payload():
     }
     response = client.post("/api/lqr", json=payload)
     assert response.status_code == 200
+
+def test_chunked_encoding_rejected():
+    # Attempt to bypass Content-Length limit using chunked transfer encoding
+    def generate_chunked():
+        yield b'{"A": [[0]], "B": [[0]], "Q": [[0]], "R": [[0]]}'
+
+    response = client.post(
+        "/api/lqr",
+        content=generate_chunked(),
+        headers={"Content-Type": "application/json"}
+    )
+    assert response.status_code == 411
+    assert response.json() == {"detail": "Chunked encoding not supported"}

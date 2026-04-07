@@ -31,3 +31,8 @@
 **Vulnerability:** Missing request payload size limit allows memory exhaustion Denial of Service (DoS) attacks because FastAPI/Starlette buffers the entire request body in memory by default.
 **Learning:** Frameworks like FastAPI and Starlette are susceptible to memory exhaustion if they blindly buffer large request payloads without validation. An attacker could send massive, multi-gigabyte payloads to consume all server memory.
 **Prevention:** Enforce a strict request payload size limit using HTTP middleware (e.g., checking `Content-Length`) to reject overly large payloads before they are completely buffered.
+
+## 2025-04-07 - Denial of Service via Chunked Transfer Encoding Bypass
+**Vulnerability:** FastAPIs buffer the entire payload into memory before executing body validations, making them vulnerable to memory exhaustion DoS attacks. A middleware size check on `Content-Length` does not prevent this if the request utilizes `Transfer-Encoding: chunked`, allowing massive payloads to completely bypass the check and hit the JSON parser.
+**Learning:** Checking `Content-Length` provides incomplete protection if chunked encoding isn't handled correctly, as chunked payloads do not provide a `Content-Length` header upfront.
+**Prevention:** In environments that do not support or require chunked payloads (like typical REST JSON endpoints), explicitly reject requests with `Transfer-Encoding: chunked` (e.g., returning `411 Length Required` or `411 Chunked encoding not supported`) in the same payload-limiting middleware.
