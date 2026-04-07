@@ -35,6 +35,21 @@ def solve_pmp_linear_quadratic(A, B, Q, R, x0, xf, tf, num_points=100):
         # ⚡ Bolt Optimization: Replace multiple @ and np.vstack with a single dot product
         return M @ y
 
+    # ⚡ Bolt Optimization: Provide exact analytical Jacobians to solve_bvp
+    # to bypass costly internal finite-difference approximations for linear systems.
+    def fun_jac(t, y):
+        # Derivative of (M @ y) with respect to y is M.
+        # solve_bvp expects shape (n, n, m) where n is state dim (2*n_states) and m is number of points.
+        m_pts = y.shape[1]
+        return np.repeat(M[:, :, np.newaxis], m_pts, axis=2)
+
+    # Pre-compute boundary condition Jacobians
+    dbc_dya = np.zeros((2 * n_states, 2 * n_states))
+    dbc_dya[:n_states, :n_states] = np.eye(n_states)
+
+    dbc_dyb = np.zeros((2 * n_states, 2 * n_states))
+    dbc_dyb[n_states:, :n_states] = np.eye(n_states)
+
     def bvp_bc(ya, yb):
         # ⚡ Bolt Optimization: Use direct slicing into a locally pre-allocated
         # array. Returning references to a single globally allocated `bc_res`
@@ -45,13 +60,16 @@ def solve_pmp_linear_quadratic(A, B, Q, R, x0, xf, tf, num_points=100):
         res[n_states:] = yb[:n_states] - xf
         return res
 
+    def bc_jac(ya, yb):
+        return dbc_dya, dbc_dyb
+
     t = np.linspace(0, tf, num_points)
 
     # ⚡ Bolt Optimization: Fast vectorized linear interpolation to replace Python loop
     y_guess = np.zeros((2 * n_states, num_points))
     y_guess[:n_states, :] = np.linspace(x0, xf, num_points).T
 
-    res = solve_bvp(bvp_system, bvp_bc, t, y_guess)
+    res = solve_bvp(bvp_system, bvp_bc, t, y_guess, fun_jac=fun_jac, bc_jac=bc_jac)
 
     if res.success:
         x_sol = res.y[:n_states, :]
