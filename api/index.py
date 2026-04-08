@@ -111,7 +111,8 @@ def lqr_endpoint(req: LQRRequest):
         return {
             "K": K.tolist(),
             "X": X.tolist(),
-            "eigvals": [complex(e).real for e in eigvals] # Returning real parts for simplicity or parse complex
+            # ⚡ Bolt Optimization: Use vectorized `.real.tolist()` to avoid python-level iteration overhead
+            "eigvals": eigvals.real.tolist()
         }
     except Exception as e:
         logger.error(f"LQR Error: {e}")
