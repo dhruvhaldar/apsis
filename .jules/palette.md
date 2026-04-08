@@ -45,3 +45,6 @@
 ## 2026-04-07 - Screen Reader Redundancy for Required Indicators
 **Learning:** Adding a visual asterisk (*) to labels for required fields is helpful for sighted users, but if not hidden, screen readers will read "star" out loud. This is redundant and noisy if the underlying `<input>` already has the `required` attribute.
 **Action:** Always wrap visual required indicators in `<span aria-hidden="true">*</span>` to keep the UI clean for screen reader users while maintaining visual cues.
+## 2025-01-20 - Transform sections to landmarks in complex dashboards
+**Learning:** Generic `<section>` tags do not automatically function as ARIA region landmarks for screen readers, meaning assistive tech users can't easily jump between major dashboard modules.
+**Action:** Always provide an accessible name for `<section>` elements in complex layouts (e.g., using `aria-labelledby` referencing the section's `<h2>` heading) to elevate them to true, navigable region landmarks.

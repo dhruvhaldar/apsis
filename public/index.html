@@ -34,8 +34,8 @@
 
         <main class="grid-layout">
             <!-- PMP Panel -->
-            <section class="panel pmp-panel">
-                <h2>Pontryagin Maximum Principle</h2>
+            <section class="panel pmp-panel" aria-labelledby="pmp-heading">
+                <h2 id="pmp-heading">Pontryagin Maximum Principle</h2>
                 <div class="math-block">
                     $$ \dot{x} = Ax + Bu $$
                     $$ J = \int_0^{t_f} \frac{1}{2}(x^TQx + u^TRu) dt $$
@@ -64,8 +64,8 @@
             </section>
 
             <!-- LQR Panel -->
-            <section class="panel lqr-panel">
-                <h2>Linear Quadratic Optimization</h2>
+            <section class="panel lqr-panel" aria-labelledby="lqr-heading">
+                <h2 id="lqr-heading">Linear Quadratic Optimization</h2>
                 <div class="math-block">
                     $$ u = -Kx $$
                     $$ 0 = A^TX + XA - XBR^{-1}B^TX + Q $$
@@ -102,8 +102,8 @@
             </section>
 
             <!-- MPC Panel -->
-            <section class="panel mpc-panel">
-                <h2>Model Predictive Control</h2>
+            <section class="panel mpc-panel" aria-labelledby="mpc-heading">
+                <h2 id="mpc-heading">Model Predictive Control</h2>
                 <div class="math-block">
                     $$ \min_u \sum_{k=0}^{N-1} (x_k^TQx_k + u_k^TRu_k) $$
                 </div>
