@@ -50,6 +50,10 @@ async def limit_payload_size(request: Request, call_next):
 
         if content_length > MAX_PAYLOAD_SIZE:
             return JSONResponse(status_code=413, content={"detail": "Payload too large"})
+    elif request.method not in ["GET", "HEAD", "OPTIONS"]:
+        # 🛡️ Sentinel Security Fix: Enforce Content-Length for all requests that
+        # could contain a body to prevent bypassing the size limit check.
+        return JSONResponse(status_code=411, content={"detail": "Length Required"})
 
     return await call_next(request)
 
