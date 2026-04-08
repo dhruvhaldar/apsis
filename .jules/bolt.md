@@ -37,3 +37,7 @@
 ## 2026-04-03 - SciPy solve_bvp Analytical Jacobians
 **Learning:** `scipy.integrate.solve_bvp` relies heavily on Jacobian computations for its damped Newton method. By default, if Jacobians are not provided, it estimates them via internal forward finite differences, which involves repeatedly calling the system dynamics and boundary conditions with perturbed states. For linear or analytically differentiable systems (e.g., LQR via Pontryagin Maximum Principle where system dynamics are `M @ y`), this implicit fallback is computationally wasteful.
 **Action:** When using `scipy.integrate.solve_bvp` for analytically differentiable systems, always supply exact analytical Jacobians (`fun_jac` and `bc_jac`) to completely bypass these costly finite-difference approximations. This yields a measurable reduction in solver execution time.
+
+## 2026-04-08 - Optimize API serialization for numpy arrays
+**Learning:** Python-level list comprehensions over numpy array elements (e.g., `[complex(e).real for e in eigvals]`) in API serialization paths cause significant overhead and bypass numpy's optimized C implementations.
+**Action:** Always prefer numpy's vectorized properties and built-in conversion methods like `.real.tolist()` over manual iteration to serialize arrays to JSON-compatible lists.
