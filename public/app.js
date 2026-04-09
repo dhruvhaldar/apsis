@@ -259,6 +259,36 @@ async function solveMPC() {
 
 // Initialize events and rendering once DOM is loaded
 window.addEventListener('DOMContentLoaded', () => {
+    // Setup copy button
+    const copyBtn = document.getElementById('lqr-copy-k');
+    let isCopying = false;
+    if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+            if (isCopying) return;
+            const kVal = document.getElementById('lqr-k-val').innerText;
+            if (kVal && kVal !== '...') {
+                try {
+                    isCopying = true;
+                    await navigator.clipboard.writeText(kVal);
+                    const span = copyBtn.querySelector('span');
+                    const originalLabel = copyBtn.getAttribute('aria-label');
+
+                    span.innerText = '✅';
+                    copyBtn.setAttribute('aria-label', 'Copied successfully');
+
+                    setTimeout(() => {
+                        span.innerText = '📋';
+                        copyBtn.setAttribute('aria-label', originalLabel);
+                        isCopying = false;
+                    }, 2000);
+                } catch (err) {
+                    console.error('Failed to copy!', err);
+                    isCopying = false;
+                }
+            }
+        });
+    }
+
     // Initialize KaTeX
     if (typeof renderMathInElement === 'function') {
         renderMathInElement(document.body);
