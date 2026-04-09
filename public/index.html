@@ -95,8 +95,11 @@
                         <div>Synthesize to view gain and poles</div>
                     </div>
                 </div>
-                <div class="output-block" id="lqr-output" aria-live="polite" style="display: none;">
-                    <p>Gain K: <span id="lqr-k-val">...</span></p>
+                <div class="output-block" id="lqr-output" aria-live="polite" style="display: none; position: relative;">
+                    <p style="padding-right: 40px;">Gain K: <span id="lqr-k-val">...</span></p>
+                    <button class="icon-btn copy-btn" id="lqr-copy-k" aria-label="Copy Gain K matrix to clipboard" title="Copy Gain K matrix">
+                        <span aria-hidden="true">📋</span>
+                    </button>
                     <p>Closed-loop Poles: <span id="lqr-poles-val">...</span></p>
                 </div>
             </section>
