@@ -42,3 +42,24 @@ def test_chunked_encoding_rejected():
     )
     assert response.status_code == 411
     assert response.json() == {"detail": "Chunked encoding not supported"}
+
+def test_chunked_encoding_bypass_mixed_case():
+    response = client.post(
+        "/api/lqr",
+        content=b'{"A": [[0]], "B": [[0]], "Q": [[0]], "R": [[0]]}',
+        headers={"Content-Type": "application/json", "Transfer-Encoding": "Chunked"}
+    )
+    assert response.status_code == 411
+    assert response.json() == {"detail": "Chunked encoding not supported"}
+
+def test_chunked_encoding_bypass_multiple_encodings():
+    def generate_chunked():
+        yield b'{"A": [[0]], "B": [[0]], "Q": [[0]], "R": [[0]]}'
+
+    response = client.post(
+        "/api/lqr",
+        content=generate_chunked(),
+        headers={"Content-Type": "application/json", "Transfer-Encoding": "gzip, chunked"}
+    )
+    assert response.status_code == 411
+    assert response.json() == {"detail": "Chunked encoding not supported"}

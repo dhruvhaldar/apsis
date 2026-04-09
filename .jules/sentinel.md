@@ -40,3 +40,8 @@
 **Vulnerability:** FastAPIs buffer the entire payload into memory, and a size check on `Content-Length` does not prevent memory exhaustion DoS attacks if an attacker simply omits the `Content-Length` header entirely. The request would pass the check and still be buffered.
 **Learning:** If a security middleware relies on a specific HTTP header (like `Content-Length`) to enforce limits, omitting that header completely can bypass the limit entirely unless its absence is explicitly handled.
 **Prevention:** For endpoints that expect a payload (like `POST`, `PUT`, `PATCH`), explicitly require the `Content-Length` header (e.g., returning `411 Length Required`) to ensure all requests are subject to the payload size limits.
+
+## 2024-05-24 - Fix DoS via chunked encoding check bypass
+**Vulnerability:** A Denial of Service (DoS) vulnerability via memory exhaustion could occur because the exact string check for the `Transfer-Encoding` header (`== "chunked"`) allowed bypassing the size limitation by sending mixed-case strings (e.g., `"Chunked"`) or multiple encodings (e.g., `"gzip, chunked"`).
+**Learning:** Checking headers with exact equality can be dangerous when multiple values or different casings are valid according to HTTP specs.
+**Prevention:** Always convert header values to lower case and use substring matching (e.g., `"chunked" in header_value`) when validating restricted encodings.
