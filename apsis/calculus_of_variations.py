@@ -37,11 +37,18 @@ def solve_pmp_linear_quadratic(A, B, Q, R, x0, xf, tf, num_points=100):
 
     # ⚡ Bolt Optimization: Provide exact analytical Jacobians to solve_bvp
     # to bypass costly internal finite-difference approximations for linear systems.
+    # Pre-expand M for zero-copy broadcasting in the Jacobian
+    M_expanded = M[:, :, np.newaxis]
+    M_shape_0 = M.shape[0]
+    M_shape_1 = M.shape[1]
+
     def fun_jac(t, y):
         # Derivative of (M @ y) with respect to y is M.
         # solve_bvp expects shape (n, n, m) where n is state dim (2*n_states) and m is number of points.
+        # ⚡ Bolt Optimization: Use np.broadcast_to to return a zero-copy view
+        # instead of explicitly allocating memory with np.repeat on every iteration.
         m_pts = y.shape[1]
-        return np.repeat(M[:, :, np.newaxis], m_pts, axis=2)
+        return np.broadcast_to(M_expanded, (M_shape_0, M_shape_1, m_pts))
 
     # Pre-compute boundary condition Jacobians
     dbc_dya = np.zeros((2 * n_states, 2 * n_states))
