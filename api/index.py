@@ -39,7 +39,9 @@ MAX_PAYLOAD_SIZE = 2 * 1024 * 1024 # 2MB
 async def limit_payload_size(request: Request, call_next):
     # 🛡️ Sentinel Security Fix: Reject chunked transfer encoding to prevent
     # bypassing the Content-Length limit and exhausting server memory.
-    if request.headers.get("transfer-encoding") == "chunked":
+    # We check for "chunked" in the header to handle mixed cases and multiple encodings.
+    te_header = request.headers.get("transfer-encoding", "").lower()
+    if "chunked" in te_header:
         return JSONResponse(status_code=411, content={"detail": "Chunked encoding not supported"})
 
     if "content-length" in request.headers:
