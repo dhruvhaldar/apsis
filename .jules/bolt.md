@@ -41,3 +41,7 @@
 ## 2026-04-08 - Optimize API serialization for numpy arrays
 **Learning:** Python-level list comprehensions over numpy array elements (e.g., `[complex(e).real for e in eigvals]`) in API serialization paths cause significant overhead and bypass numpy's optimized C implementations.
 **Action:** Always prefer numpy's vectorized properties and built-in conversion methods like `.real.tolist()` over manual iteration to serialize arrays to JSON-compatible lists.
+
+## 2024-05-29 - Zero-Copy Jacobian Broadcasting in solve_bvp
+**Learning:** Returning explicitly allocated matrices via `np.repeat` inside the analytical Jacobian callback `fun_jac` for `scipy.integrate.solve_bvp` introduces recurrent memory allocation overhead in the solver's hot loops.
+**Action:** Use `np.broadcast_to` on a pre-expanded array (`M[:, :, np.newaxis]`) instead of `np.repeat`. This returns a zero-copy view of the Jacobian which SciPy handles correctly, entirely bypassing allocation overhead and measurably improving solver execution speed.
