@@ -63,3 +63,10 @@ def test_chunked_encoding_bypass_multiple_encodings():
     )
     assert response.status_code == 411
     assert response.json() == {"detail": "Chunked encoding not supported"}
+
+def test_negative_content_length():
+    # Attempt to bypass Content-Length limit using a negative value
+    headers = {"content-length": "-1"}
+    response = client.post("/api/lqr", headers=headers, content=b'{"A": [[0]], "B": [[0]], "Q": [[0]], "R": [[0]]}')
+    assert response.status_code == 400
+    assert response.json() == {"detail": "Invalid Content-Length header"}
