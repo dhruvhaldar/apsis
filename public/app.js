@@ -132,6 +132,9 @@ async function solvePMP() {
 
     } catch (err) {
         console.error(err);
+        btn.disabled = false;
+        btn.removeAttribute('aria-busy');
+        btn.innerText = originalText;
         btn.setCustomValidity('Failed to solve PMP: ' + err.message);
         btn.reportValidity();
     } finally {
@@ -176,6 +179,9 @@ async function solveLQR() {
 
     } catch (err) {
         console.error(err);
+        btn.disabled = false;
+        btn.removeAttribute('aria-busy');
+        btn.innerText = originalText;
         btn.setCustomValidity('Failed to synthesize LQR: ' + err.message);
         btn.reportValidity();
     } finally {
@@ -248,6 +254,9 @@ async function solveMPC() {
 
     } catch (err) {
         console.error(err);
+        btn.disabled = false;
+        btn.removeAttribute('aria-busy');
+        btn.innerText = originalText;
         btn.setCustomValidity('Failed to simulate MPC: ' + err.message);
         btn.reportValidity();
     } finally {
