@@ -50,6 +50,9 @@ async def limit_payload_size(request: Request, call_next):
         except ValueError:
             return JSONResponse(status_code=400, content={"detail": "Invalid Content-Length header"})
 
+        if content_length < 0:
+            return JSONResponse(status_code=400, content={"detail": "Invalid Content-Length header"})
+
         if content_length > MAX_PAYLOAD_SIZE:
             return JSONResponse(status_code=413, content={"detail": "Payload too large"})
     elif request.method not in ["GET", "HEAD", "OPTIONS"]:

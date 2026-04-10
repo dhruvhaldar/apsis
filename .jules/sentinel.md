@@ -45,3 +45,8 @@
 **Vulnerability:** A Denial of Service (DoS) vulnerability via memory exhaustion could occur because the exact string check for the `Transfer-Encoding` header (`== "chunked"`) allowed bypassing the size limitation by sending mixed-case strings (e.g., `"Chunked"`) or multiple encodings (e.g., `"gzip, chunked"`).
 **Learning:** Checking headers with exact equality can be dangerous when multiple values or different casings are valid according to HTTP specs.
 **Prevention:** Always convert header values to lower case and use substring matching (e.g., `"chunked" in header_value`) when validating restricted encodings.
+
+## 2025-04-10 - Denial of Service via Negative Content-Length Bypass
+**Vulnerability:** A Denial of Service (DoS) vulnerability via memory exhaustion could occur because the payload size limit middleware checked if the `Content-Length` was greater than the maximum size, but did not check if it was negative. An attacker could bypass the check by providing a negative `Content-Length` (e.g., `-1`), which is less than the maximum limit, allowing an arbitrarily large payload to be buffered in memory.
+**Learning:** When validating size limits, it's crucial to consider the entire range of potential integer values, including negative numbers, rather than just the upper bound.
+**Prevention:** Always validate that size metrics (like `Content-Length`) are within the expected positive range (i.e., `>= 0`) in addition to checking the upper limit.
