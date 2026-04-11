@@ -2,8 +2,9 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import logging
+import time
 from pydantic import BaseModel, Field
-from typing import List, Optional, Annotated
+from typing import List, Optional, Annotated, Dict
 
 from apsis.calculus_of_variations import solve_pmp_linear_quadratic
 from apsis.lqr import solve_lqr
@@ -59,6 +60,42 @@ async def limit_payload_size(request: Request, call_next):
         # 🛡️ Sentinel Security Fix: Enforce Content-Length for all requests that
         # could contain a body to prevent bypassing the size limit check.
         return JSONResponse(status_code=411, content={"detail": "Length Required"})
+
+    return await call_next(request)
+
+# 🛡️ Sentinel Security Enhancement: Application-Layer Rate Limiting
+# The mathematical solvers are computationally intensive and vulnerable to CPU
+# exhaustion DoS attacks. Limit requests per IP.
+RATE_LIMIT_WINDOW = 60 # seconds
+RATE_LIMIT_MAX_REQUESTS = 50
+MAX_IPS = 10000
+
+rate_limit_store: Dict[str, List[float]] = {}
+
+@app.middleware("http")
+async def rate_limit(request: Request, call_next):
+    # Only rate limit the mathematical endpoints
+    if not request.url.path.startswith("/api/"):
+        return await call_next(request)
+
+    client_ip = request.client.host if request.client else "unknown"
+    current_time = time.time()
+
+    # Prevent memory exhaustion in the rate limit store itself
+    if len(rate_limit_store) > MAX_IPS:
+        rate_limit_store.clear()
+
+    if client_ip not in rate_limit_store:
+        rate_limit_store[client_ip] = []
+
+    # Filter out old requests
+    requests = [req_time for req_time in rate_limit_store[client_ip] if current_time - req_time < RATE_LIMIT_WINDOW]
+
+    if len(requests) >= RATE_LIMIT_MAX_REQUESTS:
+        return JSONResponse(status_code=429, content={"detail": "Too many requests. Please try again later."})
+
+    requests.append(current_time)
+    rate_limit_store[client_ip] = requests
 
     return await call_next(request)
 

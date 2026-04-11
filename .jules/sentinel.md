@@ -50,3 +50,7 @@
 **Vulnerability:** A Denial of Service (DoS) vulnerability via memory exhaustion could occur because the payload size limit middleware checked if the `Content-Length` was greater than the maximum size, but did not check if it was negative. An attacker could bypass the check by providing a negative `Content-Length` (e.g., `-1`), which is less than the maximum limit, allowing an arbitrarily large payload to be buffered in memory.
 **Learning:** When validating size limits, it's crucial to consider the entire range of potential integer values, including negative numbers, rather than just the upper bound.
 **Prevention:** Always validate that size metrics (like `Content-Length`) are within the expected positive range (i.e., `>= 0`) in addition to checking the upper limit.
+## 2024-05-24 - Rate Limiter Memory Exhaustion
+**Vulnerability:** Implementing a custom in-memory rate limiter without capping the size of the tracking dictionary (e.g., maximum IPs tracked) creates a new memory exhaustion DoS vulnerability within the security middleware itself.
+**Learning:** Security mechanisms must be designed with their own failure modes in mind. If an attacker spoofs IP addresses, an uncapped dictionary will grow indefinitely and crash the server.
+**Prevention:** Always implement a hard cap on the size of in-memory data structures used for security tracking (e.g., `if len(rate_limit_store) > MAX_IPS: rate_limit_store.clear()`).
