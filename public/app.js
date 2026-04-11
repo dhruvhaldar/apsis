@@ -49,7 +49,9 @@ function parseInput(id) {
         el.setCustomValidity('Invalid format. Please use valid JSON array format, e.g., [1, 0] or [[1,0],[0,1]]');
         el.reportValidity();
         el.focus();
-        throw e;
+        const err = new Error('ValidationError');
+        err.name = 'ValidationError';
+        throw err;
     }
 }
 
@@ -60,7 +62,9 @@ function parseFloatInput(id) {
         el.setCustomValidity('Please enter a valid number.');
         el.reportValidity();
         el.focus();
-        throw new Error(`Invalid number in ${id}`);
+        const err = new Error(`Invalid number in ${id}`);
+        err.name = 'ValidationError';
+        throw err;
     }
     return val;
 }
@@ -91,7 +95,7 @@ async function solvePMP() {
     const originalText = btn.innerText;
     btn.disabled = true;
     btn.setAttribute('aria-busy', 'true');
-    btn.innerText = '⏳ Solving...';
+    btn.innerHTML = '<span aria-hidden="true">⏳</span> Solving...';
 
     try {
         const payload = {
@@ -135,6 +139,7 @@ async function solvePMP() {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
         btn.innerText = originalText;
+        if (err.name === 'ValidationError') return;
         btn.setCustomValidity('Failed to solve PMP: ' + err.message);
         btn.reportValidity();
     } finally {
@@ -151,7 +156,7 @@ async function solveLQR() {
     const originalText = btn.innerText;
     btn.disabled = true;
     btn.setAttribute('aria-busy', 'true');
-    btn.innerText = '⏳ Synthesizing...';
+    btn.innerHTML = '<span aria-hidden="true">⏳</span> Synthesizing...';
 
     try {
         const payload = {
@@ -182,6 +187,7 @@ async function solveLQR() {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
         btn.innerText = originalText;
+        if (err.name === 'ValidationError') return;
         btn.setCustomValidity('Failed to synthesize LQR: ' + err.message);
         btn.reportValidity();
     } finally {
@@ -198,7 +204,7 @@ async function solveMPC() {
     const originalText = btn.innerText;
     btn.disabled = true;
     btn.setAttribute('aria-busy', 'true');
-    btn.innerText = '⏳ Simulating...';
+    btn.innerHTML = '<span aria-hidden="true">⏳</span> Simulating...';
 
     try {
         const payload = {
@@ -257,6 +263,7 @@ async function solveMPC() {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
         btn.innerText = originalText;
+        if (err.name === 'ValidationError') return;
         btn.setCustomValidity('Failed to simulate MPC: ' + err.message);
         btn.reportValidity();
     } finally {

@@ -55,3 +55,7 @@
 ## 2026-04-10 - Async Form Validation Error Bubble Not Showing
 **Learning:** In native browser form validation, calling `element.reportValidity()` on a disabled element (e.g., a button disabled during an async API call) will silently fail, meaning the error bubble never appears to the user even if `element.setCustomValidity()` was correctly set.
 **Action:** When implementing async form submissions with loading states, always set `element.disabled = false` *before* calling `element.reportValidity()` in error catch blocks to ensure the validation bubble successfully renders.
+
+## 2026-05-18 - Validation Bubble Override
+**Learning:** When custom client-side validation is applied both to input fields and their parent action buttons (e.g., catching parsing errors on submit), the latter can inadvertently override the former. Specifically, if a catch block sets `setCustomValidity()` on the submit button after parsing fails, it steals focus and visually overrides the helpful inline validation bubble on the specific input.
+**Action:** Always ensure that custom validation logic on parent action buttons checks for earlier input-level validation states (e.g., by throwing/catching a specific `ValidationError`) and bails out early to prevent overwriting the input's visual error bubble.
