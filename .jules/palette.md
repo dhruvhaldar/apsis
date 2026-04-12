@@ -59,3 +59,7 @@
 ## 2026-05-18 - Validation Bubble Override
 **Learning:** When custom client-side validation is applied both to input fields and their parent action buttons (e.g., catching parsing errors on submit), the latter can inadvertently override the former. Specifically, if a catch block sets `setCustomValidity()` on the submit button after parsing fails, it steals focus and visually overrides the helpful inline validation bubble on the specific input.
 **Action:** Always ensure that custom validation logic on parent action buttons checks for earlier input-level validation states (e.g., by throwing/catching a specific `ValidationError`) and bails out early to prevent overwriting the input's visual error bubble.
+
+## 2024-05-19 - Visual Feedback on Stale Data
+**Learning:** During heavy asynchronous operations (like numerical solving), leaving previously generated charts or outputs fully visible and interactive can confuse users, making them think the computation finished instantly or failed to start, particularly when the loading state is on a separate button.
+**Action:** Always apply visual dimming (e.g., `opacity: 0.5`) and disable interactions (e.g., `pointer-events: none`) to output containers immediately when a background fetch starts, restoring them in the `finally` block. This clearly marks the current data as "stale" while the new data is computing.

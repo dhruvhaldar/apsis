@@ -202,6 +202,7 @@ h2 {
     padding: 15px;
     border-radius: 10px;
     font-family: monospace;
+    transition: opacity 0.3s ease;
 }
 
 .output-block p {
@@ -253,6 +254,7 @@ h2 {
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: opacity 0.3s ease;
 }
 
 .empty-state {
