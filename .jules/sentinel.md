@@ -54,3 +54,8 @@
 **Vulnerability:** Implementing a custom in-memory rate limiter without capping the size of the tracking dictionary (e.g., maximum IPs tracked) creates a new memory exhaustion DoS vulnerability within the security middleware itself.
 **Learning:** Security mechanisms must be designed with their own failure modes in mind. If an attacker spoofs IP addresses, an uncapped dictionary will grow indefinitely and crash the server.
 **Prevention:** Always implement a hard cap on the size of in-memory data structures used for security tracking (e.g., `if len(rate_limit_store) > MAX_IPS: rate_limit_store.clear()`).
+
+## 2025-04-12 - Proxy IP Rate Limiting (Denial of Service)
+**Vulnerability:** The custom rate limiting middleware in FastAPI relied solely on `request.client.host` to identify the client IP. In a serverless deployment like Vercel (or behind any reverse proxy), this resulted in identifying all clients as the same proxy IP. This caused a Denial of Service (DoS) where rate limits were triggered for all legitimate users based on combined traffic, rather than per-user traffic.
+**Learning:** When deploying applications behind reverse proxies or CDNs, `request.client.host` is insufficient for IP-based security mechanisms. It will always return the IP of the proxy itself.
+**Prevention:** Always extract the actual client IP from the `X-Forwarded-For` header (or similar trusted headers injected by the proxy infrastructure) when implementing rate limiting or IP blocking.

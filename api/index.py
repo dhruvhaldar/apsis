@@ -84,7 +84,11 @@ async def rate_limit(request: Request, call_next):
     if not request.url.path.startswith("/api/"):
         return await call_next(request)
 
-    client_ip = request.client.host if request.client else "unknown"
+    forwarded = request.headers.get("X-Forwarded-For")
+    if forwarded:
+        client_ip = forwarded.split(",")[0].strip()
+    else:
+        client_ip = request.client.host if request.client else "unknown"
     current_time = time.time()
 
     # Prevent memory exhaustion in the rate limit store itself
