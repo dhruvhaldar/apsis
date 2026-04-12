@@ -49,3 +49,11 @@
 ## 2024-05-30 - GZip Compression for Large API Payloads
 **Learning:** Endpoints that return numerical trajectories (like PMP and MPC solvers) generate large JSON arrays. Without compression, these payloads can be hundreds of kilobytes, causing slow network transfer and delaying frontend rendering.
 **Action:** Always enable `GZipMiddleware` in FastAPI applications that serve large array payloads. Setting a reasonable `minimum_size` (e.g., 1000 bytes) ensures that small responses don't incur compression overhead, while large trajectory payloads are reduced by >60%, measurably improving network performance.
+
+## 2024-05-31 - Chart.js Memory Leaks and DOM Thrashing
+**Learning:** In a single-page application, destroying a Chart.js canvas by simply setting `innerHTML = ''` or calling `ctx.remove()` without first calling `chart.destroy()` causes a severe memory leak. Chart.js retains event listeners (like resize handlers) tied to the `window` object, keeping the orphaned chart instances in memory indefinitely.
+**Action:** Instead of tearing down the DOM and recreating charts on every update, cache the `Chart` instance in a persistent variable. Update the chart's data properties in-place (e.g., `chart.data.labels = ...`) and call `chart.update()`. This not only prevents memory leaks but also significantly improves rendering performance by avoiding expensive DOM reflows.
+
+## 2024-06-01 - Plotly Rendering Optimization
+**Learning:** Calling `Plotly.newPlot` on an existing chart container forces a complete DOM teardown and recreation of the plot elements. This is computationally expensive and can cause visual flickering during rapid consecutive updates.
+**Action:** Use `Plotly.react` instead of `Plotly.newPlot` for subsequent chart updates. `Plotly.react` performs an intelligent diff on the data and layout, updating the existing SVG elements in-place. This saves significant main-thread time and provides a much smoother user experience.

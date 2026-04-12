@@ -138,7 +138,10 @@ async function solvePMP() {
             yaxis: { gridcolor: '#333' }
         };
 
-        Plotly.newPlot('pmp-chart', [traceX1, traceX2, traceU], layout, {responsive: true});
+        // ⚡ Bolt Optimization: Use Plotly.react instead of Plotly.newPlot for subsequent updates.
+        // newPlot destroys the DOM element and recreates it. react updates the data/layout in-place
+        // via diffing, saving significant main-thread time and preventing visual flickering on re-solves.
+        Plotly.react('pmp-chart', [traceX1, traceX2, traceU], layout, {responsive: true});
 
     } catch (err) {
         console.error(err);
@@ -217,6 +220,9 @@ async function solveLQR() {
     }
 }
 
+// ⚡ Bolt Optimization: Cache the Chart.js instance to prevent memory leaks and DOM thrashing
+let mpcChartInstance = null;
+
 // 3. Solve MPC
 async function solveMPC() {
     const btn = document.getElementById('btn-mpc');
@@ -255,34 +261,45 @@ async function solveMPC() {
         const data = await response.json();
 
         // Chart.js for MPC
-        const ctx = document.getElementById('mpc-canvas-inner');
-        if (ctx) ctx.remove(); // Clear previous
-
-        const canvas = document.createElement('canvas');
-        canvas.id = 'mpc-canvas-inner';
-        document.getElementById('mpc-chart').innerHTML = '';
-        document.getElementById('mpc-chart').appendChild(canvas);
-
-        new Chart(canvas, {
-            type: 'line',
-            data: {
-                labels: data.t.map(t => t.toFixed(1)),
-                datasets: [
-                    { label: 'x_1', data: data.x[0], borderColor: '#4a90e2', tension: 0.1 },
-                    { label: 'x_2', data: data.x[1], borderColor: '#50e3c2', tension: 0.1 },
-                    { label: 'u', data: data.u[0], borderColor: '#e24a4a', tension: 0.1, stepped: true }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                color: '#e0e0e0',
-                scales: {
-                    x: { grid: { color: '#333' } },
-                    y: { grid: { color: '#333' } }
-                }
+        // ⚡ Bolt Optimization: Reuse the Chart instance and Canvas instead of destroying the DOM.
+        // Tearing down the canvas without calling chart.destroy() causes severe memory leaks
+        // as Chart.js retains event listeners. Updating data in-place is also much faster.
+        if (mpcChartInstance) {
+            mpcChartInstance.data.labels = data.t.map(t => t.toFixed(1));
+            mpcChartInstance.data.datasets[0].data = data.x[0];
+            mpcChartInstance.data.datasets[1].data = data.x[1];
+            mpcChartInstance.data.datasets[2].data = data.u[0];
+            mpcChartInstance.update();
+        } else {
+            let canvas = document.getElementById('mpc-canvas-inner');
+            if (!canvas) {
+                canvas = document.createElement('canvas');
+                canvas.id = 'mpc-canvas-inner';
+                document.getElementById('mpc-chart').innerHTML = '';
+                document.getElementById('mpc-chart').appendChild(canvas);
             }
-        });
+
+            mpcChartInstance = new Chart(canvas, {
+                type: 'line',
+                data: {
+                    labels: data.t.map(t => t.toFixed(1)),
+                    datasets: [
+                        { label: 'x_1', data: data.x[0], borderColor: '#4a90e2', tension: 0.1 },
+                        { label: 'x_2', data: data.x[1], borderColor: '#50e3c2', tension: 0.1 },
+                        { label: 'u', data: data.u[0], borderColor: '#e24a4a', tension: 0.1, stepped: true }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    color: '#e0e0e0',
+                    scales: {
+                        x: { grid: { color: '#333' } },
+                        y: { grid: { color: '#333' } }
+                    }
+                }
+            });
+        }
 
     } catch (err) {
         console.error(err);
