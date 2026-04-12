@@ -97,6 +97,12 @@ async function solvePMP() {
     btn.setAttribute('aria-busy', 'true');
     btn.innerHTML = '<span aria-hidden="true">⏳</span> Solving...';
 
+    const chartContainer = document.getElementById('pmp-chart');
+    if (chartContainer) {
+        chartContainer.style.opacity = '0.5';
+        chartContainer.style.pointerEvents = 'none';
+    }
+
     try {
         const payload = {
             A: [[0, 1], [-1, -1]], // Hardcoded linear system for now
@@ -146,6 +152,10 @@ async function solvePMP() {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
         btn.innerText = originalText;
+        if (chartContainer) {
+            chartContainer.style.opacity = '';
+            chartContainer.style.pointerEvents = '';
+        }
     }
 }
 
@@ -157,6 +167,12 @@ async function solveLQR() {
     btn.disabled = true;
     btn.setAttribute('aria-busy', 'true');
     btn.innerHTML = '<span aria-hidden="true">⏳</span> Synthesizing...';
+
+    const outputContainer = document.getElementById('lqr-output');
+    if (outputContainer) {
+        outputContainer.style.opacity = '0.5';
+        outputContainer.style.pointerEvents = 'none';
+    }
 
     try {
         const payload = {
@@ -194,6 +210,10 @@ async function solveLQR() {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
         btn.innerText = originalText;
+        if (outputContainer) {
+            outputContainer.style.opacity = '';
+            outputContainer.style.pointerEvents = '';
+        }
     }
 }
 
@@ -205,6 +225,12 @@ async function solveMPC() {
     btn.disabled = true;
     btn.setAttribute('aria-busy', 'true');
     btn.innerHTML = '<span aria-hidden="true">⏳</span> Simulating...';
+
+    const chartContainer = document.getElementById('mpc-chart');
+    if (chartContainer) {
+        chartContainer.style.opacity = '0.5';
+        chartContainer.style.pointerEvents = 'none';
+    }
 
     try {
         const payload = {
@@ -270,6 +296,10 @@ async function solveMPC() {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
         btn.innerText = originalText;
+        if (chartContainer) {
+            chartContainer.style.opacity = '';
+            chartContainer.style.pointerEvents = '';
+        }
     }
 }
 
@@ -288,13 +318,20 @@ window.addEventListener('DOMContentLoaded', () => {
                     await navigator.clipboard.writeText(kVal);
                     const span = copyBtn.querySelector('span');
                     const originalLabel = copyBtn.getAttribute('aria-label');
+                    const originalTitle = copyBtn.getAttribute('title');
 
                     span.innerText = '✅';
                     copyBtn.setAttribute('aria-label', 'Copied successfully');
+                    copyBtn.setAttribute('title', 'Copied successfully!');
 
                     setTimeout(() => {
                         span.innerText = '📋';
                         copyBtn.setAttribute('aria-label', originalLabel);
+                        if (originalTitle) {
+                            copyBtn.setAttribute('title', originalTitle);
+                        } else {
+                            copyBtn.removeAttribute('title');
+                        }
                         isCopying = false;
                     }, 2000);
                 } catch (err) {
