@@ -57,3 +57,6 @@
 ## 2024-06-01 - Plotly Rendering Optimization
 **Learning:** Calling `Plotly.newPlot` on an existing chart container forces a complete DOM teardown and recreation of the plot elements. This is computationally expensive and can cause visual flickering during rapid consecutive updates.
 **Action:** Use `Plotly.react` instead of `Plotly.newPlot` for subsequent chart updates. `Plotly.react` performs an intelligent diff on the data and layout, updating the existing SVG elements in-place. This saves significant main-thread time and provides a much smoother user experience.
+## 2024-05-24 - Frontend Bundle Optimization via Plotly Basic
+**Learning:** The application uses Plotly.js for rendering simple 2D trajectories (PMP endpoint). The full Plotly distribution is over 3.5MB, causing significant render-blocking and parsing overhead. However, the application only requires basic line/scatter traces.
+**Action:** Replaced the full `plotly-2.24.1.min.js` CDN payload with `plotly-basic-2.24.1.min.js`, reducing the dependency size by ~72% (saving ~2.6MB) and significantly improving the initial page load speed without loss of functionality. Always evaluate if the "basic" or "cartesian" bundles of large visualization libraries suffice for the application's needs.
