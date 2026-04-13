@@ -86,7 +86,11 @@ async def rate_limit(request: Request, call_next):
 
     forwarded = request.headers.get("X-Forwarded-For")
     if forwarded:
-        client_ip = forwarded.split(",")[0].strip()
+        # 🛡️ Sentinel Security Fix: Extract the rightmost IP address to prevent IP spoofing bypasses
+        # When an attacker sends a spoofed X-Forwarded-For header, the reverse proxy (e.g., Vercel)
+        # appends the actual client IP to the end of the list. Taking the first (0th) element trusts
+        # the potentially spoofed IP, allowing rate limit bypasses.
+        client_ip = forwarded.split(",")[-1].strip()
     else:
         client_ip = request.client.host if request.client else "unknown"
     current_time = time.time()
