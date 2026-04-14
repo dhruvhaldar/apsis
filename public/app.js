@@ -73,6 +73,19 @@ function parseFloatInput(id) {
 document.addEventListener('input', (e) => {
     if (e.target && e.target.classList.contains('ui-input')) {
         e.target.setCustomValidity('');
+
+        // ⚡ UX Improvement: Mark existing output as stale to prevent confusion
+        const section = e.target.closest('section');
+        if (section) {
+            const chartContainer = section.querySelector('.chart-container');
+            if (chartContainer && !chartContainer.querySelector('.empty-state')) {
+                chartContainer.style.opacity = '0.5';
+            }
+            const outputBlock = section.querySelector('.output-block[style*="display: block"]');
+            if (outputBlock && outputBlock.id !== 'lqr-empty') {
+                outputBlock.style.opacity = '0.5';
+            }
+        }
     }
     // Clear form submit button validity on input change to allow retry
     const form = e.target.closest('form');

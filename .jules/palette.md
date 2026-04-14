@@ -66,3 +66,7 @@
 ## 2024-06-10 - Skip Links and Focus Management
 **Learning:** Adding a "Skip to main content" link isn't enough if the target element (like `<main>`) is a non-interactive element. Browsers won't move programmatic focus to it unless it has `tabindex="-1"`. Furthermore, once it receives focus, it will display a massive focus ring unless `outline: none` is explicitly applied.
 **Action:** Always add `tabindex="-1"` to the target of a skip link to allow programmatic focus, and use CSS `:focus { outline: none; }` to prevent visual noise while ensuring screen readers read the target content properly.
+
+## 2024-06-25 - Visual Feedback for Stale Data on Input Modification
+**Learning:** For forms that generate stateful outputs (like charts or complex mathematical matrices), modifying input fields without immediately updating the output can cause the output to silently become stale and inaccurate. This leads to user confusion and potentially copying incorrect data.
+**Action:** Always add an `input` event listener to apply visual dimming (e.g., `opacity: 0.5`) to output containers when related input values change, indicating to the user that the displayed data is now stale and requires re-submitting the form to sync.
