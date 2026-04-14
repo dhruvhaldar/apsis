@@ -43,7 +43,10 @@ def solve_hjb(L, f, x_grid, u_grid, t_grid):
         dVdx[0] = (V_next[1] - V_next[0]) * inv_dx
         dVdx[-1] = (V_next[-1] - V_next[-2]) * inv_dx
         if nx > 2:
-            dVdx[1:-1] = (V_next[2:] - V_next[:-2]) * inv_2dx
+            # ⚡ Bolt Optimization: Use in-place np.subtract and np.multiply
+            # to avoid implicit array allocations in central difference calculation
+            np.subtract(V_next[2:], V_next[:-2], out=dVdx[1:-1])
+            np.multiply(dVdx[1:-1], inv_2dx, out=dVdx[1:-1])
 
         t_val = t_grid[k]
 

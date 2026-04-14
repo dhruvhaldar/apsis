@@ -60,3 +60,7 @@
 ## 2024-05-24 - Frontend Bundle Optimization via Plotly Basic
 **Learning:** The application uses Plotly.js for rendering simple 2D trajectories (PMP endpoint). The full Plotly distribution is over 3.5MB, causing significant render-blocking and parsing overhead. However, the application only requires basic line/scatter traces.
 **Action:** Replaced the full `plotly-2.24.1.min.js` CDN payload with `plotly-basic-2.24.1.min.js`, reducing the dependency size by ~72% (saving ~2.6MB) and significantly improving the initial page load speed without loss of functionality. Always evaluate if the "basic" or "cartesian" bundles of large visualization libraries suffice for the application's needs.
+
+## 2024-06-02 - In-place Numpy subtraction/multiplication for central differences
+**Learning:** Evaluating expressions like `V_next[2:] - V_next[:-2]` implicitly allocates temporary numpy arrays in memory. When executing thousands of times per second inside a hot loop (like numerical PDE solvers / central differences), this array allocation becomes a measurable performance bottleneck.
+**Action:** Pre-allocate output arrays and use in-place operations like `np.subtract(..., out=...)` and `np.multiply(..., out=...)` to skip allocating intermediate arrays, reducing overhead.
