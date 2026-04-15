@@ -14,6 +14,10 @@
     100% { background-position: 0% 50%; }
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 body, html {
     margin: 0;
     padding: 0;
