@@ -70,3 +70,10 @@
 ## 2024-06-25 - Visual Feedback for Stale Data on Input Modification
 **Learning:** For forms that generate stateful outputs (like charts or complex mathematical matrices), modifying input fields without immediately updating the output can cause the output to silently become stale and inaccurate. This leads to user confusion and potentially copying incorrect data.
 **Action:** Always add an `input` event listener to apply visual dimming (e.g., `opacity: 0.5`) to output containers when related input values change, indicating to the user that the displayed data is now stale and requires re-submitting the form to sync.
+## 2024-08-16 - Visual Dimming Restoration on Error
+**Learning:** Restoring visual dimming (removing `opacity` and `pointer-events: none`) in the `finally` block of an async operation is a common anti-pattern when updating stateful outputs like charts. If the async operation fails (e.g., due to validation errors), un-dimming the container makes the stale data appear fresh and accurate, confusing the user.
+**Action:** Only restore visual dimming (e.g., `chartContainer.style.opacity = ''`) at the end of the `try` block, explicitly *after* the new data has successfully rendered. This ensures that if the operation fails, the old data remains visually dimmed, indicating it is stale and out of sync with the current form inputs.
+
+## 2024-08-16 - API Validation Error Formatting for UI
+**Learning:** Directly throwing `response.text()` for API validation errors (like Pydantic's JSON response) results in a raw JSON string being rendered inside the native form validation bubble, which is unreadable for users.
+**Action:** Always intercept and parse backend API error responses before throwing them to the UI. Write a helper function (e.g., `handleApiError`) that extracts the specific error locations and messages (e.g., from `detail` arrays) and joins them into a clean, human-readable string for `setCustomValidity()`.

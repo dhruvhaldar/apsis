@@ -40,6 +40,30 @@ window.addEventListener('resize', () => {
 
 const API_BASE = window.location.origin.includes('localhost') ? 'http://localhost:8000/api' : '/api';
 
+async function handleApiError(response) {
+    const text = await response.text();
+    let errMsg = text;
+    try {
+        const errorData = JSON.parse(text);
+        if (errorData.detail && Array.isArray(errorData.detail)) {
+            // FastAPI/Pydantic validation error
+            const messages = errorData.detail.map(err => {
+                const loc = err.loc ? err.loc.join('.') : '';
+                return `${loc ? `[${loc}] ` : ''}${err.msg}`;
+            });
+            errMsg = messages.join(', ');
+        } else if (errorData.detail) {
+            errMsg = errorData.detail;
+        }
+    } catch (e) {
+        // Fallback to text string
+    }
+    const err = new Error(errMsg);
+    err.name = "ValidationError";
+    throw err;
+}
+
+
 // Utility to parse JSON array strings safely
 function parseInput(id) {
     const el = document.getElementById(id);
@@ -134,7 +158,7 @@ async function solvePMP() {
             body: JSON.stringify(payload)
         });
 
-        if (!response.ok) throw new Error(await response.text());
+        if (!response.ok) await handleApiError(response);
         const data = await response.json();
 
         // Plotly Chart for PMP
@@ -156,22 +180,27 @@ async function solvePMP() {
         // via diffing, saving significant main-thread time and preventing visual flickering on re-solves.
         Plotly.react('pmp-chart', [traceX1, traceX2, traceU], layout, {responsive: true});
 
+        if (chartContainer) {
+            chartContainer.style.opacity = '';
+            chartContainer.style.pointerEvents = '';
+        }
+
     } catch (err) {
         console.error(err);
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
         btn.innerText = originalText;
-        if (err.name === 'ValidationError') return;
+        if (err.name === 'ValidationError') {
+            btn.setCustomValidity(err.message);
+            btn.reportValidity();
+            return;
+        }
         btn.setCustomValidity('Failed to solve PMP: ' + err.message);
         btn.reportValidity();
     } finally {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
         btn.innerText = originalText;
-        if (chartContainer) {
-            chartContainer.style.opacity = '';
-            chartContainer.style.pointerEvents = '';
-        }
     }
 }
 
@@ -204,7 +233,7 @@ async function solveLQR() {
             body: JSON.stringify(payload)
         });
 
-        if (!response.ok) throw new Error(await response.text());
+        if (!response.ok) await handleApiError(response);
         const data = await response.json();
 
         // Hide empty state and show output block
@@ -214,22 +243,27 @@ async function solveLQR() {
         document.getElementById('lqr-k-val').innerText = JSON.stringify(data.K.map(row => row.map(val => val.toFixed(4))));
         document.getElementById('lqr-poles-val').innerText = JSON.stringify(data.eigvals.map(val => val.toFixed(4)));
 
+        if (outputContainer) {
+            outputContainer.style.opacity = '';
+            outputContainer.style.pointerEvents = '';
+        }
+
     } catch (err) {
         console.error(err);
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
         btn.innerText = originalText;
-        if (err.name === 'ValidationError') return;
+        if (err.name === 'ValidationError') {
+            btn.setCustomValidity(err.message);
+            btn.reportValidity();
+            return;
+        }
         btn.setCustomValidity('Failed to synthesize LQR: ' + err.message);
         btn.reportValidity();
     } finally {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
         btn.innerText = originalText;
-        if (outputContainer) {
-            outputContainer.style.opacity = '';
-            outputContainer.style.pointerEvents = '';
-        }
     }
 }
 
@@ -270,7 +304,7 @@ async function solveMPC() {
             body: JSON.stringify(payload)
         });
 
-        if (!response.ok) throw new Error(await response.text());
+        if (!response.ok) await handleApiError(response);
         const data = await response.json();
 
         // Chart.js for MPC
@@ -314,22 +348,27 @@ async function solveMPC() {
             });
         }
 
+        if (chartContainer) {
+            chartContainer.style.opacity = '';
+            chartContainer.style.pointerEvents = '';
+        }
+
     } catch (err) {
         console.error(err);
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
         btn.innerText = originalText;
-        if (err.name === 'ValidationError') return;
+        if (err.name === 'ValidationError') {
+            btn.setCustomValidity(err.message);
+            btn.reportValidity();
+            return;
+        }
         btn.setCustomValidity('Failed to simulate MPC: ' + err.message);
         btn.reportValidity();
     } finally {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
         btn.innerText = originalText;
-        if (chartContainer) {
-            chartContainer.style.opacity = '';
-            chartContainer.style.pointerEvents = '';
-        }
     }
 }
 
