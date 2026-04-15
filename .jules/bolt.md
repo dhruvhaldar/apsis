@@ -64,3 +64,7 @@
 ## 2024-06-02 - In-place Numpy subtraction/multiplication for central differences
 **Learning:** Evaluating expressions like `V_next[2:] - V_next[:-2]` implicitly allocates temporary numpy arrays in memory. When executing thousands of times per second inside a hot loop (like numerical PDE solvers / central differences), this array allocation becomes a measurable performance bottleneck.
 **Action:** Pre-allocate output arrays and use in-place operations like `np.subtract(..., out=...)` and `np.multiply(..., out=...)` to skip allocating intermediate arrays, reducing overhead.
+
+## 2025-02-28 - NumPy In-Place Operations in Loops
+**Learning:** Using `V[:, k] = V_next + dt * min_val` inside a numerical hot loop allocates two intermediate temporary arrays (the product and the sum) per iteration, causing unnecessary garbage collection.
+**Action:** Use `np.multiply(..., out=...)` and `np.add(..., out=...)` for in-place calculations in hot loops to significantly reduce array allocation overhead, as observed in the HJB solver.

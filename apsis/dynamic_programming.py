@@ -66,6 +66,8 @@ def solve_hjb(L, f, x_grid, u_grid, t_grid):
 
         u_opt[:, k] = u_grid[min_indices]
         # Update V(x, t) = V(x, t+dt) + dt * min_u [ L + dV/dx * f ]
-        V[:, k] = V_next + dt * min_val
+        # ⚡ Bolt Optimization: Use in-place operations to prevent intermediate array allocations in the hot loop
+        np.multiply(min_val, dt, out=min_val)
+        np.add(V_next, min_val, out=V[:, k])
 
     return V, u_opt
