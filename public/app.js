@@ -73,8 +73,8 @@ function parseInput(id) {
         el.setCustomValidity('Invalid format. Please use valid JSON array format, e.g., [1, 0] or [[1,0],[0,1]]');
         el.reportValidity();
         el.focus();
-        const err = new Error('ValidationError');
-        err.name = 'ValidationError';
+        const err = new Error('InputValidationError');
+        err.name = 'InputValidationError';
         throw err;
     }
 }
@@ -87,7 +87,7 @@ function parseFloatInput(id) {
         el.reportValidity();
         el.focus();
         const err = new Error(`Invalid number in ${id}`);
-        err.name = 'ValidationError';
+        err.name = 'InputValidationError';
         throw err;
     }
     return val;
@@ -190,6 +190,9 @@ async function solvePMP() {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
         btn.innerText = originalText;
+        if (err.name === 'InputValidationError') {
+            return;
+        }
         if (err.name === 'ValidationError') {
             btn.setCustomValidity(err.message);
             btn.reportValidity();
@@ -253,6 +256,9 @@ async function solveLQR() {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
         btn.innerText = originalText;
+        if (err.name === 'InputValidationError') {
+            return;
+        }
         if (err.name === 'ValidationError') {
             btn.setCustomValidity(err.message);
             btn.reportValidity();
@@ -358,6 +364,9 @@ async function solveMPC() {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
         btn.innerText = originalText;
+        if (err.name === 'InputValidationError') {
+            return;
+        }
         if (err.name === 'ValidationError') {
             btn.setCustomValidity(err.message);
             btn.reportValidity();
