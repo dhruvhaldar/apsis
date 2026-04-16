@@ -68,3 +68,6 @@
 ## 2025-02-28 - NumPy In-Place Operations in Loops
 **Learning:** Using `V[:, k] = V_next + dt * min_val` inside a numerical hot loop allocates two intermediate temporary arrays (the product and the sum) per iteration, causing unnecessary garbage collection.
 **Action:** Use `np.multiply(..., out=...)` and `np.add(..., out=...)` for in-place calculations in hot loops to significantly reduce array allocation overhead, as observed in the HJB solver.
+## 2024-04-16 - Cache expensive API calls
+**Learning:** The mathematical solvers for PMP, LQR, and MPC are computationally intensive and deterministic. Currently, the application makes a full network request and backend computation for identical inputs.
+**Action:** Implemented a generic `fetchWithCache` wrapper around the `fetch` API on the frontend, mapping a combination of endpoint and serialized payload to the response data to avoid redundant network/compute load for unchanged forms.

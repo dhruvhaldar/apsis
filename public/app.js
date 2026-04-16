@@ -40,6 +40,28 @@ window.addEventListener('resize', () => {
 
 const API_BASE = window.location.origin.includes('localhost') ? 'http://localhost:8000/api' : '/api';
 
+// ⚡ Bolt Optimization: Cache expensive API call results to eliminate network latency
+// and prevent redundant backend processing for identical deterministic mathematical requests.
+const apiCache = new Map();
+
+async function fetchWithCache(endpoint, payload) {
+    const cacheKey = `${endpoint}|${JSON.stringify(payload)}`;
+    if (apiCache.has(cacheKey)) {
+        return apiCache.get(cacheKey);
+    }
+
+    const response = await fetch(`${API_BASE}${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) await handleApiError(response);
+    const data = await response.json();
+    apiCache.set(cacheKey, data);
+    return data;
+}
+
 async function handleApiError(response) {
     const text = await response.text();
     let errMsg = text;
@@ -152,14 +174,7 @@ async function solvePMP() {
             num_points: 100
         };
 
-        const response = await fetch(`${API_BASE}/pmp`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
-        if (!response.ok) await handleApiError(response);
-        const data = await response.json();
+        const data = await fetchWithCache('/pmp', payload);
 
         // Plotly Chart for PMP
         const traceX1 = { x: data.t, y: data.x[0], mode: 'lines', name: 'x_1(t)', line: {color: '#4a90e2'} };
@@ -230,14 +245,7 @@ async function solveLQR() {
             R: parseInput('lqr-R')
         };
 
-        const response = await fetch(`${API_BASE}/lqr`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
-        if (!response.ok) await handleApiError(response);
-        const data = await response.json();
+        const data = await fetchWithCache('/lqr', payload);
 
         // Hide empty state and show output block
         document.getElementById('lqr-empty').style.display = 'none';
@@ -304,14 +312,7 @@ async function solveMPC() {
             u_max: parseInput('mpc-umax')
         };
 
-        const response = await fetch(`${API_BASE}/mpc`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
-        if (!response.ok) await handleApiError(response);
-        const data = await response.json();
+        const data = await fetchWithCache('/mpc', payload);
 
         // Chart.js for MPC
         // ⚡ Bolt Optimization: Reuse the Chart instance and Canvas instead of destroying the DOM.
