@@ -77,3 +77,7 @@
 ## 2024-08-16 - API Validation Error Formatting for UI
 **Learning:** Directly throwing `response.text()` for API validation errors (like Pydantic's JSON response) results in a raw JSON string being rendered inside the native form validation bubble, which is unreadable for users.
 **Action:** Always intercept and parse backend API error responses before throwing them to the UI. Write a helper function (e.g., `handleApiError`) that extracts the specific error locations and messages (e.g., from `detail` arrays) and joins them into a clean, human-readable string for `setCustomValidity()`.
+
+## 2024-08-20 - Stale Output Accessibility
+**Learning:** Relying solely on visual dimming (`opacity: 0.5`) to indicate stale output leaves keyboard users and screen readers vulnerable. They can still navigate to and interact with elements inside the stale container (like a 'Copy' button) or read the stale text data as if it were accurate.
+**Action:** Always explicitly disable interactive elements (`disabled = true`) or apply `pointer-events: none` alongside `aria-hidden="true"` when marking data/containers as visually stale.

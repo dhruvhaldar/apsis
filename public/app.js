@@ -126,10 +126,16 @@ document.addEventListener('input', (e) => {
             const chartContainer = section.querySelector('.chart-container');
             if (chartContainer && !chartContainer.querySelector('.empty-state')) {
                 chartContainer.style.opacity = '0.5';
+                chartContainer.style.pointerEvents = 'none';
+                chartContainer.setAttribute('aria-hidden', 'true');
             }
             const outputBlock = section.querySelector('.output-block[style*="display: block"]');
             if (outputBlock && outputBlock.id !== 'lqr-empty') {
                 outputBlock.style.opacity = '0.5';
+                outputBlock.style.pointerEvents = 'none';
+                outputBlock.setAttribute('aria-hidden', 'true');
+                const copyBtn = outputBlock.querySelector('.copy-btn');
+                if (copyBtn) copyBtn.disabled = true;
             }
         }
     }
@@ -160,6 +166,7 @@ async function solvePMP() {
     if (chartContainer) {
         chartContainer.style.opacity = '0.5';
         chartContainer.style.pointerEvents = 'none';
+        chartContainer.setAttribute('aria-hidden', 'true');
     }
 
     try {
@@ -198,6 +205,7 @@ async function solvePMP() {
         if (chartContainer) {
             chartContainer.style.opacity = '';
             chartContainer.style.pointerEvents = '';
+            chartContainer.removeAttribute('aria-hidden');
         }
 
     } catch (err) {
@@ -235,6 +243,9 @@ async function solveLQR() {
     if (outputContainer) {
         outputContainer.style.opacity = '0.5';
         outputContainer.style.pointerEvents = 'none';
+        outputContainer.setAttribute('aria-hidden', 'true');
+        const copyBtn = outputContainer.querySelector('.copy-btn');
+        if (copyBtn) copyBtn.disabled = true;
     }
 
     try {
@@ -257,6 +268,9 @@ async function solveLQR() {
         if (outputContainer) {
             outputContainer.style.opacity = '';
             outputContainer.style.pointerEvents = '';
+            outputContainer.removeAttribute('aria-hidden');
+            const copyBtn = outputContainer.querySelector('.copy-btn');
+            if (copyBtn) copyBtn.disabled = false;
         }
 
     } catch (err) {
@@ -297,6 +311,7 @@ async function solveMPC() {
     if (chartContainer) {
         chartContainer.style.opacity = '0.5';
         chartContainer.style.pointerEvents = 'none';
+        chartContainer.setAttribute('aria-hidden', 'true');
     }
 
     try {
@@ -358,6 +373,7 @@ async function solveMPC() {
         if (chartContainer) {
             chartContainer.style.opacity = '';
             chartContainer.style.pointerEvents = '';
+            chartContainer.removeAttribute('aria-hidden');
         }
 
     } catch (err) {
