@@ -68,3 +68,8 @@
 **Vulnerability:** `requirements.txt` contained unpinned dependencies.
 **Learning:** This is a supply chain security risk because a compromised new version of a dependency, or a broken update, will be automatically installed during the next build or deployment, potentially introducing vulnerabilities or bringing down the application. Note: Do not use `pip freeze` from the AI sandbox environment to determine and pin dependency versions in `requirements.txt`. The sandbox environment contains mocked or inaccurate package versions which will introduce build regressions.
 **Prevention:** Always pin dependencies to specific, verified versions in `requirements.txt` or use a lockfile.
+
+## $(date +%Y-%m-%d) - Rate Limiter Capacity Flooding Bypass
+**Vulnerability:** The in-memory rate limiter implemented in FastAPI cleared the entire `rate_limit_store` using `.clear()` whenever the tracked IPs reached `MAX_IPS`. An attacker could spoof IPs or use a distributed attack to rapidly flood the store. This would trigger the reset condition, wiping out all active rate limit counters and completely bypassing the rate limits for themselves and all other users.
+**Learning:** Security mechanisms (like rate limiters) must be designed with their own failure modes in mind. If an attacker can predictably trigger a reset state that fails open, the entire mechanism can be bypassed.
+**Prevention:** Instead of clearing the entire security tracking store upon reaching maximum capacity, selectively evict expired/stale entries to reclaim memory. If the store remains full and cannot evict anything, reject the request with a `503 Service Unavailable` rather than abandoning the tracking altogether.
