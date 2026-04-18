@@ -81,3 +81,7 @@
 ## 2024-08-20 - Stale Output Accessibility
 **Learning:** Relying solely on visual dimming (`opacity: 0.5`) to indicate stale output leaves keyboard users and screen readers vulnerable. They can still navigate to and interact with elements inside the stale container (like a 'Copy' button) or read the stale text data as if it were accurate.
 **Action:** Always explicitly disable interactive elements (`disabled = true`) or apply `pointer-events: none` alongside `aria-hidden="true"` when marking data/containers as visually stale.
+
+## 2024-05-24 - Accessible Overflowing Math Blocks
+**Learning:** Mathematical formulas containing matrices or long integral equations often overflow horizontally on smaller screens. While `overflow-x: auto` allows mouse users to scroll, keyboard-only and screen reader users cannot access or read the full overflowing equation if the container isn't focusable.
+**Action:** When creating containers with `overflow: auto` or `overflow: scroll` (like `.math-block`), always add `tabindex="0"` to make them keyboard focusable, assign an appropriate ARIA role (`role="region"`), give them an accessible name (`aria-label`), and provide a clear `:focus-visible` styling to indicate focus without relying on mouse interactions.
