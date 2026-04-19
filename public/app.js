@@ -134,8 +134,8 @@ document.addEventListener('input', (e) => {
                 outputBlock.style.opacity = '0.5';
                 outputBlock.style.pointerEvents = 'none';
                 outputBlock.setAttribute('aria-hidden', 'true');
-                const copyBtn = outputBlock.querySelector('.copy-btn');
-                if (copyBtn) copyBtn.disabled = true;
+                const copyBtns = outputBlock.querySelectorAll('.copy-btn');
+                copyBtns.forEach(btn => btn.disabled = true);
             }
         }
     }
@@ -244,8 +244,8 @@ async function solveLQR() {
         outputContainer.style.opacity = '0.5';
         outputContainer.style.pointerEvents = 'none';
         outputContainer.setAttribute('aria-hidden', 'true');
-        const copyBtn = outputContainer.querySelector('.copy-btn');
-        if (copyBtn) copyBtn.disabled = true;
+        const copyBtns = outputContainer.querySelectorAll('.copy-btn');
+        copyBtns.forEach(btn => btn.disabled = true);
     }
 
     try {
@@ -269,8 +269,8 @@ async function solveLQR() {
             outputContainer.style.opacity = '';
             outputContainer.style.pointerEvents = '';
             outputContainer.removeAttribute('aria-hidden');
-            const copyBtn = outputContainer.querySelector('.copy-btn');
-            if (copyBtn) copyBtn.disabled = false;
+            const copyBtns = outputContainer.querySelectorAll('.copy-btn');
+            copyBtns.forEach(btn => btn.disabled = false);
         }
 
     } catch (err) {
@@ -400,17 +400,21 @@ async function solveMPC() {
 
 // Initialize events and rendering once DOM is loaded
 window.addEventListener('DOMContentLoaded', () => {
-    // Setup copy button
-    const copyBtn = document.getElementById('lqr-copy-k');
-    let isCopying = false;
-    if (copyBtn) {
+    // Setup copy buttons
+    const copyBtns = document.querySelectorAll('.copy-btn');
+    copyBtns.forEach(copyBtn => {
+        let isCopying = false;
         copyBtn.addEventListener('click', async () => {
             if (isCopying) return;
-            const kVal = document.getElementById('lqr-k-val').innerText;
-            if (kVal && kVal !== '...') {
+            const targetId = copyBtn.getAttribute('data-target');
+            const targetEl = document.getElementById(targetId);
+            if (!targetEl) return;
+            const textVal = targetEl.innerText;
+
+            if (textVal && textVal !== '...') {
                 try {
                     isCopying = true;
-                    await navigator.clipboard.writeText(kVal);
+                    await navigator.clipboard.writeText(textVal);
                     const span = copyBtn.querySelector('span');
                     const originalLabel = copyBtn.getAttribute('aria-label');
                     const originalTitle = copyBtn.getAttribute('title');
@@ -435,7 +439,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 }
             }
         });
-    }
+    });
 
     // Initialize KaTeX
     if (typeof renderMathInElement === 'function') {
