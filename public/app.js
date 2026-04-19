@@ -7,15 +7,17 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.getElementById('three-canvas').appendChild(renderer.domElement);
 
 const geometry = new THREE.BufferGeometry();
-const vertices = [];
-for (let i = 0; i < 5000; i++) {
-    vertices.push(
-        THREE.MathUtils.randFloatSpread(2000),
-        THREE.MathUtils.randFloatSpread(2000),
-        THREE.MathUtils.randFloatSpread(2000)
-    );
+const particleCount = 5000;
+// ⚡ Bolt Optimization: Pre-allocate Float32Array instead of dynamically pushing to a standard Array.
+// This prevents dynamic memory reallocation and significantly reduces garbage collection overhead
+// when initializing WebGL/Three.js geometry buffers.
+const vertices = new Float32Array(particleCount * 3);
+for (let i = 0; i < particleCount; i++) {
+    vertices[i * 3] = THREE.MathUtils.randFloatSpread(2000);
+    vertices[i * 3 + 1] = THREE.MathUtils.randFloatSpread(2000);
+    vertices[i * 3 + 2] = THREE.MathUtils.randFloatSpread(2000);
 }
-geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
 const material = new THREE.PointsMaterial({ color: 0x4a90e2, size: 2, transparent: true, opacity: 0.5 });
 const particles = new THREE.Points(geometry, material);
 scene.add(particles);
