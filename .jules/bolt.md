@@ -71,3 +71,7 @@
 ## 2024-04-16 - Cache expensive API calls
 **Learning:** The mathematical solvers for PMP, LQR, and MPC are computationally intensive and deterministic. Currently, the application makes a full network request and backend computation for identical inputs.
 **Action:** Implemented a generic `fetchWithCache` wrapper around the `fetch` API on the frontend, mapping a combination of endpoint and serialized payload to the response data to avoid redundant network/compute load for unchanged forms.
+
+## 2024-06-03 - WebGL Buffer Initialization Allocation
+**Learning:** When initializing Three.js or WebGL geometry buffers, dynamically pushing to standard JavaScript arrays creates unnecessary array reallocations and significantly increases garbage collection overhead, delaying initial rendering.
+**Action:** Always pre-allocate a `Float32Array` of the exact required size and populate it via direct index assignment.
