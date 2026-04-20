@@ -81,3 +81,7 @@
 ## 2024-08-20 - Stale Output Accessibility
 **Learning:** Relying solely on visual dimming (`opacity: 0.5`) to indicate stale output leaves keyboard users and screen readers vulnerable. They can still navigate to and interact with elements inside the stale container (like a 'Copy' button) or read the stale text data as if it were accurate.
 **Action:** Always explicitly disable interactive elements (`disabled = true`) or apply `pointer-events: none` alongside `aria-hidden="true"` when marking data/containers as visually stale.
+
+## 2024-08-21 - Scalable Copy Buttons for Multiple Outputs
+**Learning:** Displaying multiple complex outputs (like matrices and arrays) simultaneously in the UI requires dedicated copy actions for each to prevent user confusion and formatting errors. Hardcoding single IDs for the copy button and target text (e.g., `lqr-copy-k` and `lqr-k-val`) breaks down when scaling to multiple outputs, leading to duplicated listener code or missed stale-state handling.
+**Action:** When displaying multiple complex outputs, provide dedicated copy buttons. To keep JS scalable and maintainable, use generic classes (e.g., `.copy-btn`) paired with `data-target` attributes, and use `querySelectorAll` for click listeners and state management (enabling/disabling) rather than hardcoding element IDs.
