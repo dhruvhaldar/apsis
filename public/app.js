@@ -134,8 +134,7 @@ document.addEventListener('input', (e) => {
                 outputBlock.style.opacity = '0.5';
                 outputBlock.style.pointerEvents = 'none';
                 outputBlock.setAttribute('aria-hidden', 'true');
-                const copyBtn = outputBlock.querySelector('.copy-btn');
-                if (copyBtn) copyBtn.disabled = true;
+                outputBlock.querySelectorAll('.copy-btn').forEach(btn => btn.disabled = true);
             }
         }
     }
@@ -244,8 +243,7 @@ async function solveLQR() {
         outputContainer.style.opacity = '0.5';
         outputContainer.style.pointerEvents = 'none';
         outputContainer.setAttribute('aria-hidden', 'true');
-        const copyBtn = outputContainer.querySelector('.copy-btn');
-        if (copyBtn) copyBtn.disabled = true;
+        outputContainer.querySelectorAll('.copy-btn').forEach(btn => btn.disabled = true);
     }
 
     try {
@@ -269,8 +267,7 @@ async function solveLQR() {
             outputContainer.style.opacity = '';
             outputContainer.style.pointerEvents = '';
             outputContainer.removeAttribute('aria-hidden');
-            const copyBtn = outputContainer.querySelector('.copy-btn');
-            if (copyBtn) copyBtn.disabled = false;
+            outputContainer.querySelectorAll('.copy-btn').forEach(btn => btn.disabled = false);
         }
 
     } catch (err) {
@@ -400,42 +397,43 @@ async function solveMPC() {
 
 // Initialize events and rendering once DOM is loaded
 window.addEventListener('DOMContentLoaded', () => {
-    // Setup copy button
-    const copyBtn = document.getElementById('lqr-copy-k');
-    let isCopying = false;
-    if (copyBtn) {
-        copyBtn.addEventListener('click', async () => {
-            if (isCopying) return;
-            const kVal = document.getElementById('lqr-k-val').innerText;
-            if (kVal && kVal !== '...') {
+    // Setup copy buttons
+    document.querySelectorAll('.copy-btn').forEach(copyBtn => {
+        copyBtn.addEventListener('click', async function() {
+            if (this.disabled) return;
+            const targetId = this.dataset.target;
+            const valElement = document.getElementById(targetId);
+            const val = valElement ? valElement.innerText : null;
+
+            if (val && val !== '...') {
                 try {
-                    isCopying = true;
-                    await navigator.clipboard.writeText(kVal);
-                    const span = copyBtn.querySelector('span');
-                    const originalLabel = copyBtn.getAttribute('aria-label');
-                    const originalTitle = copyBtn.getAttribute('title');
+                    this.disabled = true; // Prevent overlapping rapid clicks
+                    await navigator.clipboard.writeText(val);
+                    const span = this.querySelector('span');
+                    const originalLabel = this.getAttribute('aria-label');
+                    const originalTitle = this.getAttribute('title');
 
                     span.innerText = '✅';
-                    copyBtn.setAttribute('aria-label', 'Copied successfully');
-                    copyBtn.setAttribute('title', 'Copied successfully!');
+                    this.setAttribute('aria-label', 'Copied successfully');
+                    this.setAttribute('title', 'Copied successfully!');
 
                     setTimeout(() => {
                         span.innerText = '📋';
-                        copyBtn.setAttribute('aria-label', originalLabel);
-                        if (originalTitle) {
-                            copyBtn.setAttribute('title', originalTitle);
+                        this.setAttribute('aria-label', originalLabel);
+                        if (originalTitle !== null) {
+                            this.setAttribute('title', originalTitle);
                         } else {
-                            copyBtn.removeAttribute('title');
+                            this.removeAttribute('title');
                         }
-                        isCopying = false;
+                        this.disabled = false;
                     }, 2000);
                 } catch (err) {
                     console.error('Failed to copy!', err);
-                    isCopying = false;
+                    this.disabled = false;
                 }
             }
         });
-    }
+    });
 
     // Initialize KaTeX
     if (typeof renderMathInElement === 'function') {
