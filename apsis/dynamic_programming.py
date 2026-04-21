@@ -35,6 +35,7 @@ def solve_hjb(L, f, x_grid, u_grid, t_grid):
     inv_2dx = 1.0 / (2.0 * dx)
     idx_arange = np.arange(nx)
     vals = np.empty((nx, nu))
+    min_indices = np.empty(nx, dtype=np.intp)
 
     # Backward value iteration
     for k in range(nt - 2, -1, -1):
@@ -61,7 +62,8 @@ def solve_hjb(L, f, x_grid, u_grid, t_grid):
         np.add(cost, vals, out=vals)
 
         # Find the minimum value and corresponding control along the 'u' axis (axis=1)
-        min_indices = np.argmin(vals, axis=1)
+        # ⚡ Bolt Optimization: Use `out` parameter to avoid dynamic memory allocation of the index array on every iteration
+        np.argmin(vals, axis=1, out=min_indices)
         min_val = vals[idx_arange, min_indices]
 
         u_opt[:, k] = u_grid[min_indices]
