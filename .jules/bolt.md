@@ -75,3 +75,7 @@
 ## 2024-06-03 - WebGL Buffer Initialization Allocation
 **Learning:** When initializing Three.js or WebGL geometry buffers, dynamically pushing to standard JavaScript arrays creates unnecessary array reallocations and significantly increases garbage collection overhead, delaying initial rendering.
 **Action:** Always pre-allocate a `Float32Array` of the exact required size and populate it via direct index assignment.
+
+## 2024-06-04 - Using `out=` Parameter in NumPy Operations Inside Hot Loops
+**Learning:** In tight numerical loops, using functions like `np.argmin(..., axis=1)` causes NumPy to dynamically allocate a new array for the output on every single iteration. This constant memory allocation and de-allocation significantly increases garbage collection overhead and slows down solvers like HJB backward integration.
+**Action:** Always pre-allocate the necessary output array outside the loop (e.g., `min_indices = np.empty(size, dtype=np.intp)`) and use the `out=` parameter (e.g., `np.argmin(..., out=min_indices)`) to write results in-place, bypassing dynamic memory allocation entirely.
