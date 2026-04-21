@@ -110,6 +110,13 @@ h2 {
     margin-bottom: 20px;
     text-align: center;
     overflow-x: auto;
+    outline: none;
+}
+
+.math-block:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 4px;
+    box-shadow: 0 0 15px rgba(102, 252, 241, 0.4);
 }
 
 .input-group {
