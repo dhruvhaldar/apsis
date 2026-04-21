@@ -73,3 +73,8 @@
 **Vulnerability:** The in-memory rate limiter implemented in FastAPI cleared the entire `rate_limit_store` using `.clear()` whenever the tracked IPs reached `MAX_IPS`. An attacker could spoof IPs or use a distributed attack to rapidly flood the store. This would trigger the reset condition, wiping out all active rate limit counters and completely bypassing the rate limits for themselves and all other users.
 **Learning:** Security mechanisms (like rate limiters) must be designed with their own failure modes in mind. If an attacker can predictably trigger a reset state that fails open, the entire mechanism can be bypassed.
 **Prevention:** Instead of clearing the entire security tracking store upon reaching maximum capacity, selectively evict expired/stale entries to reclaim memory. If the store remains full and cannot evict anything, reject the request with a `503 Service Unavailable` rather than abandoning the tracking altogether.
+
+## 2026-03-27 - Disable Default OpenAPI Documentation Endpoints
+**Vulnerability:** Information Disclosure
+**Learning:** FastAPI automatically generates and exposes `/docs`, `/redoc`, and `/openapi.json` endpoints by default. In a production environment, this can inadvertently leak the API's internal structure, parameter requirements, and validation rules to potential attackers, facilitating reconnaissance.
+**Prevention:** Always explicitly disable these endpoints in production by initializing `FastAPI(docs_url=None, redoc_url=None, openapi_url=None)`.

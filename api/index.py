@@ -13,7 +13,11 @@ from apsis.mpc import solve_mpc
 
 logger = logging.getLogger(__name__)
 
-app = FastAPI()
+# 🛡️ Sentinel Security Fix: Disable default API documentation endpoints
+# FastAPI automatically generates /docs, /redoc, and /openapi.json. In a production
+# environment, these endpoints can inadvertently disclose the API's internal structure
+# and input parameters, facilitating attacks. We disable them to prevent information leakage.
+app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 
 # ⚡ Bolt Optimization: Add GZip compression for large trajectory payloads (PMP, MPC).
 # PMP/MPC endpoints return large JSON arrays. Applying GZip reduces response payload size by >60%,
