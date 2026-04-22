@@ -206,6 +206,7 @@ async function solvePMP() {
             chartContainer.style.opacity = '';
             chartContainer.style.pointerEvents = '';
             chartContainer.removeAttribute('aria-hidden');
+            chartContainer.querySelectorAll('button, input').forEach(el => el.disabled = false);
         }
 
     } catch (err) {
@@ -268,7 +269,7 @@ async function solveLQR() {
             outputContainer.style.opacity = '';
             outputContainer.style.pointerEvents = '';
             outputContainer.removeAttribute('aria-hidden');
-            outputContainer.querySelectorAll('.copy-btn').forEach(btn => btn.disabled = false);
+            outputContainer.querySelectorAll('button, input, .copy-btn').forEach(btn => btn.disabled = false);
         }
 
     } catch (err) {
@@ -372,6 +373,7 @@ async function solveMPC() {
             chartContainer.style.opacity = '';
             chartContainer.style.pointerEvents = '';
             chartContainer.removeAttribute('aria-hidden');
+            chartContainer.querySelectorAll('button, input').forEach(el => el.disabled = false);
         }
 
     } catch (err) {
@@ -441,6 +443,28 @@ window.addEventListener('DOMContentLoaded', () => {
         renderMathInElement(document.body);
     }
 
+    // Helper to dim output containers when input changes
+    function setOutputStale(containerId) {
+        const container = document.getElementById(containerId);
+        if (container && !container.hasAttribute('data-empty')) {
+            container.style.opacity = '0.5';
+            container.style.pointerEvents = 'none';
+            container.setAttribute('aria-hidden', 'true');
+            container.querySelectorAll('button, input').forEach(el => el.disabled = true);
+        }
+    }
+
+    // Helper to restore output containers after successful calculation
+    window.clearOutputStale = function(containerId) {
+        const container = document.getElementById(containerId);
+        if (container) {
+            container.style.opacity = '';
+            container.style.pointerEvents = '';
+            container.removeAttribute('aria-hidden');
+            container.querySelectorAll('button, input, .copy-btn').forEach(el => el.disabled = false);
+        }
+    };
+
     // Attach form submit listeners
     const pmpForm = document.getElementById('pmp-form');
     if (pmpForm) {
@@ -448,6 +472,7 @@ window.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             solvePMP();
         });
+        pmpForm.addEventListener('input', () => setOutputStale('pmp-chart'));
     }
 
     const lqrForm = document.getElementById('lqr-form');
@@ -456,6 +481,7 @@ window.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             solveLQR();
         });
+        lqrForm.addEventListener('input', () => setOutputStale('lqr-output'));
     }
 
     const mpcForm = document.getElementById('mpc-form');
@@ -464,5 +490,6 @@ window.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             solveMPC();
         });
+        mpcForm.addEventListener('input', () => setOutputStale('mpc-chart'));
     }
 });
