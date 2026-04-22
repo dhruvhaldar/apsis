@@ -69,7 +69,7 @@
 **Learning:** This is a supply chain security risk because a compromised new version of a dependency, or a broken update, will be automatically installed during the next build or deployment, potentially introducing vulnerabilities or bringing down the application. Note: Do not use `pip freeze` from the AI sandbox environment to determine and pin dependency versions in `requirements.txt`. The sandbox environment contains mocked or inaccurate package versions which will introduce build regressions.
 **Prevention:** Always pin dependencies to specific, verified versions in `requirements.txt` or use a lockfile.
 
-## $(date +%Y-%m-%d) - Rate Limiter Capacity Flooding Bypass
+## 2026-04-13 - Rate Limiter Capacity Flooding Bypass
 **Vulnerability:** The in-memory rate limiter implemented in FastAPI cleared the entire `rate_limit_store` using `.clear()` whenever the tracked IPs reached `MAX_IPS`. An attacker could spoof IPs or use a distributed attack to rapidly flood the store. This would trigger the reset condition, wiping out all active rate limit counters and completely bypassing the rate limits for themselves and all other users.
 **Learning:** Security mechanisms (like rate limiters) must be designed with their own failure modes in mind. If an attacker can predictably trigger a reset state that fails open, the entire mechanism can be bypassed.
 **Prevention:** Instead of clearing the entire security tracking store upon reaching maximum capacity, selectively evict expired/stale entries to reclaim memory. If the store remains full and cannot evict anything, reject the request with a `503 Service Unavailable` rather than abandoning the tracking altogether.
@@ -78,3 +78,8 @@
 **Vulnerability:** Information Disclosure
 **Learning:** FastAPI automatically generates and exposes `/docs`, `/redoc`, and `/openapi.json` endpoints by default. In a production environment, this can inadvertently leak the API's internal structure, parameter requirements, and validation rules to potential attackers, facilitating reconnaissance.
 **Prevention:** Always explicitly disable these endpoints in production by initializing `FastAPI(docs_url=None, redoc_url=None, openapi_url=None)`.
+
+## 2026-04-13 - Rate Limiter Bypass via Multiple X-Forwarded-For Headers
+**Vulnerability:** The rate limiter relied on `request.headers.get("X-Forwarded-For")` to extract the client IP. In FastAPI/Starlette, `.get()` only returns the value of the *first* matching header. If an attacker sends a spoofed `X-Forwarded-For` header, and the reverse proxy (e.g., Vercel) injects a *second* `X-Forwarded-For` header containing the real IP, the application only reads the attacker's spoofed header. This completely bypassed the rate limit, allowing DoS.
+**Learning:** HTTP allows multiple headers with the same name. Reverse proxies may append their values as a comma-separated list to the existing header, or they may inject a completely new header row. Framework methods like `.get()` often arbitrarily return the first occurrence, ignoring subsequent headers.
+**Prevention:** Always use `.getlist("X-Forwarded-For")` (or equivalent) to retrieve all header values, join them into a single string, and then parse the rightmost IP address to ensure you extract the proxy-appended value regardless of how the proxy formatted the injection.

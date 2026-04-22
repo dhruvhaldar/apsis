@@ -88,12 +88,14 @@ async def rate_limit(request: Request, call_next):
     if not request.url.path.startswith("/api/"):
         return await call_next(request)
 
-    forwarded = request.headers.get("X-Forwarded-For")
-    if forwarded:
-        # 🛡️ Sentinel Security Fix: Extract the rightmost IP address to prevent IP spoofing bypasses
-        # When an attacker sends a spoofed X-Forwarded-For header, the reverse proxy (e.g., Vercel)
-        # appends the actual client IP to the end of the list. Taking the first (0th) element trusts
-        # the potentially spoofed IP, allowing rate limit bypasses.
+    # 🛡️ Sentinel Security Fix: Use getlist() to handle multiple X-Forwarded-For headers
+    # If an attacker sends a spoofed X-Forwarded-For header and the proxy appends a new
+    # X-Forwarded-For header with the real IP, using request.headers.get() only returns
+    # the first (spoofed) one, allowing a rate limit bypass. Combining all headers
+    # guarantees we extract the final proxy-appended IP.
+    forwarded_list = request.headers.getlist("X-Forwarded-For")
+    if forwarded_list:
+        forwarded = ",".join(forwarded_list)
         client_ip = forwarded.split(",")[-1].strip()
     else:
         client_ip = request.client.host if request.client else "unknown"
