@@ -56,3 +56,22 @@ def test_rate_limit_x_forwarded_for():
     # But a request from IP 5.6.7.8 should pass
     response = client.post("/api/lqr", json=payload, headers={"X-Forwarded-For": "5.6.7.8"})
     assert response.status_code == 200
+
+def test_rate_limit_multiple_x_forwarded_for():
+    rate_limit_store.clear()
+
+    payload = {
+        "A": [[0, 1], [-1, -1]],
+        "B": [[0], [1]],
+        "Q": [[1, 0], [0, 1]],
+        "R": [[1]]
+    }
+
+    # Send 50 successful requests from IP 9.9.9.9, but attacker tries to spoof with 1.1.1.1
+    for _ in range(50):
+        response = client.post("/api/lqr", json=payload, headers=[("X-Forwarded-For", "1.1.1.1"), ("X-Forwarded-For", "9.9.9.9")])
+        assert response.status_code == 200
+
+    # The 51st request from IP 9.9.9.9 should be rate limited, even if spoof header is different
+    response = client.post("/api/lqr", json=payload, headers=[("X-Forwarded-For", "2.2.2.2"), ("X-Forwarded-For", "9.9.9.9")])
+    assert response.status_code == 429
