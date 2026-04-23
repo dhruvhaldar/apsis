@@ -156,6 +156,7 @@ document.addEventListener('click', (e) => {
 // 1. Solve PMP
 async function solvePMP() {
     const btn = document.getElementById('btn-pmp');
+    const wasFocused = document.activeElement === btn;
     btn.setCustomValidity('');
     const originalText = btn.innerText;
     btn.disabled = true;
@@ -228,12 +229,14 @@ async function solvePMP() {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
         btn.innerText = originalText;
+        if (wasFocused) btn.focus();
     }
 }
 
 // 2. Solve LQR
 async function solveLQR() {
     const btn = document.getElementById('btn-lqr');
+    const wasFocused = document.activeElement === btn;
     btn.setCustomValidity('');
     const originalText = btn.innerText;
     btn.disabled = true;
@@ -291,6 +294,7 @@ async function solveLQR() {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
         btn.innerText = originalText;
+        if (wasFocused) btn.focus();
     }
 }
 
@@ -300,6 +304,7 @@ let mpcChartInstance = null;
 // 3. Solve MPC
 async function solveMPC() {
     const btn = document.getElementById('btn-mpc');
+    const wasFocused = document.activeElement === btn;
     btn.setCustomValidity('');
     const originalText = btn.innerText;
     btn.disabled = true;
@@ -395,6 +400,7 @@ async function solveMPC() {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
         btn.innerText = originalText;
+        if (wasFocused) btn.focus();
     }
 }
 
@@ -410,6 +416,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
             if (val && val !== '...') {
                 try {
+                    const wasFocused = document.activeElement === this;
                     this.disabled = true; // Prevent overlapping rapid clicks
                     await navigator.clipboard.writeText(val);
                     const span = this.querySelector('span');
@@ -420,6 +427,12 @@ window.addEventListener('DOMContentLoaded', () => {
                     this.setAttribute('aria-label', 'Copied successfully');
                     this.setAttribute('title', 'Copied successfully!');
 
+                    const announcer = document.getElementById('a11y-announcer');
+                    if (announcer) {
+                        announcer.innerText = 'Copied successfully!';
+                        setTimeout(() => { announcer.innerText = ''; }, 3000);
+                    }
+
                     setTimeout(() => {
                         span.innerText = '📋';
                         this.setAttribute('aria-label', originalLabel);
@@ -429,10 +442,12 @@ window.addEventListener('DOMContentLoaded', () => {
                             this.removeAttribute('title');
                         }
                         this.disabled = false;
+                        if (wasFocused) this.focus();
                     }, 2000);
                 } catch (err) {
                     console.error('Failed to copy!', err);
                     this.disabled = false;
+                    if (wasFocused) this.focus();
                 }
             }
         });
