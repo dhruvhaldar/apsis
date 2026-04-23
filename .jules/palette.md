@@ -85,3 +85,11 @@
 ## 2024-05-24 - Accessible Overflowing Math Blocks
 **Learning:** Mathematical formulas containing matrices or long integral equations often overflow horizontally on smaller screens. While `overflow-x: auto` allows mouse users to scroll, keyboard-only and screen reader users cannot access or read the full overflowing equation if the container isn't focusable.
 **Action:** When creating containers with `overflow: auto` or `overflow: scroll` (like `.math-block`), always add `tabindex="0"` to make them keyboard focusable, assign an appropriate ARIA role (`role="region"`), give them an accessible name (`aria-label`), and provide a clear `:focus-visible` styling to indicate focus without relying on mouse interactions.
+
+## 2026-04-23 - Focus Loss on Disabled Elements
+**Learning:** When an interactive element (like a submit or copy button) is disabled (e.g., `disabled = true`) during an async or delayed operation, it instantly loses keyboard focus. The browser subsequently drops focus to the `<body>`, forcing keyboard-only and screen reader users to completely restart their navigation from the top of the page.
+**Action:** Before disabling an element, always check if it currently has focus (`const wasFocused = document.activeElement === btn;`). If it did, explicitly call `btn.focus()` when re-enabling it in the `finally` block, `catch` block, or `setTimeout` to seamlessly restore the user's navigational context.
+
+## 2026-04-23 - ARIA Label Updates on Disabled Elements
+**Learning:** Updating the `aria-label` of a button (e.g., from 'Copy' to 'Copied') while the button is temporarily `disabled` fails to announce the change to screen readers, because disabled elements are generally ignored by accessibility APIs for dynamic updates.
+**Action:** For temporary success states on disabled elements, do not rely on `aria-label` alone for screen reader feedback. Always use a visually hidden `aria-live="polite"` announcer region and inject the success message there.
