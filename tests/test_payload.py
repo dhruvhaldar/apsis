@@ -70,3 +70,15 @@ def test_negative_content_length():
     response = client.post("/api/lqr", headers=headers, content=b'{"A": [[0]], "B": [[0]], "Q": [[0]], "R": [[0]]}')
     assert response.status_code == 400
     assert response.json() == {"detail": "Invalid Content-Length header"}
+
+def test_chunked_encoding_bypass_multiple_headers():
+    def generate_chunked():
+        yield b'{"A": [[0]], "B": [[0]], "Q": [[0]], "R": [[0]]}'
+
+    response = client.post(
+        "/api/lqr",
+        content=generate_chunked(),
+        headers=[("Content-Type", "application/json"), ("Transfer-Encoding", "identity"), ("Transfer-Encoding", "chunked")]
+    )
+    assert response.status_code == 411
+    assert response.json() == {"detail": "Chunked encoding not supported"}
