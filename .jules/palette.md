@@ -93,3 +93,7 @@
 ## 2026-04-23 - ARIA Label Updates on Disabled Elements
 **Learning:** Updating the `aria-label` of a button (e.g., from 'Copy' to 'Copied') while the button is temporarily `disabled` fails to announce the change to screen readers, because disabled elements are generally ignored by accessibility APIs for dynamic updates.
 **Action:** For temporary success states on disabled elements, do not rely on `aria-label` alone for screen reader feedback. Always use a visually hidden `aria-live="polite"` announcer region and inject the success message there.
+
+## 2024-05-24 - Async Form Validation Focus Stealing
+**Learning:** When using `finally` blocks in async form submissions to restore focus to a submit button (e.g., `if (wasFocused) btn.focus()`), it can inadvertently steal focus away from input fields that have just triggered native browser validation errors. This causes the helpful browser-native error bubble to immediately close, confusing the user and making the error invisible.
+**Action:** When implementing custom client-side validation that hooks into native `reportValidity()`, always reset the `wasFocused` tracking variable (e.g., `wasFocused = false`) in the `catch` block if the error was a validation error on an input field. This ensures the input retains focus and the native error bubble remains visible to the user.

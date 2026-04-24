@@ -156,7 +156,7 @@ document.addEventListener('click', (e) => {
 // 1. Solve PMP
 async function solvePMP() {
     const btn = document.getElementById('btn-pmp');
-    const wasFocused = document.activeElement === btn;
+    let wasFocused = document.activeElement === btn;
     btn.setCustomValidity('');
     const originalText = btn.innerText;
     btn.disabled = true;
@@ -210,12 +210,19 @@ async function solvePMP() {
             chartContainer.querySelectorAll('button, input').forEach(el => el.disabled = false);
         }
 
+        const announcer = document.getElementById('a11y-announcer');
+        if (announcer) {
+            announcer.innerText = 'PMP trajectory calculated successfully. Chart updated.';
+            setTimeout(() => { announcer.innerText = ''; }, 3000);
+        }
+
     } catch (err) {
         console.error(err);
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
         btn.innerText = originalText;
         if (err.name === 'InputValidationError') {
+            wasFocused = false;
             return;
         }
         if (err.name === 'ValidationError') {
@@ -236,7 +243,7 @@ async function solvePMP() {
 // 2. Solve LQR
 async function solveLQR() {
     const btn = document.getElementById('btn-lqr');
-    const wasFocused = document.activeElement === btn;
+    let wasFocused = document.activeElement === btn;
     btn.setCustomValidity('');
     const originalText = btn.innerText;
     btn.disabled = true;
@@ -275,12 +282,19 @@ async function solveLQR() {
             outputContainer.querySelectorAll('button, input, .copy-btn').forEach(btn => btn.disabled = false);
         }
 
+        const announcer = document.getElementById('a11y-announcer');
+        if (announcer) {
+            announcer.innerText = 'LQR synthesis complete. Gain and poles available.';
+            setTimeout(() => { announcer.innerText = ''; }, 3000);
+        }
+
     } catch (err) {
         console.error(err);
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
         btn.innerText = originalText;
         if (err.name === 'InputValidationError') {
+            wasFocused = false;
             return;
         }
         if (err.name === 'ValidationError') {
@@ -304,7 +318,7 @@ let mpcChartInstance = null;
 // 3. Solve MPC
 async function solveMPC() {
     const btn = document.getElementById('btn-mpc');
-    const wasFocused = document.activeElement === btn;
+    let wasFocused = document.activeElement === btn;
     btn.setCustomValidity('');
     const originalText = btn.innerText;
     btn.disabled = true;
@@ -381,12 +395,19 @@ async function solveMPC() {
             chartContainer.querySelectorAll('button, input').forEach(el => el.disabled = false);
         }
 
+        const announcer = document.getElementById('a11y-announcer');
+        if (announcer) {
+            announcer.innerText = 'MPC simulation complete. Chart updated.';
+            setTimeout(() => { announcer.innerText = ''; }, 3000);
+        }
+
     } catch (err) {
         console.error(err);
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
         btn.innerText = originalText;
         if (err.name === 'InputValidationError') {
+            wasFocused = false;
             return;
         }
         if (err.name === 'ValidationError') {
