@@ -14,8 +14,12 @@ def solve_hjb(L, f, x_grid, u_grid, t_grid):
     nu = len(u_grid)
     nt = len(t_grid)
 
-    V = np.zeros((nx, nt))
-    u_opt = np.zeros((nx, nt))
+    # ⚡ Bolt Optimization: Use Fortran-contiguous (column-major) ordering for arrays.
+    # The solver iterates backwards over time `k`, extensively slicing columns like `V[:, k]`.
+    # C-contiguous (default) arrays cause severe cache misses for column slices.
+    # Fortran-ordering ensures column elements are contiguous in memory, speeding up slicing and element-wise operations.
+    V = np.zeros((nx, nt), order='F')
+    u_opt = np.zeros((nx, nt), order='F')
 
     # Terminal condition (assume V(x, tf) = 0 for simplicity or add a terminal cost function)
     V[:, -1] = 0
