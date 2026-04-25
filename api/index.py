@@ -56,17 +56,26 @@ async def limit_payload_size(request: Request, call_next):
         if "chunked" in te_header.lower():
             return JSONResponse(status_code=411, content={"detail": "Chunked encoding not supported"})
 
-    if "content-length" in request.headers:
-        try:
-            content_length = int(request.headers["content-length"])
-        except ValueError:
-            return JSONResponse(status_code=400, content={"detail": "Invalid Content-Length header"})
+    # 🛡️ Sentinel Security Fix: Use getlist() to handle multiple Content-Length headers
+    # If an attacker sends multiple Content-Length headers, request.headers.get()
+    # (or in checks) only returns the first one. A small first value would bypass the check,
+    # while a large second value could cause memory exhaustion.
+    cl_headers = request.headers.getlist("content-length")
+    if cl_headers:
+        for cl in cl_headers:
+            # Handle comma-separated values within a single header line
+            for cl_part in cl.split(","):
+                cl_part = cl_part.strip()
+                try:
+                    content_length = int(cl_part)
+                except ValueError:
+                    return JSONResponse(status_code=400, content={"detail": "Invalid Content-Length header"})
 
-        if content_length < 0:
-            return JSONResponse(status_code=400, content={"detail": "Invalid Content-Length header"})
+                if content_length < 0:
+                    return JSONResponse(status_code=400, content={"detail": "Invalid Content-Length header"})
 
-        if content_length > MAX_PAYLOAD_SIZE:
-            return JSONResponse(status_code=413, content={"detail": "Payload too large"})
+                if content_length > MAX_PAYLOAD_SIZE:
+                    return JSONResponse(status_code=413, content={"detail": "Payload too large"})
     elif request.method not in ["GET", "HEAD", "OPTIONS"]:
         # 🛡️ Sentinel Security Fix: Enforce Content-Length for all requests that
         # could contain a body to prevent bypassing the size limit check.

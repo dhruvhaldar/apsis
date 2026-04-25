@@ -82,3 +82,12 @@ def test_chunked_encoding_bypass_multiple_headers():
     )
     assert response.status_code == 411
     assert response.json() == {"detail": "Chunked encoding not supported"}
+
+def test_multiple_content_length_bypass():
+    headers = [
+        (b"content-type", b"application/json"),
+        (b"content-length", b"10"),
+        (b"content-length", b"3000000")
+    ]
+    response = client.post("/api/lqr", headers=headers, content=b'{"A": [[0]], "B": [[0]], "Q": [[0]], "R": [[0]]}')
+    assert response.status_code == 413
