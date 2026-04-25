@@ -97,3 +97,7 @@
 ## 2024-05-24 - Async Form Validation Focus Stealing
 **Learning:** When using `finally` blocks in async form submissions to restore focus to a submit button (e.g., `if (wasFocused) btn.focus()`), it can inadvertently steal focus away from input fields that have just triggered native browser validation errors. This causes the helpful browser-native error bubble to immediately close, confusing the user and making the error invisible.
 **Action:** When implementing custom client-side validation that hooks into native `reportValidity()`, always reset the `wasFocused` tracking variable (e.g., `wasFocused = false`) in the `catch` block if the error was a validation error on an input field. This ensures the input retains focus and the native error bubble remains visible to the user.
+
+## 2026-04-25 - Avoid Dimming Empty States
+**Learning:** Applying visual dimming (`opacity: 0.5`) to output containers when data becomes stale is a good UX pattern, but applying it when the container is in its initial "empty state" makes the UI look broken or disabled before the user has even submitted anything.
+**Action:** When implementing stale data dimming logic on input changes, always check if the container is currently displaying an empty state (e.g., `!container.querySelector('.empty-state')`) and skip the dimming if it is.
