@@ -101,3 +101,7 @@
 ## 2026-04-25 - Avoid Dimming Empty States
 **Learning:** Applying visual dimming (`opacity: 0.5`) to output containers when data becomes stale is a good UX pattern, but applying it when the container is in its initial "empty state" makes the UI look broken or disabled before the user has even submitted anything.
 **Action:** When implementing stale data dimming logic on input changes, always check if the container is currently displaying an empty state (e.g., `!container.querySelector('.empty-state')`) and skip the dimming if it is.
+
+## 2026-04-26 - Inline Validation Feedback
+**Learning:** Relying solely on color changes (like a red border) to indicate validation errors violates WCAG 1.4.1 (Use of Color). Furthermore, when adding custom icons to the right side of `input[type="number"]`, the browser's default up/down spin arrows will visually overlap the icon, creating a cluttered and unreadable UI.
+**Action:** When styling `:invalid` states, always add a secondary visual indicator (like an SVG warning icon via `background-image`). For number inputs, specifically hide the default spin arrows using `::-webkit-inner-spin-button { -webkit-appearance: none; }` and `-moz-appearance: textfield` to prevent icon overlap.
