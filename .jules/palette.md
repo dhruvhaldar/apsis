@@ -105,3 +105,7 @@
 ## 2026-04-26 - Inline Validation Feedback
 **Learning:** Relying solely on color changes (like a red border) to indicate validation errors violates WCAG 1.4.1 (Use of Color). Furthermore, when adding custom icons to the right side of `input[type="number"]`, the browser's default up/down spin arrows will visually overlap the icon, creating a cluttered and unreadable UI.
 **Action:** When styling `:invalid` states, always add a secondary visual indicator (like an SVG warning icon via `background-image`). For number inputs, specifically hide the default spin arrows using `::-webkit-inner-spin-button { -webkit-appearance: none; }` and `-moz-appearance: textfield` to prevent icon overlap.
+
+## 2026-04-27 - Intuitive Inline Validation
+**Learning:** Using the `:invalid` pseudo-class for required form inputs causes them to aggressively display error styles (like red borders and warning icons) immediately when the page loads, before the user has even had a chance to interact with them. This creates a hostile and confusing first impression.
+**Action:** Always prefer the `:user-invalid` pseudo-class over `:invalid` for inline form validation styling. This ensures that error states are only shown after the user has interacted with the input (e.g., focused and blurred) or attempted to submit the form, creating a much more pleasant and intuitive UX.
