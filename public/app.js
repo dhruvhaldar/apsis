@@ -51,16 +51,33 @@ async function fetchWithCache(endpoint, payload) {
         return apiCache.get(cacheKey);
     }
 
-    const response = await fetch(`${API_BASE}${endpoint}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    });
+    // 🛡️ Sentinel Security Enhancement: Add a timeout to prevent client-side hanging
+    // and resource exhaustion if the backend becomes unresponsive or under DoS.
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-    if (!response.ok) await handleApiError(response);
-    const data = await response.json();
-    apiCache.set(cacheKey, data);
-    return data;
+    try {
+        const response = await fetch(`${API_BASE}${endpoint}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        if (!response.ok) await handleApiError(response);
+        const data = await response.json();
+        apiCache.set(cacheKey, data);
+        return data;
+    } catch (err) {
+        clearTimeout(timeoutId);
+        if (err.name === 'AbortError') {
+            const timeoutErr = new Error("Request timed out. The server might be under heavy load.");
+            timeoutErr.name = "ValidationError";
+            throw timeoutErr;
+        }
+        throw err;
+    }
 }
 
 async function handleApiError(response) {
