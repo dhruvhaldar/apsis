@@ -201,6 +201,9 @@ async function solvePMP() {
         // ⚡ Bolt Optimization: Use Plotly.react instead of Plotly.newPlot for subsequent updates.
         // newPlot destroys the DOM element and recreates it. react updates the data/layout in-place
         // via diffing, saving significant main-thread time and preventing visual flickering on re-solves.
+        const emptyState = document.querySelector('#pmp-chart .empty-state');
+        if (emptyState) emptyState.remove();
+
         Plotly.react('pmp-chart', [traceX1, traceX2, traceU], layout, {responsive: true});
 
         if (chartContainer) {
@@ -479,6 +482,17 @@ window.addEventListener('DOMContentLoaded', () => {
         renderMathInElement(document.body);
     }
 
+    // Helper to dim output containers when input changes
+    function setOutputStale(containerId) {
+        const container = document.getElementById(containerId);
+        if (container && !container.querySelector('.empty-state')) {
+            container.style.opacity = '0.5';
+            container.style.pointerEvents = 'none';
+            container.setAttribute('aria-hidden', 'true');
+            container.querySelectorAll('button, input').forEach(el => el.disabled = true);
+        }
+    }
+
     // Helper to restore output containers after successful calculation
     window.clearOutputStale = function(containerId) {
         const container = document.getElementById(containerId);
@@ -497,6 +511,7 @@ window.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             solvePMP();
         });
+        pmpForm.addEventListener('input', () => setOutputStale('pmp-chart'));
     }
 
     const lqrForm = document.getElementById('lqr-form');
@@ -505,6 +520,7 @@ window.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             solveLQR();
         });
+        lqrForm.addEventListener('input', () => setOutputStale('lqr-output'));
     }
 
     const mpcForm = document.getElementById('mpc-form');
@@ -513,5 +529,6 @@ window.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             solveMPC();
         });
+        mpcForm.addEventListener('input', () => setOutputStale('mpc-chart'));
     }
 });
