@@ -140,7 +140,10 @@ document.addEventListener('input', (e) => {
 
         // ⚡ UX Improvement: Mark existing output as stale to prevent confusion
         const section = e.target.closest('section');
-        if (section) {
+        // ⚡ Bolt Optimization: Early return to prevent redundant DOM queries and style recalculations
+        // on every single keystroke once the section is already marked as stale.
+        if (section && section.dataset.stale !== 'true') {
+            section.dataset.stale = 'true';
             const chartContainer = section.querySelector('.chart-container');
             if (chartContainer && !chartContainer.querySelector('.empty-state') && !chartContainer.hasAttribute('data-empty')) {
                 chartContainer.style.opacity = '0.5';
@@ -228,6 +231,8 @@ async function solvePMP() {
             chartContainer.style.pointerEvents = '';
             chartContainer.removeAttribute('aria-hidden');
             chartContainer.querySelectorAll('button, input').forEach(el => el.disabled = false);
+            const section = chartContainer.closest('section');
+            if (section) delete section.dataset.stale;
         }
 
         const announcer = document.getElementById('a11y-announcer');
@@ -300,6 +305,8 @@ async function solveLQR() {
             outputContainer.style.pointerEvents = '';
             outputContainer.removeAttribute('aria-hidden');
             outputContainer.querySelectorAll('button, input, .copy-btn').forEach(btn => btn.disabled = false);
+            const section = outputContainer.closest('section');
+            if (section) delete section.dataset.stale;
         }
 
         const announcer = document.getElementById('a11y-announcer');
@@ -413,6 +420,8 @@ async function solveMPC() {
             chartContainer.style.pointerEvents = '';
             chartContainer.removeAttribute('aria-hidden');
             chartContainer.querySelectorAll('button, input').forEach(el => el.disabled = false);
+            const section = chartContainer.closest('section');
+            if (section) delete section.dataset.stale;
         }
 
         const announcer = document.getElementById('a11y-announcer');

@@ -85,3 +85,6 @@
 ## 2024-06-06 - Bypass __matmul__ in Hot Loops using .dot()
 **Learning:** Using the `@` operator for matrix multiplication (e.g., `M @ y`) inside Python-level tight numerical loops (like `solve_bvp`'s `bvp_system` evaluation which is called tens of thousands of times) invokes Python's `__matmul__` dunder method, creating measurable dynamic dispatch overhead.
 **Action:** Replace `M @ y` with `M.dot(y)` in numerical hot loops. `.dot()` binds directly to the underlying compiled C implementation, bypassing Python's operator dispatch overhead and executing ~5% faster, which adds up to meaningful savings in solver execution times.
+## 2026-04-30 - Redundant DOM Manipulations on Keystrokes
+**Learning:** Attaching heavy DOM queries (`querySelector`, `closest`) and style modifications directly to the `input` event causes them to execute synchronously on every keystroke. For complex forms, this creates a CPU hot loop that delays the main thread, leading to typing lag (poor Interaction to Next Paint).
+**Action:** Always cache the visual state (e.g., using a `dataset.stale` flag) and use early returns inside high-frequency event listeners to short-circuit redundant DOM traversals and layout recalculations once the state is already applied.
