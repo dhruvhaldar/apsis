@@ -33,7 +33,8 @@ def solve_pmp_linear_quadratic(A, B, Q, R, x0, xf, tf, num_points=100):
 
     def bvp_system(t, y):
         # ⚡ Bolt Optimization: Replace multiple @ and np.vstack with a single dot product
-        return M @ y
+        # and use .dot() to bypass python __matmul__ dispatch overhead in hot loops
+        return M.dot(y)
 
     # ⚡ Bolt Optimization: Provide exact analytical Jacobians to solve_bvp
     # to bypass costly internal finite-difference approximations for linear systems.
