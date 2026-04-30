@@ -45,15 +45,15 @@
                 <form id="pmp-form" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="none">
                     <div class="input-group">
                         <label for="pmp-x0">Initial State (x0) <span class="required-indicator" aria-hidden="true">*</span></label>
-                        <input type="text" id="pmp-x0" class="ui-input" value="[1.0, 0.0]" placeholder="e.g. [1.0, 0.0]" required>
+                        <input type="text" id="pmp-x0" class="ui-input" value="[1.0, 0.0]" placeholder="e.g. [1.0, 0.0]" required aria-required="true">
                     </div>
                     <div class="input-group">
                         <label for="pmp-xf">Target State (xf) <span class="required-indicator" aria-hidden="true">*</span></label>
-                        <input type="text" id="pmp-xf" class="ui-input" value="[0.0, 0.0]" placeholder="e.g. [0.0, 0.0]" required>
+                        <input type="text" id="pmp-xf" class="ui-input" value="[0.0, 0.0]" placeholder="e.g. [0.0, 0.0]" required aria-required="true">
                     </div>
                     <div class="input-group">
                         <label for="pmp-tf">Final Time (tf) <span class="required-indicator" aria-hidden="true">*</span></label>
-                        <input type="number" id="pmp-tf" class="ui-input" value="10.0" min="0.1" step="any" required>
+                        <input type="number" id="pmp-tf" class="ui-input" value="10.0" min="0.1" step="any" required aria-required="true">
                     </div>
                     <button id="btn-pmp" class="ui-btn" type="submit">Solve PMP</button>
                 </form>
@@ -75,19 +75,19 @@
                 <form id="lqr-form" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="none">
                     <div class="input-group">
                         <label for="lqr-A">System A Matrix <span class="required-indicator" aria-hidden="true">*</span></label>
-                        <input type="text" id="lqr-A" class="ui-input" value="[[0, 1], [-1, -1]]" placeholder="e.g. [[0, 1], [-1, -1]]" required>
+                        <input type="text" id="lqr-A" class="ui-input" value="[[0, 1], [-1, -1]]" placeholder="e.g. [[0, 1], [-1, -1]]" required aria-required="true">
                     </div>
                     <div class="input-group">
                         <label for="lqr-B">Input B Matrix <span class="required-indicator" aria-hidden="true">*</span></label>
-                        <input type="text" id="lqr-B" class="ui-input" value="[[0], [1]]" placeholder="e.g. [[0], [1]]" required>
+                        <input type="text" id="lqr-B" class="ui-input" value="[[0], [1]]" placeholder="e.g. [[0], [1]]" required aria-required="true">
                     </div>
                     <div class="input-group">
                         <label for="lqr-Q">State Cost Q Matrix <span class="required-indicator" aria-hidden="true">*</span></label>
-                        <input type="text" id="lqr-Q" class="ui-input" value="[[1, 0], [0, 1]]" placeholder="e.g. [[1, 0], [0, 1]]" required>
+                        <input type="text" id="lqr-Q" class="ui-input" value="[[1, 0], [0, 1]]" placeholder="e.g. [[1, 0], [0, 1]]" required aria-required="true">
                     </div>
                     <div class="input-group">
                         <label for="lqr-R">Input Cost R Matrix <span class="required-indicator" aria-hidden="true">*</span></label>
-                        <input type="text" id="lqr-R" class="ui-input" value="[[1]]" placeholder="e.g. [[1]]" required>
+                        <input type="text" id="lqr-R" class="ui-input" value="[[1]]" placeholder="e.g. [[1]]" required aria-required="true">
                     </div>
                     <button id="btn-lqr" class="ui-btn" type="submit">Synthesize LQR</button>
                 </form>
@@ -122,22 +122,22 @@
                 <form id="mpc-form" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="none">
                     <div class="input-group">
                         <label for="mpc-N">Horizon Steps (N) <span class="required-indicator" aria-hidden="true">*</span></label>
-                        <input type="number" id="mpc-N" class="ui-input" value="20" min="1" step="1" required>
+                        <input type="number" id="mpc-N" class="ui-input" value="20" min="1" step="1" required aria-required="true">
                     </div>
                     <div class="input-group">
                         <label for="mpc-dt">Time Step (dt) <span class="required-indicator" aria-hidden="true">*</span></label>
-                        <input type="number" id="mpc-dt" class="ui-input" value="0.5" min="0.1" step="any" required>
+                        <input type="number" id="mpc-dt" class="ui-input" value="0.5" min="0.1" step="any" required aria-required="true">
                     </div>
                     <fieldset class="input-group" style="border: none; padding: 0; margin: 0; margin-bottom: 20px;">
                         <legend style="display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--accent-dark);">Input Bounds <span class="required-indicator" aria-hidden="true">*</span></legend>
                         <div style="display: flex; gap: 10px;">
-                            <div style="flex: 1;">
-                                <label for="mpc-umin" style="display: block; margin-bottom: 4px; font-size: 0.8rem; color: var(--text-color);">Min (u_min)</label>
-                                <input type="text" id="mpc-umin" class="ui-input" value="[-1.0]" placeholder="e.g. [-1.0]" required>
+                            <div class="input-group" style="flex: 1; margin-bottom: 0;">
+                                <label for="mpc-umin" style="display: block; margin-bottom: 4px; font-size: 0.8rem;">Min (u_min)</label>
+                                <input type="text" id="mpc-umin" class="ui-input" value="[-1.0]" placeholder="e.g. [-1.0]" required aria-required="true">
                             </div>
-                            <div style="flex: 1;">
-                                <label for="mpc-umax" style="display: block; margin-bottom: 4px; font-size: 0.8rem; color: var(--text-color);">Max (u_max)</label>
-                                <input type="text" id="mpc-umax" class="ui-input" value="[1.0]" placeholder="e.g. [1.0]" required>
+                            <div class="input-group" style="flex: 1; margin-bottom: 0;">
+                                <label for="mpc-umax" style="display: block; margin-bottom: 4px; font-size: 0.8rem;">Max (u_max)</label>
+                                <input type="text" id="mpc-umax" class="ui-input" value="[1.0]" placeholder="e.g. [1.0]" required aria-required="true">
                             </div>
                         </div>
                     </fieldset>

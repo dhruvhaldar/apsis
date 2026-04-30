@@ -109,3 +109,7 @@
 ## 2026-04-27 - Intuitive Inline Validation
 **Learning:** Using the `:invalid` pseudo-class for required form inputs causes them to aggressively display error styles (like red borders and warning icons) immediately when the page loads, before the user has even had a chance to interact with them. This creates a hostile and confusing first impression.
 **Action:** Always prefer the `:user-invalid` pseudo-class over `:invalid` for inline form validation styling. This ensures that error states are only shown after the user has interacted with the input (e.g., focused and blurred) or attempted to submit the form, creating a much more pleasant and intuitive UX.
+
+## 2026-04-30 - Form Label Focus Tracking
+**Learning:** In forms with complex layouts or dark themes, it can be hard to quickly identify which input has focus. Furthermore, labels are often seen as purely decorative text rather than clickable interactive elements that focus their associated inputs.
+**Action:** Make form labels discoverable by applying `cursor: pointer` via CSS. Additionally, apply a focus-within pattern to parent containers (e.g., `.input-group:focus-within label`) to highlight the active input's label, providing clear, intuitive visual tracking as the user tabs or clicks through the form.
