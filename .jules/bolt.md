@@ -88,3 +88,7 @@
 ## 2026-04-30 - Redundant DOM Manipulations on Keystrokes
 **Learning:** Attaching heavy DOM queries (`querySelector`, `closest`) and style modifications directly to the `input` event causes them to execute synchronously on every keystroke. For complex forms, this creates a CPU hot loop that delays the main thread, leading to typing lag (poor Interaction to Next Paint).
 **Action:** Always cache the visual state (e.g., using a `dataset.stale` flag) and use early returns inside high-frequency event listeners to short-circuit redundant DOM traversals and layout recalculations once the state is already applied.
+
+## 2024-06-07 - Python __matmul__ Dispatch Overhead
+**Learning:** Using the `@` operator for matrix multiplication (e.g., `B @ X`) invokes Python's `__matmul__` dunder method. In some tight, frequently evaluated scopes, this creates measurable dynamic dispatch overhead compared to directly calling the method on the array.
+**Action:** Replace `M @ y` or `B.T @ X` with `M.dot(y)` and `B.T.dot(X)`. `.dot()` binds directly to the underlying C implementation, completely bypassing the Python-level operator dispatch, and yields a small but measurable speedup.

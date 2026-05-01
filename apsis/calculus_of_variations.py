@@ -21,7 +21,8 @@ def solve_pmp_linear_quadratic(A, B, Q, R, x0, xf, tf, num_points=100):
 
     # ⚡ Bolt Optimization:
     # Use np.linalg.solve for better numerical stability and performance over inv
-    BR_invB = B @ np.linalg.solve(R, B.T)
+    # ⚡ Bolt Optimization: Replace @ with .dot() to bypass python __matmul__ dispatch overhead
+    BR_invB = B.dot(np.linalg.solve(R, B.T))
 
     # Pre-compute state-costate matrix M to avoid allocation and repeated matrix
     # operations in the hot loop (bvp_system)
@@ -83,7 +84,8 @@ def solve_pmp_linear_quadratic(A, B, Q, R, x0, xf, tf, num_points=100):
         x_sol = res.y[:n_states, :]
         lam_sol = res.y[n_states:, :]
         # ⚡ Bolt Optimization: Use np.linalg.solve instead of np.linalg.inv(R) @
-        u_sol = -np.linalg.solve(R, B.T @ lam_sol)
+        # and replace @ with .dot() to bypass python __matmul__ dispatch overhead
+        u_sol = -np.linalg.solve(R, B.T.dot(lam_sol))
         return t, x_sol, u_sol, lam_sol
     else:
         raise RuntimeError("BVP solver failed: " + res.message)
