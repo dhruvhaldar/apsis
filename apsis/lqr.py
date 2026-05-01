@@ -18,9 +18,10 @@ def solve_lqr(A, B, Q, R):
     # the Python-level overhead of `scipy.linalg.solve` (argument checking, dispatch)
     # outweighs the algorithmic benefit of `assume_a='pos'` (Cholesky).
     # `np.linalg.solve` wraps LAPACK more directly, offering ~10% lower overhead per call.
-    K = np.linalg.solve(R, B.T @ X)
+    # We also use `.dot()` instead of `@` to bypass python __matmul__ dispatch overhead.
+    K = np.linalg.solve(R, B.T.dot(X))
 
     # Compute closed-loop poles using numpy's eigvals for less overhead
-    eigvals = np.linalg.eigvals(A - B @ K)
+    eigvals = np.linalg.eigvals(A - B.dot(K))
 
     return K, X, eigvals
