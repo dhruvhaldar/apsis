@@ -113,3 +113,7 @@
 ## 2026-04-30 - Form Label Focus Tracking
 **Learning:** In forms with complex layouts or dark themes, it can be hard to quickly identify which input has focus. Furthermore, labels are often seen as purely decorative text rather than clickable interactive elements that focus their associated inputs.
 **Action:** Make form labels discoverable by applying `cursor: pointer` via CSS. Additionally, apply a focus-within pattern to parent containers (e.g., `.input-group:focus-within label`) to highlight the active input's label, providing clear, intuitive visual tracking as the user tabs or clicks through the form.
+
+## 2026-05-01 - Real-time Inline Validation for Strict Formats
+**Learning:** For strict text inputs (like JSON arrays), validating on `input` can be frustrating because partial valid typing triggers errors. Validating on `focusout` perfectly complements CSS `:user-invalid` styling, providing immediate visual feedback and clear error states without interrupting the user's flow or waiting until form submission.
+**Action:** Apply `focusout` validation logic for complex data formats (JSON, matrices) combined with native CSS `:user-invalid` to ensure a smooth, error-preventing user experience.

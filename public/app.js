@@ -133,6 +133,22 @@ function parseFloatInput(id) {
     return val;
 }
 
+// ⚡ Palette: Add real-time inline validation for JSON inputs on focusout
+// This leverages CSS :user-invalid to instantly show feedback without interrupting typing
+document.addEventListener('focusout', (e) => {
+    if (e.target && e.target.classList.contains('ui-input') && e.target.dataset.format === 'json') {
+        try {
+            // Only validate if not empty (let native 'required' handle empty state if needed)
+            if (e.target.value.trim() !== '') {
+                JSON.parse(e.target.value);
+            }
+            e.target.setCustomValidity('');
+        } catch (err) {
+            e.target.setCustomValidity('Invalid format. Please use valid JSON array format, e.g., [1, 0] or [[1,0],[0,1]]');
+        }
+    }
+});
+
 // Clear validation errors when user types
 document.addEventListener('input', (e) => {
     if (e.target && e.target.classList.contains('ui-input')) {
