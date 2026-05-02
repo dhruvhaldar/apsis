@@ -60,7 +60,7 @@
                         <label for="pmp-tf">Final Time (tf) <span class="required-indicator" aria-hidden="true">*</span></label>
                         <input type="number" id="pmp-tf" class="ui-input" value="10.0" min="0.1" step="any" required aria-required="true">
                     </div>
-                    <button id="btn-pmp" class="ui-btn" type="submit">Solve PMP</button>
+                    <button id="btn-pmp" class="ui-btn" type="submit">Solve PMP <span class="shortcut-hint" aria-hidden="true">(<kbd class="shortcut-modifier">Ctrl</kbd> + <kbd>Enter</kbd>)</span></button>
                 </form>
                 <div class="chart-container" id="pmp-chart">
                     <div class="empty-state">
@@ -94,7 +94,7 @@
                         <label for="lqr-R">Input Cost R Matrix <span class="required-indicator" aria-hidden="true">*</span></label>
                         <input type="text" id="lqr-R" class="ui-input" data-format="json" value="[[1]]" placeholder="e.g. [[1]]" required aria-required="true">
                     </div>
-                    <button id="btn-lqr" class="ui-btn" type="submit">Synthesize LQR</button>
+                    <button id="btn-lqr" class="ui-btn" type="submit">Synthesize LQR <span class="shortcut-hint" aria-hidden="true">(<kbd class="shortcut-modifier">Ctrl</kbd> + <kbd>Enter</kbd>)</span></button>
                 </form>
                 <div class="output-block" id="lqr-empty">
                     <div class="empty-state">
@@ -146,7 +146,7 @@
                             </div>
                         </div>
                     </fieldset>
-                    <button id="btn-mpc" class="ui-btn" type="submit">Simulate MPC</button>
+                    <button id="btn-mpc" class="ui-btn" type="submit">Simulate MPC <span class="shortcut-hint" aria-hidden="true">(<kbd class="shortcut-modifier">Ctrl</kbd> + <kbd>Enter</kbd>)</span></button>
                 </form>
                 <div class="chart-container" id="mpc-chart">
                     <div class="empty-state">

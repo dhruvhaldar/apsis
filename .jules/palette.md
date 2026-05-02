@@ -117,3 +117,7 @@
 ## 2026-05-01 - Real-time Inline Validation for Strict Formats
 **Learning:** For strict text inputs (like JSON arrays), validating on `input` can be frustrating because partial valid typing triggers errors. Validating on `focusout` perfectly complements CSS `:user-invalid` styling, providing immediate visual feedback and clear error states without interrupting the user's flow or waiting until form submission.
 **Action:** Apply `focusout` validation logic for complex data formats (JSON, matrices) combined with native CSS `:user-invalid` to ensure a smooth, error-preventing user experience.
+
+## 2026-05-02 - Keyboard Shortcuts and Accessibility
+**Learning:** Adding visual hints for keyboard shortcuts inside buttons can create redundant and confusing announcements for screen reader users (e.g., reading "Solve PMP left parenthesis Ctrl plus Enter right parenthesis"). Power users utilizing screen readers will often discover shortcuts through documentation or application help, making the inline visual hint unnecessary noise.
+**Action:** When adding inline keyboard shortcut hints to interactive elements, wrap the hint in a `<span>` and apply `aria-hidden="true"` to ensure the visual hint is hidden from accessibility APIs, keeping the button's accessible name clean and focused.
