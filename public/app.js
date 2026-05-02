@@ -574,3 +574,33 @@ window.addEventListener('DOMContentLoaded', () => {
         mpcForm.addEventListener('input', () => setOutputStale('mpc-chart'));
     }
 });
+
+// ⚡ Palette: Add keyboard shortcuts for power users to quickly submit forms.
+// This improves the UX for users who prefer keyboard navigation.
+document.addEventListener('DOMContentLoaded', () => {
+    // Detect Mac for shortcut hints
+    const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+    if (isMac) {
+        document.querySelectorAll('.shortcut-modifier').forEach(el => {
+            el.innerText = '⌘';
+        });
+    }
+});
+
+document.addEventListener('keydown', (e) => {
+    // Check if Ctrl+Enter or Cmd+Enter is pressed
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        const activeElement = document.activeElement;
+        if (activeElement) {
+            const form = activeElement.closest('form');
+            if (form) {
+                // Prevent default Enter behavior
+                e.preventDefault();
+                const submitBtn = form.querySelector('[type="submit"]');
+                if (submitBtn && !submitBtn.disabled) {
+                    submitBtn.click();
+                }
+            }
+        }
+    }
+});
