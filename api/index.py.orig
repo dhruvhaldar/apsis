@@ -197,13 +197,12 @@ class MPCRequest(BaseModel):
 def lqr_endpoint(req: LQRRequest):
     try:
         K, X, eigvals = solve_lqr(req.A, req.B, req.Q, req.R)
-        # ⚡ Bolt Optimization: Use JSONResponse directly to bypass FastAPI's slow recursive jsonable_encoder for large primitive arrays
-        return JSONResponse(content={
+        return {
             "K": K.tolist(),
             "X": X.tolist(),
             # ⚡ Bolt Optimization: Use vectorized `.real.tolist()` to avoid python-level iteration overhead
             "eigvals": eigvals.real.tolist()
-        })
+        }
     except Exception as e:
         logger.error(f"LQR Error: {e}")
         raise HTTPException(status_code=400, detail="An error occurred during LQR computation")
@@ -214,13 +213,12 @@ def pmp_endpoint(req: PMPRequest):
         t, x_sol, u_sol, lam_sol = solve_pmp_linear_quadratic(
             req.A, req.B, req.Q, req.R, req.x0, req.xf, req.tf, req.num_points
         )
-        # ⚡ Bolt Optimization: Use JSONResponse directly to bypass FastAPI's slow recursive jsonable_encoder for large primitive arrays
-        return JSONResponse(content={
+        return {
             "t": t.tolist(),
             "x": x_sol.tolist(),
             "u": u_sol.tolist(),
             "lambda": lam_sol.tolist()
-        })
+        }
     except Exception as e:
         logger.error(f"PMP Error: {e}")
         raise HTTPException(status_code=400, detail="An error occurred during PMP computation")
@@ -231,12 +229,11 @@ def mpc_endpoint(req: MPCRequest):
         t, x_sol, u_sol = solve_mpc(
             req.A, req.B, req.Q, req.R, req.x0, req.N_horizon, req.dt, req.u_min, req.u_max
         )
-        # ⚡ Bolt Optimization: Use JSONResponse directly to bypass FastAPI's slow recursive jsonable_encoder for large primitive arrays
-        return JSONResponse(content={
+        return {
             "t": t.tolist(),
             "x": x_sol.tolist(),
             "u": u_sol.tolist()
-        })
+        }
     except Exception as e:
         logger.error(f"MPC Error: {e}")
         raise HTTPException(status_code=400, detail="An error occurred during MPC computation")
