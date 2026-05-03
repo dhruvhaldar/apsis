@@ -194,7 +194,7 @@ async function solvePMP() {
     const btn = document.getElementById('btn-pmp');
     let wasFocused = document.activeElement === btn;
     btn.setCustomValidity('');
-    const originalText = btn.innerText;
+    const originalHTML = btn.innerHTML;
     btn.disabled = true;
     btn.setAttribute('aria-busy', 'true');
     btn.innerHTML = '<span aria-hidden="true">⏳</span> Solving...';
@@ -261,7 +261,7 @@ async function solvePMP() {
         console.error(err);
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
-        btn.innerText = originalText;
+        btn.innerHTML = originalHTML;
         if (err.name === 'InputValidationError') {
             wasFocused = false;
             return;
@@ -276,7 +276,7 @@ async function solvePMP() {
     } finally {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
-        btn.innerText = originalText;
+        btn.innerHTML = originalHTML;
         if (wasFocused) btn.focus();
     }
 }
@@ -286,7 +286,7 @@ async function solveLQR() {
     const btn = document.getElementById('btn-lqr');
     let wasFocused = document.activeElement === btn;
     btn.setCustomValidity('');
-    const originalText = btn.innerText;
+    const originalHTML = btn.innerHTML;
     btn.disabled = true;
     btn.setAttribute('aria-busy', 'true');
     btn.innerHTML = '<span aria-hidden="true">⏳</span> Synthesizing...';
@@ -335,7 +335,7 @@ async function solveLQR() {
         console.error(err);
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
-        btn.innerText = originalText;
+        btn.innerHTML = originalHTML;
         if (err.name === 'InputValidationError') {
             wasFocused = false;
             return;
@@ -350,7 +350,7 @@ async function solveLQR() {
     } finally {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
-        btn.innerText = originalText;
+        btn.innerHTML = originalHTML;
         if (wasFocused) btn.focus();
     }
 }
@@ -363,7 +363,7 @@ async function solveMPC() {
     const btn = document.getElementById('btn-mpc');
     let wasFocused = document.activeElement === btn;
     btn.setCustomValidity('');
-    const originalText = btn.innerText;
+    const originalHTML = btn.innerHTML;
     btn.disabled = true;
     btn.setAttribute('aria-busy', 'true');
     btn.innerHTML = '<span aria-hidden="true">⏳</span> Simulating...';
@@ -450,7 +450,7 @@ async function solveMPC() {
         console.error(err);
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
-        btn.innerText = originalText;
+        btn.innerHTML = originalHTML;
         if (err.name === 'InputValidationError') {
             wasFocused = false;
             return;
@@ -465,7 +465,7 @@ async function solveMPC() {
     } finally {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
-        btn.innerText = originalText;
+        btn.innerHTML = originalHTML;
         if (wasFocused) btn.focus();
     }
 }

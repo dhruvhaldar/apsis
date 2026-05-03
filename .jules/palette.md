@@ -121,3 +121,7 @@
 ## 2026-05-02 - Keyboard Shortcuts and Accessibility
 **Learning:** Adding visual hints for keyboard shortcuts inside buttons can create redundant and confusing announcements for screen reader users (e.g., reading "Solve PMP left parenthesis Ctrl plus Enter right parenthesis"). Power users utilizing screen readers will often discover shortcuts through documentation or application help, making the inline visual hint unnecessary noise.
 **Action:** When adding inline keyboard shortcut hints to interactive elements, wrap the hint in a `<span>` and apply `aria-hidden="true"` to ensure the visual hint is hidden from accessibility APIs, keeping the button's accessible name clean and focused.
+
+## 2024-10-24 - InnerText Destroys Structural HTML and A11y Attributes
+**Learning:** When temporarily updating button contents (e.g., to a "Loading..." state) during async operations, caching and restoring the button's original state using `btn.innerText` destroys any structural HTML inside the button. This removes critical accessibility attributes like `aria-hidden="true"` and styling tags like `<kbd>`, resulting in degraded accessibility and visual regressions when the button is restored.
+**Action:** Always use `btn.innerHTML` instead of `btn.innerText` when caching and restoring the content of interactive elements that contain child nodes, icons, or complex HTML structures.
