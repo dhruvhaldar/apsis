@@ -136,23 +136,40 @@ function parseFloatInput(id) {
 // ⚡ Palette: Add real-time inline validation for JSON inputs on focusout
 // This leverages CSS :user-invalid to instantly show feedback without interrupting typing
 document.addEventListener('focusout', (e) => {
-    if (e.target && e.target.classList.contains('ui-input') && e.target.dataset.format === 'json') {
-        try {
-            // Only validate if not empty (let native 'required' handle empty state if needed)
-            if (e.target.value.trim() !== '') {
-                JSON.parse(e.target.value);
+    if (e.target && e.target.classList.contains('ui-input')) {
+        if (e.target.dataset.format === 'json') {
+            try {
+                // Only validate if not empty (let native 'required' handle empty state if needed)
+                if (e.target.value.trim() !== '') {
+                    JSON.parse(e.target.value);
+                }
+                e.target.setCustomValidity('');
+            } catch (err) {
+                e.target.setCustomValidity('Invalid format. Please use valid JSON array format, e.g., [1, 0] or [[1,0],[0,1]]');
             }
-            e.target.setCustomValidity('');
-        } catch (err) {
-            e.target.setCustomValidity('Invalid format. Please use valid JSON array format, e.g., [1, 0] or [[1,0],[0,1]]');
+        }
+
+        // ⚡ Palette UX: Expose validation message as a tooltip for inline feedback
+        if (!e.target.validity.valid) {
+            e.target.title = e.target.validationMessage;
+        } else {
+            e.target.removeAttribute('title');
         }
     }
 });
+
+// Capture native 'invalid' events (e.g., on form submit) to ensure tooltips are set
+document.addEventListener('invalid', (e) => {
+    if (e.target && e.target.classList.contains('ui-input')) {
+        e.target.title = e.target.validationMessage;
+    }
+}, true);
 
 // Clear validation errors when user types
 document.addEventListener('input', (e) => {
     if (e.target && e.target.classList.contains('ui-input')) {
         e.target.setCustomValidity('');
+        e.target.removeAttribute('title'); // Clear tooltip when fixing
 
         // ⚡ UX Improvement: Mark existing output as stale to prevent confusion
         const section = e.target.closest('section');
