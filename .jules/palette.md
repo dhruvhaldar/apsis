@@ -125,3 +125,7 @@
 ## 2024-10-24 - InnerText Destroys Structural HTML and A11y Attributes
 **Learning:** When temporarily updating button contents (e.g., to a "Loading..." state) during async operations, caching and restoring the button's original state using `btn.innerText` destroys any structural HTML inside the button. This removes critical accessibility attributes like `aria-hidden="true"` and styling tags like `<kbd>`, resulting in degraded accessibility and visual regressions when the button is restored.
 **Action:** Always use `btn.innerHTML` instead of `btn.innerText` when caching and restoring the content of interactive elements that contain child nodes, icons, or complex HTML structures.
+
+## 2024-05-04 - Native Validation Tooltips
+**Learning:** Native CSS `:user-invalid` styling correctly shows visual cues for invalid inputs, but it does not tell the user *why* the input is invalid if the browser's native error bubble is dismissed or hasn't appeared yet. This is particularly problematic for custom validation (e.g., using `setCustomValidity`).
+**Action:** When an input is invalid, set its `title` attribute to the `validationMessage` (and clear it when valid). This exposes the error text as a native browser tooltip, allowing users to hover over the invalid field and read exactly what needs to be fixed.
