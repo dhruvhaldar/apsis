@@ -41,6 +41,11 @@ def solve_hjb(L, f, x_grid, u_grid, t_grid):
     vals = np.empty((nx, nu))
     min_indices = np.empty(nx, dtype=np.intp)
 
+    # Pre-allocate arrays for completely allocation-free min extraction
+    min_val = np.empty(nx)
+    flat_indices = np.empty(nx, dtype=np.intp)
+    row_offsets = idx_arange * nu
+
     # Backward value iteration
     for k in range(nt - 2, -1, -1):
         # Estimate spatial derivative dV/dx using central difference for all x simultaneously
@@ -66,11 +71,14 @@ def solve_hjb(L, f, x_grid, u_grid, t_grid):
         np.add(cost, vals, out=vals)
 
         # Find the minimum value and corresponding control along the 'u' axis (axis=1)
-        # ⚡ Bolt Optimization: Use `out` parameter to avoid dynamic memory allocation of the index array on every iteration
+        # ⚡ Bolt Optimization: Use `out` parameter to avoid dynamic memory allocation of the index array on every iteration.
+        # We also use `np.take` with flattened arrays to avoid the implicit dynamic memory allocation caused by fancy indexing (vals[idx_arange, min_indices]).
         np.argmin(vals, axis=1, out=min_indices)
-        min_val = vals[idx_arange, min_indices]
+        np.add(row_offsets, min_indices, out=flat_indices)
+        np.take(vals.ravel(), flat_indices, out=min_val)
 
-        u_opt[:, k] = u_grid[min_indices]
+        # ⚡ Bolt Optimization: Use `np.take` to avoid implicit dynamic memory allocation caused by fancy indexing (u_grid[min_indices])
+        np.take(u_grid, min_indices, out=u_opt[:, k])
         # Update V(x, t) = V(x, t+dt) + dt * min_u [ L + dV/dx * f ]
         # ⚡ Bolt Optimization: Use in-place operations to prevent intermediate array allocations in the hot loop
         np.multiply(min_val, dt, out=min_val)
