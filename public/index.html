@@ -58,7 +58,7 @@
                     </div>
                     <div class="input-group">
                         <label for="pmp-tf">Final Time (tf) <span class="required-indicator" aria-hidden="true">*</span></label>
-                        <input type="number" id="pmp-tf" class="ui-input" value="10.0" min="0.1" step="any" required aria-required="true">
+                        <input type="number" id="pmp-tf" class="ui-input" value="10.0" min="0.1" step="any" placeholder="e.g. 10.0" required aria-required="true">
                     </div>
                     <button id="btn-pmp" class="ui-btn" type="submit">Solve PMP <span class="shortcut-hint" aria-hidden="true">(<kbd class="shortcut-modifier">Ctrl</kbd> + <kbd>Enter</kbd>)</span></button>
                 </form>
@@ -127,11 +127,11 @@
                 <form id="mpc-form" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="none">
                     <div class="input-group">
                         <label for="mpc-N">Horizon Steps (N) <span class="required-indicator" aria-hidden="true">*</span></label>
-                        <input type="number" id="mpc-N" class="ui-input" value="20" min="1" step="1" required aria-required="true">
+                        <input type="number" id="mpc-N" class="ui-input" value="20" min="1" step="1" placeholder="e.g. 20" required aria-required="true">
                     </div>
                     <div class="input-group">
                         <label for="mpc-dt">Time Step (dt) <span class="required-indicator" aria-hidden="true">*</span></label>
-                        <input type="number" id="mpc-dt" class="ui-input" value="0.5" min="0.1" step="any" required aria-required="true">
+                        <input type="number" id="mpc-dt" class="ui-input" value="0.5" min="0.1" step="any" placeholder="e.g. 0.5" required aria-required="true">
                     </div>
                     <fieldset class="input-group" style="border: none; padding: 0; margin: 0; margin-bottom: 20px;">
                         <legend style="display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--accent-dark);">Input Bounds <span class="required-indicator" aria-hidden="true">*</span></legend>

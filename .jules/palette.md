@@ -129,3 +129,7 @@
 ## 2024-05-04 - Native Validation Tooltips
 **Learning:** Native CSS `:user-invalid` styling correctly shows visual cues for invalid inputs, but it does not tell the user *why* the input is invalid if the browser's native error bubble is dismissed or hasn't appeared yet. This is particularly problematic for custom validation (e.g., using `setCustomValidity`).
 **Action:** When an input is invalid, set its `title` attribute to the `validationMessage` (and clear it when valid). This exposes the error text as a native browser tooltip, allowing users to hover over the invalid field and read exactly what needs to be fixed.
+
+## 2024-11-20 - Responsive CSS Grid on Mobile Viewports
+**Learning:** Using `grid-template-columns: repeat(auto-fit, minmax(400px, 1fr))` creates a strict 400px minimum column width. On mobile devices with screen widths narrower than 400px (like iPhone SE at 375px), this forces horizontal scrolling and breaks the layout, violating WCAG 1.4.10 (Reflow).
+**Action:** Always wrap the minimum value in CSS grid with `min(100%, [value]px)` (e.g., `minmax(min(100%, 400px), 1fr)`). This ensures the column shrinks to fit smaller viewports when necessary, preventing horizontal overflow while maintaining the desired layout on larger screens.
