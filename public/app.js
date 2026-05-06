@@ -544,11 +544,16 @@ window.addEventListener('DOMContentLoaded', () => {
     // Helper to dim output containers when input changes
     function setOutputStale(containerId) {
         const container = document.getElementById(containerId);
-        if (container && !container.querySelector('.empty-state')) {
-            container.style.opacity = '0.5';
-            container.style.pointerEvents = 'none';
-            container.setAttribute('aria-hidden', 'true');
-            container.querySelectorAll('button, input').forEach(el => el.disabled = true);
+        // ⚡ Bolt Optimization: Early return to prevent redundant DOM queries and style recalculations
+        // on every single keystroke once the container is already marked as stale.
+        if (container && container.dataset.stale !== 'true') {
+            if (!container.querySelector('.empty-state')) {
+                container.dataset.stale = 'true';
+                container.style.opacity = '0.5';
+                container.style.pointerEvents = 'none';
+                container.setAttribute('aria-hidden', 'true');
+                container.querySelectorAll('button, input').forEach(el => el.disabled = true);
+            }
         }
     }
 
@@ -560,6 +565,7 @@ window.addEventListener('DOMContentLoaded', () => {
             container.style.pointerEvents = '';
             container.removeAttribute('aria-hidden');
             container.querySelectorAll('button, input, .copy-btn').forEach(el => el.disabled = false);
+            delete container.dataset.stale;
         }
     };
 
