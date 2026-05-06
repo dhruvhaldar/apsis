@@ -100,3 +100,7 @@
 ## 2026-05-05 - Avoid dynamic memory allocations from fancy indexing in NumPy loops
 **Learning:** In tight NumPy hot loops, utilizing fancy indexing (e.g., `vals[row_indices, col_indices]`) implicitly causes hidden dynamic memory allocations on every iteration. This introduces garbage collection overhead that becomes significant when the loop runs thousands of times. While `np.argmin(out=...)` prevents allocation for the indices, extracting the corresponding elements still incurs this cost.
 **Action:** To achieve completely allocation-free array extraction, compute 1D flattened indices. Pre-compute row offsets outside the loop (`row_offsets = np.arange(rows) * cols`), then inside the loop compute flattened indices in-place (`np.add(row_offsets, col_indices, out=flat_indices)`), and extract elements into a pre-allocated array using `np.take(vals.ravel(), flat_indices, out=pre_allocated_array)`.
+
+## 2024-06-09 - Redundant DOM manipulations on Form Input Events
+**Learning:** Attaching heavy DOM queries (`querySelector`, `querySelectorAll`) and style modifications to high-frequency events like `input` without a state cache causes redundant synchronous execution on every keystroke, which can create noticeable CPU load and delay the main thread.
+**Action:** Use a visual state cache (like `dataset.stale`) and an early return to short-circuit redundant traversals and DOM changes on subsequent key events once the state has already been applied.
