@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 import logging
@@ -165,6 +166,25 @@ async def add_security_headers(request: Request, call_next):
 SafeFloat = Annotated[float, Field(allow_inf_nan=False)]
 Row = Annotated[List[SafeFloat], Field(max_length=20)]
 Matrix = Annotated[List[Row], Field(max_length=20)]
+
+# 🛡️ Sentinel Security Fix: Sanitize validation errors to prevent Infinity/NaN JSON serialization crashes
+# Pydantic includes the raw invalid input in the error response. If an attacker sends `Infinity`,
+# FastAPI's default JSONResponse (which uses standard json.dumps) will crash with a ValueError,
+# causing a 500 Internal Server Error DoS. Removing the input field guarantees serialization safety.
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    errors = exc.errors()
+    safe_errors = []
+    for err in errors:
+        safe_err = err.copy()
+        if "input" in safe_err:
+            del safe_err["input"]
+        safe_errors.append(safe_err)
+
+    return JSONResponse(
+        status_code=422,
+        content={"detail": safe_errors},
+    )
 
 class LQRRequest(BaseModel):
     A: Matrix
