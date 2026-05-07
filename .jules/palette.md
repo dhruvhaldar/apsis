@@ -133,3 +133,7 @@
 ## 2024-11-20 - Responsive CSS Grid on Mobile Viewports
 **Learning:** Using `grid-template-columns: repeat(auto-fit, minmax(400px, 1fr))` creates a strict 400px minimum column width. On mobile devices with screen widths narrower than 400px (like iPhone SE at 375px), this forces horizontal scrolling and breaks the layout, violating WCAG 1.4.10 (Reflow).
 **Action:** Always wrap the minimum value in CSS grid with `min(100%, [value]px)` (e.g., `minmax(min(100%, 400px), 1fr)`). This ensures the column shrinks to fit smaller viewports when necessary, preventing horizontal overflow while maintaining the desired layout on larger screens.
+
+## 2026-05-07 - Fieldset Legend Focus Tracking
+**Learning:** Form `<legend>` elements acting as group labels (e.g., for "Input Bounds" grouping multiple inputs) miss out on the visual focus tracking commonly applied to standard `<label>` elements when an input inside the group is focused. This inconsistency reduces the cohesiveness of the UI and makes tracking focus position across complex form groupings slightly harder for sighted keyboard/mouse users.
+**Action:** When creating a `.focus-within` tracking style for form labels (e.g., `.input-group:focus-within label { color: highlight }`), extend the same selector logic to include `.input-group:focus-within legend`. Ensure `<legend>` specific styling is applied (like resetting the `cursor` to `default` instead of `pointer` if clicking it doesn't intuitively do anything, and padding adjustments).
