@@ -104,3 +104,6 @@
 ## 2024-06-09 - Redundant DOM manipulations on Form Input Events
 **Learning:** Attaching heavy DOM queries (`querySelector`, `querySelectorAll`) and style modifications to high-frequency events like `input` without a state cache causes redundant synchronous execution on every keystroke, which can create noticeable CPU load and delay the main thread.
 **Action:** Use a visual state cache (like `dataset.stale`) and an early return to short-circuit redundant traversals and DOM changes on subsequent key events once the state has already been applied.
+## $(date +%Y-%m-%d) - Debounce WebGL Resize Events
+**Learning:** When performing heavy canvas or WebGL recalculations (like updateProjectionMatrix and renderer.setSize) in response to window resizing, not debouncing causes severe performance degradation and layout thrashing as the browser attempts to re-render the heavy 3D scene on every single pixel change during a drag.
+**Action:** Always wrap the `resize` event listener in a debounce function (e.g., using a 200ms `setTimeout`) to ensure expensive WebGL resizing only happens once the user has finished resizing the window.

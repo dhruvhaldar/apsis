@@ -31,10 +31,17 @@ function animate() {
 }
 animate();
 
+// ⚡ Bolt Optimization: Debounce WebGL resize events
+// When performing heavy canvas or WebGL recalculations (like updateProjectionMatrix and renderer.setSize)
+// in response to window resizing, debouncing prevents severe performance degradation and layout thrashing.
+let resizeTimeout;
 window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }, 200);
 });
 
 // --- API Interaction & Chart Rendering ---
