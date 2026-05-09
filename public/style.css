@@ -65,7 +65,8 @@ body, html {
     transition: transform 0.3s ease, border-color 0.3s ease;
 }
 
-.panel:hover {
+.panel:hover,
+.panel:focus-within {
     transform: translateY(-5px);
     border-color: rgba(102, 252, 241, 0.3);
 }
@@ -160,6 +161,10 @@ h2 {
     box-sizing: border-box;
     transition: all 0.3s ease;
     outline: none;
+}
+
+.ui-input:hover {
+    border-color: rgba(102, 252, 241, 0.5);
 }
 
 .ui-input::placeholder {
