@@ -1,7 +1,11 @@
 // --- Three.js Background Setup ---
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+// ⚡ Bolt Optimization: Disable WebGL antialiasing for particle systems.
+// The scene only contains THREE.Points, which are drawn using gl.POINTS and do not benefit from MSAA.
+// Disabling antialiasing avoids allocating a multisampled render buffer and executing expensive resolve passes
+// on every frame, significantly reducing GPU memory and processing overhead with zero visual difference.
+const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: false });
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.getElementById('three-canvas').appendChild(renderer.domElement);

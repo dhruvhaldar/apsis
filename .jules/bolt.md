@@ -107,3 +107,7 @@
 ## $(date +%Y-%m-%d) - Debounce WebGL Resize Events
 **Learning:** When performing heavy canvas or WebGL recalculations (like updateProjectionMatrix and renderer.setSize) in response to window resizing, not debouncing causes severe performance degradation and layout thrashing as the browser attempts to re-render the heavy 3D scene on every single pixel change during a drag.
 **Action:** Always wrap the `resize` event listener in a debounce function (e.g., using a 200ms `setTimeout`) to ensure expensive WebGL resizing only happens once the user has finished resizing the window.
+
+## $(date +%Y-%m-%d) - Disable WebGL Antialiasing for Particle Systems
+**Learning:** Initializing `THREE.WebGLRenderer` with `antialias: true` when the scene only contains `THREE.Points` (particle systems) is a pure performance loss. `gl.POINTS` primitives do not benefit from Multi-Sample Anti-Aliasing (MSAA), which only smooths polygon edges. Leaving it enabled forces the browser to needlessly allocate a multisampled render buffer (consuming up to 4x GPU memory and bandwidth) and perform expensive resolve passes on every frame for absolutely zero visual benefit.
+**Action:** When a Three.js or WebGL scene exclusively renders points/particles, always explicitly set `antialias: false` in the renderer constructor to significantly reduce GPU overhead, especially on high-DPI displays or lower-end devices.
