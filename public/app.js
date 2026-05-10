@@ -1,4 +1,5 @@
 // --- Three.js Background Setup ---
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 // ⚡ Bolt Optimization: Disable WebGL antialiasing for particle systems.
@@ -29,8 +30,10 @@ camera.position.z = 1000;
 
 function animate() {
     requestAnimationFrame(animate);
-    particles.rotation.x += 0.0001;
-    particles.rotation.y += 0.0002;
+    if (!prefersReducedMotion.matches) {
+        particles.rotation.x += 0.0001;
+        particles.rotation.y += 0.0002;
+    }
     renderer.render(scene, camera);
 }
 animate();

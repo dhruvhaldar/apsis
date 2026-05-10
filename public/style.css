@@ -372,3 +372,13 @@ h2 {
     border-radius: 4px;
     border: 1px solid rgba(255,255,255,0.2);
 }
+
+@media (prefers-reduced-motion: reduce) {
+    .panel {
+        animation: none !important;
+        transition: none !important;
+    }
+    .panel:hover, .panel:focus-within {
+        transform: none !important;
+    }
+}
