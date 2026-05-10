@@ -145,3 +145,7 @@
 ## 2026-05-09 - Spatial Orientation with Panel Focus-Within
 **Learning:** In complex layouts with distinctly grouped visual panels, mouse users naturally orient themselves using the `:hover` states on those macro panels. However, keyboard users tabbing through deeply nested forms inside these panels don't receive the same macro-level visual feedback about which section they are currently working in, reducing spatial orientation.
 **Action:** When a layout uses `:hover` effects to highlight macro containers (like panels or cards), always pair it with a `:focus-within` selector (`.panel:hover, .panel:focus-within`) to provide visual parity for keyboard users and maintain clear spatial orientation as they navigate through the application.
+
+## 2024-05-18 - Respecting `prefers-reduced-motion` in JS Canvas
+**Learning:** Checking CSS media queries for `prefers-reduced-motion` only stops CSS-based animations. It's equally important to extend these checks into JavaScript-driven animations (like Three.js or Canvas `requestAnimationFrame` loops) to fully respect the user's accessibility preferences.
+**Action:** When implementing heavy background canvases or JS particle systems, expose a `window.matchMedia('(prefers-reduced-motion: reduce)')` boolean and conditionally pause rendering/transform loops.
