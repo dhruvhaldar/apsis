@@ -158,16 +158,20 @@ document.addEventListener('focusout', (e) => {
                     JSON.parse(e.target.value);
                 }
                 e.target.setCustomValidity('');
+                e.target.setAttribute('aria-invalid', 'false');
             } catch (err) {
                 e.target.setCustomValidity('Invalid format. Please use valid JSON array format, e.g., [1, 0] or [[1,0],[0,1]]');
+                e.target.setAttribute('aria-invalid', 'true');
             }
         }
 
         // ⚡ Palette UX: Expose validation message as a tooltip for inline feedback
         if (!e.target.validity.valid) {
             e.target.title = e.target.validationMessage;
+            e.target.setAttribute('aria-invalid', 'true');
         } else {
             e.target.removeAttribute('title');
+            e.target.setAttribute('aria-invalid', 'false');
         }
     }
 });
@@ -176,6 +180,7 @@ document.addEventListener('focusout', (e) => {
 document.addEventListener('invalid', (e) => {
     if (e.target && e.target.classList.contains('ui-input')) {
         e.target.title = e.target.validationMessage;
+        e.target.setAttribute('aria-invalid', 'true');
     }
 }, true);
 
@@ -183,6 +188,7 @@ document.addEventListener('invalid', (e) => {
 document.addEventListener('input', (e) => {
     if (e.target && e.target.classList.contains('ui-input')) {
         e.target.setCustomValidity('');
+        e.target.setAttribute('aria-invalid', 'false');
         e.target.removeAttribute('title'); // Clear tooltip when fixing
 
         // ⚡ UX Improvement: Mark existing output as stale to prevent confusion

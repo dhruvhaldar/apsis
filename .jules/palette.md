@@ -149,3 +149,15 @@
 ## 2024-05-18 - Respecting `prefers-reduced-motion` in JS Canvas
 **Learning:** Checking CSS media queries for `prefers-reduced-motion` only stops CSS-based animations. It's equally important to extend these checks into JavaScript-driven animations (like Three.js or Canvas `requestAnimationFrame` loops) to fully respect the user's accessibility preferences.
 **Action:** When implementing heavy background canvases or JS particle systems, expose a `window.matchMedia('(prefers-reduced-motion: reduce)')` boolean and conditionally pause rendering/transform loops.
+
+## 2024-05-25 - Positive Validation Reinforcement
+**Learning:** For complex inputs like JSON matrices, only showing error states (`:user-invalid`) can be stressful. Showing a subtle positive confirmation (`:user-valid`) when the format is correct gives the user confidence before submitting.
+**Action:** When validating strict text formats, use CSS `:user-valid` coupled with a success icon (e.g., inline SVG data URI) to provide positive reinforcement once the user completes the input correctly.
+
+## 2024-05-25 - Synchronizing Custom Validation and ARIA
+**Learning:** `setCustomValidity` triggers CSS `:user-invalid` but does not reliably update the accessibility tree to announce the field as invalid to screen readers in all browsers.
+**Action:** When implementing custom validation logic via JavaScript, always explicitly manage the `aria-invalid="true"` (or `"false"`) attribute alongside `setCustomValidity` to ensure screen readers provide accurate and immediate feedback about the input's state.
+
+## 2024-05-25 - Semantic Cursors for Async Operations
+**Learning:** Disabling a submit button during async operations using `.ui-btn:disabled` often defaults to a `cursor: not-allowed` style. While technically accurate (the button cannot be clicked), it conveys an error state rather than a loading state.
+**Action:** Apply a specific `cursor: wait !important;` style to buttons when they are actively processing (e.g., matching the `aria-busy="true"` attribute). This provides a more intuitive, semantic visual cue that the application is working, overriding the generic disabled cursor.

@@ -193,6 +193,16 @@ h2 {
     padding-right: 40px;
 }
 
+.ui-input[data-format="json"]:user-valid {
+    border-color: #50e3c2;
+    box-shadow: 0 0 10px rgba(80, 227, 194, 0.2);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2350e3c2'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 20px;
+    padding-right: 40px;
+}
+
 /* Remove number input arrows to prevent overlap with validation icon */
 .ui-input[type="number"]::-webkit-inner-spin-button,
 .ui-input[type="number"]::-webkit-outer-spin-button {
@@ -244,6 +254,10 @@ h2 {
     transform: none;
 }
 
+.ui-btn[aria-busy="true"] {
+    cursor: wait !important;
+}
+
 .output-block {
     background-color: var(--input-bg-color);
     border: 1px solid rgba(102, 252, 241, 0.1);
@@ -282,6 +296,10 @@ h2 {
 .icon-btn:focus-visible {
     outline: 2px solid var(--accent-color);
     outline-offset: 2px;
+}
+
+.icon-btn:active {
+    transform: scale(0.9);
 }
 
 .icon-btn:disabled {
