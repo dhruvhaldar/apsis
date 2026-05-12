@@ -193,6 +193,12 @@ h2 {
     padding-right: 40px;
 }
 
+.ui-input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: rgba(11, 12, 16, 0.3);
+}
+
 .ui-input[data-format="json"]:user-valid {
     border-color: #50e3c2;
     box-shadow: 0 0 10px rgba(80, 227, 194, 0.2);

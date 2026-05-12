@@ -161,3 +161,7 @@
 ## 2024-05-25 - Semantic Cursors for Async Operations
 **Learning:** Disabling a submit button during async operations using `.ui-btn:disabled` often defaults to a `cursor: not-allowed` style. While technically accurate (the button cannot be clicked), it conveys an error state rather than a loading state.
 **Action:** Apply a specific `cursor: wait !important;` style to buttons when they are actively processing (e.g., matching the `aria-busy="true"` attribute). This provides a more intuitive, semantic visual cue that the application is working, overriding the generic disabled cursor.
+
+## 2026-05-12 - Disabled State for Text Inputs
+**Learning:** Text inputs that are disabled via the `disabled` attribute can appear almost identical to enabled inputs if they lack a clear visual `:disabled` state, causing user confusion.
+**Action:** Always verify that every input element class (especially generic utility classes like `.ui-input`) explicitly defines a `:disabled` CSS state (typically `opacity` and `cursor: not-allowed`, or a slight background change) to clearly convey that it cannot be interacted with.
