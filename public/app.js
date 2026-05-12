@@ -28,15 +28,42 @@ scene.add(particles);
 
 camera.position.z = 1000;
 
+let animationFrameId;
+
+// ⚡ Bolt Optimization: Pause WebGL render loop for static scenes
+// If the user prefers reduced motion, the scene does not animate. Continuously calling
+// requestAnimationFrame and renderer.render for a completely static scene wastes
+// significant CPU and GPU resources (rendering 60 identical frames per second).
+// We pause the loop entirely and only re-render once on static initializations or resize events.
 function animate() {
-    requestAnimationFrame(animate);
     if (!prefersReducedMotion.matches) {
         particles.rotation.x += 0.0001;
         particles.rotation.y += 0.0002;
+        renderer.render(scene, camera);
+        animationFrameId = requestAnimationFrame(animate);
+    } else {
+        // Render exactly once if static
+        renderer.render(scene, camera);
     }
-    renderer.render(scene, camera);
 }
+
+// Start loop
 animate();
+
+// Listen for dynamic changes to the accessibility preference
+prefersReducedMotion.addEventListener('change', (e) => {
+    if (!e.matches) {
+        // Motion is now allowed, restart loop
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        animate();
+    } else {
+        // Motion is disabled, stop loop
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+            animationFrameId = null;
+        }
+    }
+});
 
 // ⚡ Bolt Optimization: Debounce WebGL resize events
 // When performing heavy canvas or WebGL recalculations (like updateProjectionMatrix and renderer.setSize)
@@ -48,6 +75,11 @@ window.addEventListener('resize', () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
+
+        // ⚡ Bolt Optimization: Force a re-render if the loop is paused
+        if (prefersReducedMotion.matches) {
+            renderer.render(scene, camera);
+        }
     }, 200);
 });
 
