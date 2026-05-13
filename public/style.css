@@ -145,7 +145,7 @@ h2 {
 }
 
 .required-indicator {
-    color: #e24a4a;
+    color: #ff6b6b;
     margin-left: 2px;
 }
 
@@ -168,7 +168,7 @@ h2 {
 }
 
 .ui-input::placeholder {
-    color: rgba(197, 198, 199, 0.5); /* Semi-transparent var(--text-color) for contrast */
+    color: rgba(197, 198, 199, 0.8); /* Semi-transparent var(--text-color) for contrast */
 }
 
 .ui-input:focus {
@@ -184,9 +184,9 @@ h2 {
 }
 
 .ui-input:user-invalid {
-    border-color: #e24a4a;
-    box-shadow: 0 0 10px rgba(226, 74, 74, 0.4);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23e24a4a'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'/%3E%3C/svg%3E");
+    border-color: #ff6b6b;
+    box-shadow: 0 0 10px rgba(255, 107, 107, 0.4);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ff6b6b'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 12px center;
     background-size: 20px;
@@ -340,7 +340,7 @@ h2 {
     text-align: center;
     color: var(--accent-dark);
     font-size: 1.1rem;
-    opacity: 0.7;
+    opacity: 1;
     pointer-events: none;
 }
 
@@ -384,7 +384,7 @@ h2 {
 /* Keyboard Shortcut Hints */
 .shortcut-hint {
     font-size: 0.8rem;
-    opacity: 0.7;
+    opacity: 0.9;
     margin-left: 10px;
     font-weight: normal;
 }
