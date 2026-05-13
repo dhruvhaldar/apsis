@@ -165,3 +165,7 @@
 ## 2026-05-12 - Disabled State for Text Inputs
 **Learning:** Text inputs that are disabled via the `disabled` attribute can appear almost identical to enabled inputs if they lack a clear visual `:disabled` state, causing user confusion.
 **Action:** Always verify that every input element class (especially generic utility classes like `.ui-input`) explicitly defines a `:disabled` CSS state (typically `opacity` and `cursor: not-allowed`, or a slight background change) to clearly convey that it cannot be interacted with.
+
+## 2024-05-25 - Contrast Ratios for Low-Opacity Text
+**Learning:** Text elements that use `opacity` for styling (like `.shortcut-hint`, `.empty-state`, and placeholders) can easily violate WCAG AA 4.5:1 contrast requirements against complex, semi-transparent layered backgrounds (e.g., dark panels over darker global backgrounds). `opacity: 0.5` or `0.7` might look aesthetically pleasing but often renders the text unreadable for users with low vision.
+**Action:** When designing subtle text elements on dark backgrounds, explicitly calculate the blended background color before checking contrast. Increase opacity (e.g., to `0.8` or `0.9` or `1`) or use a naturally brighter base color to ensure the final calculated contrast ratio remains above 4.5:1.

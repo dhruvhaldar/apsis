@@ -292,7 +292,7 @@ async function solvePMP() {
         // Plotly Chart for PMP
         const traceX1 = { x: data.t, y: data.x[0], mode: 'lines', name: 'x_1(t)', line: {color: '#4a90e2'} };
         const traceX2 = { x: data.t, y: data.x[1], mode: 'lines', name: 'x_2(t)', line: {color: '#50e3c2'} };
-        const traceU = { x: data.t, y: data.u[0], mode: 'lines', name: 'u(t)', line: {color: '#e24a4a'} };
+        const traceU = { x: data.t, y: data.u[0], mode: 'lines', name: 'u(t)', line: {color: '#ff6b6b'} };
 
         const layout = {
             paper_bgcolor: 'rgba(0,0,0,0)',
@@ -485,7 +485,7 @@ async function solveMPC() {
                     datasets: [
                         { label: 'x_1', data: data.x[0], borderColor: '#4a90e2', tension: 0.1 },
                         { label: 'x_2', data: data.x[1], borderColor: '#50e3c2', tension: 0.1 },
-                        { label: 'u', data: data.u[0], borderColor: '#e24a4a', tension: 0.1, stepped: true }
+                        { label: 'u', data: data.u[0], borderColor: '#ff6b6b', tension: 0.1, stepped: true }
                     ]
                 },
                 options: {
