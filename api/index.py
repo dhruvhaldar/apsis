@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 import logging
 import time
+import hashlib
 from pydantic import BaseModel, Field
 from typing import List, Optional, Annotated, Dict
 
@@ -110,6 +111,9 @@ async def rate_limit(request: Request, call_next):
         client_ip = forwarded.split(",")[-1].strip()
     else:
         client_ip = request.client.host if request.client else "unknown"
+
+    # 🛡️ Sentinel Security Enhancement: Hash IP addresses to protect PII in memory
+    hashed_ip = hashlib.sha256(client_ip.encode('utf-8')).hexdigest()
     current_time = time.time()
 
     # Prevent memory exhaustion in the rate limit store itself
@@ -130,20 +134,20 @@ async def rate_limit(request: Request, call_next):
 
         # If the store is still full after eviction and this is a new IP,
         # we must reject to prevent memory exhaustion without resetting existing rate limits.
-        if len(rate_limit_store) >= MAX_IPS and client_ip not in rate_limit_store:
+        if len(rate_limit_store) >= MAX_IPS and hashed_ip not in rate_limit_store:
             return JSONResponse(status_code=503, content={"detail": "Service temporarily unavailable due to high load."})
 
-    if client_ip not in rate_limit_store:
-        rate_limit_store[client_ip] = []
+    if hashed_ip not in rate_limit_store:
+        rate_limit_store[hashed_ip] = []
 
     # Filter out old requests for current IP
-    requests = [req_time for req_time in rate_limit_store[client_ip] if current_time - req_time < RATE_LIMIT_WINDOW]
+    requests = [req_time for req_time in rate_limit_store[hashed_ip] if current_time - req_time < RATE_LIMIT_WINDOW]
 
     if len(requests) >= RATE_LIMIT_MAX_REQUESTS:
         return JSONResponse(status_code=429, content={"detail": "Too many requests. Please try again later."})
 
     requests.append(current_time)
-    rate_limit_store[client_ip] = requests
+    rate_limit_store[hashed_ip] = requests
 
     return await call_next(request)
 
@@ -157,6 +161,7 @@ async def add_security_headers(request: Request, call_next):
     response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' https://cdn.plot.ly https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src https://cdn.jsdelivr.net; img-src 'self' data:; connect-src 'self' http://localhost:8000;"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
     return response
 
 # 🛡️ Sentinel Security Fix: Prevent NaN/Inf injection
