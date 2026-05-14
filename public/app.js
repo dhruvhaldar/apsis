@@ -258,6 +258,9 @@ document.addEventListener('click', (e) => {
     if (btn) btn.setCustomValidity('');
 });
 
+// ⚡ Bolt Optimization: Cache the Chart.js instance to prevent memory leaks and DOM thrashing
+let pmpChartInstance = null;
+
 // 1. Solve PMP
 async function solvePMP() {
     const btn = document.getElementById('btn-pmp');
@@ -289,27 +292,45 @@ async function solvePMP() {
 
         const data = await fetchWithCache('/pmp', payload);
 
-        // Plotly Chart for PMP
-        const traceX1 = { x: data.t, y: data.x[0], mode: 'lines', name: 'x_1(t)', line: {color: '#4a90e2'} };
-        const traceX2 = { x: data.t, y: data.x[1], mode: 'lines', name: 'x_2(t)', line: {color: '#50e3c2'} };
-        const traceU = { x: data.t, y: data.u[0], mode: 'lines', name: 'u(t)', line: {color: '#ff6b6b'} };
+        // Chart.js for PMP
+        // ⚡ Bolt Optimization: Reuse the Chart instance and Canvas instead of destroying the DOM.
+        // Updating data in-place prevents memory leaks and is much faster than destroying and recreating.
+        if (pmpChartInstance) {
+            pmpChartInstance.data.labels = data.t.map(t => t.toFixed(2));
+            pmpChartInstance.data.datasets[0].data = data.x[0];
+            pmpChartInstance.data.datasets[1].data = data.x[1];
+            pmpChartInstance.data.datasets[2].data = data.u[0];
+            pmpChartInstance.update();
+        } else {
+            let canvas = document.getElementById('pmp-canvas-inner');
+            if (!canvas) {
+                canvas = document.createElement('canvas');
+                canvas.id = 'pmp-canvas-inner';
+                document.getElementById('pmp-chart').innerHTML = '';
+                document.getElementById('pmp-chart').appendChild(canvas);
+            }
 
-        const layout = {
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(0,0,0,0)',
-            font: { color: '#e0e0e0' },
-            margin: { l: 40, r: 20, b: 40, t: 20 },
-            xaxis: { gridcolor: '#333' },
-            yaxis: { gridcolor: '#333' }
-        };
-
-        // ⚡ Bolt Optimization: Use Plotly.react instead of Plotly.newPlot for subsequent updates.
-        // newPlot destroys the DOM element and recreates it. react updates the data/layout in-place
-        // via diffing, saving significant main-thread time and preventing visual flickering on re-solves.
-        const emptyState = document.querySelector('#pmp-chart .empty-state');
-        if (emptyState) emptyState.remove();
-
-        Plotly.react('pmp-chart', [traceX1, traceX2, traceU], layout, {responsive: true});
+            pmpChartInstance = new Chart(canvas, {
+                type: 'line',
+                data: {
+                    labels: data.t.map(t => t.toFixed(2)),
+                    datasets: [
+                        { label: 'x_1(t)', data: data.x[0], borderColor: '#4a90e2', tension: 0.1, pointRadius: 0 },
+                        { label: 'x_2(t)', data: data.x[1], borderColor: '#50e3c2', tension: 0.1, pointRadius: 0 },
+                        { label: 'u(t)', data: data.u[0], borderColor: '#ff6b6b', tension: 0.1, pointRadius: 0 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    color: '#e0e0e0',
+                    scales: {
+                        x: { grid: { color: '#333' } },
+                        y: { grid: { color: '#333' } }
+                    }
+                }
+            });
+        }
 
         if (chartContainer) {
             chartContainer.style.opacity = '';
