@@ -169,3 +169,7 @@
 ## 2024-05-25 - Contrast Ratios for Low-Opacity Text
 **Learning:** Text elements that use `opacity` for styling (like `.shortcut-hint`, `.empty-state`, and placeholders) can easily violate WCAG AA 4.5:1 contrast requirements against complex, semi-transparent layered backgrounds (e.g., dark panels over darker global backgrounds). `opacity: 0.5` or `0.7` might look aesthetically pleasing but often renders the text unreadable for users with low vision.
 **Action:** When designing subtle text elements on dark backgrounds, explicitly calculate the blended background color before checking contrast. Increase opacity (e.g., to `0.8` or `0.9` or `1`) or use a naturally brighter base color to ensure the final calculated contrast ratio remains above 4.5:1.
+
+## 2026-05-15 - Accessible Names for Dynamic Canvases
+**Learning:** Dynamically generated `<canvas>` elements (like those created by Chart.js) lack accessible names by default and are completely opaque to screen readers, which might just read "canvas" or ignore them entirely.
+**Action:** When dynamically appending a `<canvas>` element to the DOM for data visualization, always explicitly add `role="img"` and a descriptive `aria-label` detailing what the chart represents to ensure screen readers can announce it properly.
