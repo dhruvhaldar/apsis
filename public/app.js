@@ -219,9 +219,14 @@ document.addEventListener('invalid', (e) => {
 // Clear validation errors when user types
 document.addEventListener('input', (e) => {
     if (e.target && e.target.classList.contains('ui-input')) {
-        e.target.setCustomValidity('');
-        e.target.setAttribute('aria-invalid', 'false');
-        e.target.removeAttribute('title'); // Clear tooltip when fixing
+        // ⚡ Bolt Optimization: Avoid redundant DOM writes on every keystroke.
+        // Unconditional writes to DOM attributes synchronously force the browser to invalidate
+        // and recalculate styles on every keystroke, causing typing lag (poor INP).
+        if (e.target.getAttribute('aria-invalid') === 'true' || e.target.hasAttribute('title')) {
+            e.target.setCustomValidity('');
+            e.target.setAttribute('aria-invalid', 'false');
+            e.target.removeAttribute('title'); // Clear tooltip when fixing
+        }
 
         // ⚡ UX Improvement: Mark existing output as stale to prevent confusion
         const section = e.target.closest('section');
@@ -248,14 +253,20 @@ document.addEventListener('input', (e) => {
     const form = e.target.closest('form');
     if (form) {
         const btn = form.querySelector('button[type="submit"]');
-        if (btn) btn.setCustomValidity('');
+        // ⚡ Bolt Optimization: Avoid redundant DOM writes on the submit button
+        if (btn && btn.validationMessage !== '') {
+            btn.setCustomValidity('');
+        }
     }
 });
 
 // Clear submit button validity on click to allow immediate retry
 document.addEventListener('click', (e) => {
     const btn = e.target.closest('button[type="submit"]');
-    if (btn) btn.setCustomValidity('');
+    // ⚡ Bolt Optimization: Avoid redundant DOM writes on the submit button
+    if (btn && btn.validationMessage !== '') {
+        btn.setCustomValidity('');
+    }
 });
 
 // ⚡ Bolt Optimization: Cache the Chart.js instance to prevent memory leaks and DOM thrashing
