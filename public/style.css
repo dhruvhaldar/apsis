@@ -235,7 +235,8 @@ h2 {
     text-shadow: 0 0 5px rgba(0,0,0,0.5);
 }
 
-.ui-btn:hover {
+.ui-btn:hover,
+.ui-btn:focus-visible {
     background: linear-gradient(90deg, var(--accent-color), var(--accent-dark));
     box-shadow: 0 0 15px rgba(102, 252, 241, 0.4);
     transform: scale(1.02);
@@ -248,7 +249,6 @@ h2 {
 .ui-btn:focus-visible {
     outline: 2px solid var(--accent-color);
     outline-offset: 4px;
-    box-shadow: 0 0 15px rgba(102, 252, 241, 0.4);
 }
 
 .ui-btn:disabled {
@@ -294,7 +294,8 @@ h2 {
     justify-content: center;
 }
 
-.icon-btn:hover {
+.icon-btn:hover,
+.icon-btn:focus-visible {
     background-color: rgba(102, 252, 241, 0.1);
     transform: scale(1.1);
 }
@@ -398,11 +399,16 @@ h2 {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .panel {
+    .panel,
+    .ui-btn,
+    .icon-btn,
+    .skip-link {
         animation: none !important;
         transition: none !important;
     }
-    .panel:hover, .panel:focus-within {
+    .panel:hover, .panel:focus-within,
+    .ui-btn:hover, .ui-btn:focus-visible, .ui-btn:active,
+    .icon-btn:hover, .icon-btn:focus-visible, .icon-btn:active {
         transform: none !important;
     }
 }
