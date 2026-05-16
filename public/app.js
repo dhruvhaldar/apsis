@@ -614,8 +614,12 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 
     // Initialize KaTeX
+    // ⚡ Bolt Optimization: Scope DOM traversal to specific math blocks
+    // Calling renderMathInElement on document.body forces a deep recursive traversal of the entire DOM tree,
+    // scanning every text node including inputs, SVGs, and the heavy Three.js canvas container.
+    // Scoping it strictly to .math-block containers drastically reduces initialization overhead and Time to Interactive.
     if (typeof renderMathInElement === 'function') {
-        renderMathInElement(document.body);
+        document.querySelectorAll('.math-block').forEach(el => renderMathInElement(el));
     }
 
     // Helper to dim output containers when input changes
