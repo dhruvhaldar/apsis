@@ -117,24 +117,24 @@ async def rate_limit(request: Request, call_next):
     current_time = time.time()
 
     # Prevent memory exhaustion in the rate limit store itself
-    if len(rate_limit_store) > MAX_IPS:
-        # 🛡️ Sentinel Security Fix: Evict stale entries rather than clearing the entire store.
-        # Clearing the entire store allows an attacker to bypass rate limits for all users
-        # by simply flooding the system to trigger a reset.
+    # 🛡️ Sentinel Security Fix: Only run the O(N) eviction loop when the store is full AND
+    # the incoming request is from a new IP. Running this loop on every request when full
+    # causes an Algorithmic Complexity DoS, freezing the event loop.
+    if len(rate_limit_store) >= MAX_IPS and hashed_ip not in rate_limit_store:
+        # Evict stale entries rather than clearing the entire store.
         stale_ips = []
         for ip, timestamps in rate_limit_store.items():
-            valid_timestamps = [t for t in timestamps if current_time - t < RATE_LIMIT_WINDOW]
-            if not valid_timestamps:
+            # 🛡️ Sentinel Security Fix: Fast staleness check. If the most recent timestamp
+            # is older than the window, the entire list is stale.
+            if not timestamps or current_time - timestamps[-1] >= RATE_LIMIT_WINDOW:
                 stale_ips.append(ip)
-            else:
-                rate_limit_store[ip] = valid_timestamps
 
         for ip in stale_ips:
             del rate_limit_store[ip]
 
         # If the store is still full after eviction and this is a new IP,
         # we must reject to prevent memory exhaustion without resetting existing rate limits.
-        if len(rate_limit_store) >= MAX_IPS and hashed_ip not in rate_limit_store:
+        if len(rate_limit_store) >= MAX_IPS:
             return JSONResponse(status_code=503, content={"detail": "Service temporarily unavailable due to high load."})
 
     if hashed_ip not in rate_limit_store:
