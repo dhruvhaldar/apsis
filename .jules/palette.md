@@ -173,3 +173,7 @@
 ## 2026-05-15 - Accessible Names for Dynamic Canvases
 **Learning:** Dynamically generated `<canvas>` elements (like those created by Chart.js) lack accessible names by default and are completely opaque to screen readers, which might just read "canvas" or ignore them entirely.
 **Action:** When dynamically appending a `<canvas>` element to the DOM for data visualization, always explicitly add `role="img"` and a descriptive `aria-label` detailing what the chart represents to ensure screen readers can announce it properly.
+
+## 2026-05-17 - Button Focus States and Reduced Motion
+**Learning:** Providing `:hover` states on interactive buttons without applying the same styles to `:focus-visible` creates a disparity for keyboard users, making spatial orientation harder. Furthermore, failing to explicitly disable `transform` and `transition` on these interactive elements when `prefers-reduced-motion: reduce` is active can cause vestibular discomfort for users navigating rapidly with the keyboard.
+**Action:** When adding interactive visual effects (like scaling transforms or gradients) to button `:hover` states, always combine the selector with `:focus-visible` (e.g., `.btn:hover, .btn:focus-visible`) to ensure visual parity for keyboard users. Additionally, explicitly disable these `transform` and `transition` properties inside `@media (prefers-reduced-motion: reduce)` to prevent vestibular discomfort during fast keyboard navigation.
