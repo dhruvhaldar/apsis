@@ -219,9 +219,18 @@ document.addEventListener('invalid', (e) => {
 // Clear validation errors when user types
 document.addEventListener('input', (e) => {
     if (e.target && e.target.classList.contains('ui-input')) {
-        e.target.setCustomValidity('');
-        e.target.setAttribute('aria-invalid', 'false');
-        e.target.removeAttribute('title'); // Clear tooltip when fixing
+        // ⚡ Bolt Optimization: Wrap DOM attribute writes inside high-frequency listeners
+        // with a conditional check to prevent redundant JS-to-C++ boundary crossings
+        // and avoid triggering synchronous layout thrashing.
+        if (e.target.validationMessage !== '') {
+            e.target.setCustomValidity('');
+        }
+        if (e.target.getAttribute('aria-invalid') !== 'false') {
+            e.target.setAttribute('aria-invalid', 'false');
+        }
+        if (e.target.hasAttribute('title')) {
+            e.target.removeAttribute('title'); // Clear tooltip when fixing
+        }
 
         // ⚡ UX Improvement: Mark existing output as stale to prevent confusion
         const section = e.target.closest('section');
