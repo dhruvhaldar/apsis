@@ -117,3 +117,7 @@
 ## $(date +%Y-%m-%d) - Remove Redundant Visualization Libraries
 **Learning:** Loading multiple large charting or visualization libraries (like Plotly.js at ~3.4MB and Chart.js at ~200KB) creates redundant dependency bloat that severely delays initial page load and increases JS parse/compile time without providing unique functional value for basic line charts.
 **Action:** Consolidate data visualization by removing the larger, redundant dependency (Plotly.js) and standardizing the application on the lighter alternative (Chart.js), reducing the dependency size significantly and improving load speed. Update HTML `<script>` tags, CDN preconnects, CSP headers, and refactor existing chart rendering to use the standard library while caching the chart instance to prevent memory leaks and DOM thrashing.
+
+## 2026-05-17 - Scope KaTeX Initialization
+**Learning:** When initializing DOM-traversing parsing libraries (like KaTeX), initializing on `document.body` forces the library to scan massive unrelated sub-trees like Three.js canvases and Chart.js containers, causing severe initialization overhead and main thread blocking.
+**Action:** Use `ignoredTags` and `ignoredClasses` configuration when calling `renderMathInElement` on `document.body` to explicitly prevent traversal of heavy sub-trees (like `canvas` and `.chart-container`), while ensuring default tags (like `script`, `style`, `option`, etc.) are preserved in the list.

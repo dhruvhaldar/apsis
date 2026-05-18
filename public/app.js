@@ -613,9 +613,14 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Initialize KaTeX
+    // ⚡ Bolt Optimization: Use ignoredTags and ignoredClasses for KaTeX initialization.
+    // This prevents KaTeX from scanning heavy, unrelated DOM sub-trees (like Three.js canvases and Chart.js containers),
+    // which causes severe initialization overhead and main thread blocking, while safely keeping the fallback on document.body.
     if (typeof renderMathInElement === 'function') {
-        renderMathInElement(document.body);
+        renderMathInElement(document.body, {
+            ignoredClasses: ["chart-container"],
+            ignoredTags: ["canvas", "script", "noscript", "style", "textarea", "pre", "code", "option"]
+        });
     }
 
     // Helper to dim output containers when input changes
