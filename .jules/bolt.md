@@ -121,3 +121,7 @@
 ## 2026-05-17 - Scope KaTeX Initialization
 **Learning:** When initializing DOM-traversing parsing libraries (like KaTeX), initializing on `document.body` forces the library to scan massive unrelated sub-trees like Three.js canvases and Chart.js containers, causing severe initialization overhead and main thread blocking.
 **Action:** Use `ignoredTags` and `ignoredClasses` configuration when calling `renderMathInElement` on `document.body` to explicitly prevent traversal of heavy sub-trees (like `canvas` and `.chart-container`), while ensuring default tags (like `script`, `style`, `option`, etc.) are preserved in the list.
+
+## 2024-06-10 - Conditional DOM Attribute Writes in Hot Event Listeners
+**Learning:** In high-frequency event listeners (like `input` or `mousemove`), directly modifying DOM attributes (e.g., `setCustomValidity`, `setAttribute`) on every invocation forces unnecessary JS-to-C++ boundary crossings and synchronously triggers layout/style recalculations, causing main thread lag.
+**Action:** Always wrap DOM attribute writes inside high-frequency listeners with a conditional check (e.g., `if (el.getAttribute('attr') !== 'value')`) to prevent redundant updates and avoid layout thrashing.
