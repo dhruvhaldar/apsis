@@ -235,7 +235,8 @@ h2 {
     text-shadow: 0 0 5px rgba(0,0,0,0.5);
 }
 
-.ui-btn:hover {
+.ui-btn:hover,
+.ui-btn:focus-visible {
     background: linear-gradient(90deg, var(--accent-color), var(--accent-dark));
     box-shadow: 0 0 15px rgba(102, 252, 241, 0.4);
     transform: scale(1.02);
@@ -294,7 +295,8 @@ h2 {
     justify-content: center;
 }
 
-.icon-btn:hover {
+.icon-btn:hover,
+.icon-btn:focus-visible {
     background-color: rgba(102, 252, 241, 0.1);
     transform: scale(1.1);
 }
@@ -403,6 +405,11 @@ h2 {
         transition: none !important;
     }
     .panel:hover, .panel:focus-within {
+        transform: none !important;
+    }
+    .ui-btn, .ui-btn:hover, .ui-btn:focus-visible, .ui-btn:active,
+    .icon-btn, .icon-btn:hover, .icon-btn:focus-visible, .icon-btn:active {
+        transition: none !important;
         transform: none !important;
     }
 }
