@@ -16,9 +16,11 @@ def solve_mpc(A, B, Q, R, x0, N_horizon, dt, u_min=None, u_max=None):
     n_x = A.shape[0]
     n_u = B.shape[1]
 
-    m = GEKKO(remote=False)
+    m = None
 
     try:
+        m = GEKKO(remote=False)
+
         m.time = np.linspace(0, N_horizon * dt, N_horizon + 1)
 
         # States
@@ -83,4 +85,5 @@ def solve_mpc(A, B, Q, R, x0, N_horizon, dt, u_min=None, u_max=None):
         return m.time, x_sol, u_sol
     finally:
         # 🛡️ Sentinel Security Enhancement: Prevent resource exhaustion by ensuring GEKKO temporary files are cleaned up
-        m.cleanup()
+        if m is not None:
+            m.cleanup()
