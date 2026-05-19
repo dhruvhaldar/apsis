@@ -177,3 +177,7 @@
 ## 2024-05-24 - Interactive Button Accessibility
 **Learning:** Keyboard users often miss out on visual interactive cues like scaling and gradients if `:hover` states aren't paired with `:focus-visible`. Additionally, motion effects on focus/hover can cause vestibular discomfort during fast keyboard navigation.
 **Action:** Always combine `:hover` and `:focus-visible` selectors for interactive buttons. Explicitly disable `transform` and `transition` properties for these buttons within `@media (prefers-reduced-motion: reduce)`.
+
+## 2026-05-19 - Synchronizing Inline Validation with Submission Requirements
+**Learning:** When using CSS `:user-valid` to provide positive reinforcement for complex inputs (like JSON formats), the inline validation logic must strictly match the backend or submission parsing requirements. If the inline validation is too permissive (e.g., accepting `1` or `"text"` as valid JSON), the user receives a positive reinforcement cue (`:user-valid`), only to have the form immediately fail on submission. This misalignment destroys user trust in the UI's positive feedback mechanisms.
+**Action:** Always ensure that client-side inline validation logic (e.g., on `focusout`) strictly mirrors the final parsing logic used during form submission (e.g., ensuring a parsed JSON object is actually an `Array` if an array is expected).
