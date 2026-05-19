@@ -187,7 +187,10 @@ document.addEventListener('focusout', (e) => {
             try {
                 // Only validate if not empty (let native 'required' handle empty state if needed)
                 if (e.target.value.trim() !== '') {
-                    JSON.parse(e.target.value);
+                    const parsed = JSON.parse(e.target.value);
+                    if (!Array.isArray(parsed)) {
+                        throw new Error('Must be a JSON array');
+                    }
                 }
                 e.target.setCustomValidity('');
                 e.target.setAttribute('aria-invalid', 'false');
