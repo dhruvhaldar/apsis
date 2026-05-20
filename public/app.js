@@ -721,3 +721,10 @@ document.addEventListener('keydown', (e) => {
         }
     }
 });
+
+// ⚡ Palette: Prevent accidental value changes on number inputs when scrolling
+document.addEventListener('wheel', (e) => {
+    if (document.activeElement.type === 'number' && document.activeElement.classList.contains('ui-input')) {
+        document.activeElement.blur();
+    }
+}, { passive: true });
