@@ -181,3 +181,7 @@
 ## 2026-05-19 - Synchronizing Inline Validation with Submission Requirements
 **Learning:** When using CSS `:user-valid` to provide positive reinforcement for complex inputs (like JSON formats), the inline validation logic must strictly match the backend or submission parsing requirements. If the inline validation is too permissive (e.g., accepting `1` or `"text"` as valid JSON), the user receives a positive reinforcement cue (`:user-valid`), only to have the form immediately fail on submission. This misalignment destroys user trust in the UI's positive feedback mechanisms.
 **Action:** Always ensure that client-side inline validation logic (e.g., on `focusout`) strictly mirrors the final parsing logic used during form submission (e.g., ensuring a parsed JSON object is actually an `Array` if an array is expected).
+
+## 2024-05-20 - Prevent Accidental Scrolling Changes on Number Inputs
+**Learning:** Number inputs naturally increment or decrement when focused and the user scrolls the mouse wheel. In complex forms or long pages, users often click to focus a field, then use the scroll wheel to view the rest of the form, inadvertently changing the number value without realizing it. This causes silent data corruption and user frustration.
+**Action:** Add a global `wheel` event listener to passively blur number inputs (`document.activeElement.blur()`) when the user attempts to scroll the page while a number input is focused, preventing the unintended value change.
