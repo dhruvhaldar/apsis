@@ -185,3 +185,7 @@
 ## 2024-05-20 - Prevent Accidental Scrolling Changes on Number Inputs
 **Learning:** Number inputs naturally increment or decrement when focused and the user scrolls the mouse wheel. In complex forms or long pages, users often click to focus a field, then use the scroll wheel to view the rest of the form, inadvertently changing the number value without realizing it. This causes silent data corruption and user frustration.
 **Action:** Add a global `wheel` event listener to passively blur number inputs (`document.activeElement.blur()`) when the user attempts to scroll the page while a number input is focused, preventing the unintended value change.
+
+## 2024-05-21 - Locking Forms During Async Submit
+**Learning:** If async form submissions take time, disabling only the submit button allows users to change inputs while processing, leading to state mismatch between the UI and the eventual response. Visual shortcut hints hidden with `aria-hidden` need programmatic equivalents.
+**Action:** Disable all form inputs during async submission to maintain state consistency and utilize CSS disabled styles for visual feedback. Ensure `aria-keyshortcuts` is used when visual hints are hidden.

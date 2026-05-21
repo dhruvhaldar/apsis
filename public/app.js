@@ -282,6 +282,8 @@ async function solvePMP() {
     btn.disabled = true;
     btn.setAttribute('aria-busy', 'true');
     btn.innerHTML = '<span aria-hidden="true">⏳</span> Solving...';
+    const form = btn.closest('form');
+    if (form) form.querySelectorAll('input').forEach(input => input.disabled = true);
 
     const chartContainer = document.getElementById('pmp-chart');
     if (chartContainer) {
@@ -381,6 +383,8 @@ async function solvePMP() {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
         btn.innerHTML = originalHTML;
+        const form = btn.closest('form');
+        if (form) form.querySelectorAll('input').forEach(input => input.disabled = false);
         if (wasFocused) btn.focus();
     }
 }
@@ -394,6 +398,8 @@ async function solveLQR() {
     btn.disabled = true;
     btn.setAttribute('aria-busy', 'true');
     btn.innerHTML = '<span aria-hidden="true">⏳</span> Synthesizing...';
+    const form = btn.closest('form');
+    if (form) form.querySelectorAll('input').forEach(input => input.disabled = true);
 
     const outputContainer = document.getElementById('lqr-output');
     if (outputContainer) {
@@ -455,6 +461,8 @@ async function solveLQR() {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
         btn.innerHTML = originalHTML;
+        const form = btn.closest('form');
+        if (form) form.querySelectorAll('input').forEach(input => input.disabled = false);
         if (wasFocused) btn.focus();
     }
 }
@@ -471,6 +479,8 @@ async function solveMPC() {
     btn.disabled = true;
     btn.setAttribute('aria-busy', 'true');
     btn.innerHTML = '<span aria-hidden="true">⏳</span> Simulating...';
+    const form = btn.closest('form');
+    if (form) form.querySelectorAll('input').forEach(input => input.disabled = true);
 
     const chartContainer = document.getElementById('mpc-chart');
     if (chartContainer) {
@@ -572,6 +582,8 @@ async function solveMPC() {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
         btn.innerHTML = originalHTML;
+        const form = btn.closest('form');
+        if (form) form.querySelectorAll('input').forEach(input => input.disabled = false);
         if (wasFocused) btn.focus();
     }
 }
