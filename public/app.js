@@ -276,12 +276,18 @@ let pmpChartInstance = null;
 // 1. Solve PMP
 async function solvePMP() {
     const btn = document.getElementById('btn-pmp');
+    const form = btn.closest('form');
+    let enabledInputs = [];
     let wasFocused = document.activeElement === btn;
     btn.setCustomValidity('');
     const originalHTML = btn.innerHTML;
     btn.disabled = true;
     btn.setAttribute('aria-busy', 'true');
     btn.innerHTML = '<span aria-hidden="true">⏳</span> Solving...';
+    if (form) {
+        enabledInputs = Array.from(form.elements).filter(el => !el.disabled && el !== btn);
+        enabledInputs.forEach(el => el.disabled = true);
+    }
 
     const chartContainer = document.getElementById('pmp-chart');
     if (chartContainer) {
@@ -381,6 +387,7 @@ async function solvePMP() {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
         btn.innerHTML = originalHTML;
+        enabledInputs.forEach(el => el.disabled = false);
         if (wasFocused) btn.focus();
     }
 }
@@ -388,12 +395,18 @@ async function solvePMP() {
 // 2. Solve LQR
 async function solveLQR() {
     const btn = document.getElementById('btn-lqr');
+    const form = btn.closest('form');
+    let enabledInputs = [];
     let wasFocused = document.activeElement === btn;
     btn.setCustomValidity('');
     const originalHTML = btn.innerHTML;
     btn.disabled = true;
     btn.setAttribute('aria-busy', 'true');
     btn.innerHTML = '<span aria-hidden="true">⏳</span> Synthesizing...';
+    if (form) {
+        enabledInputs = Array.from(form.elements).filter(el => !el.disabled && el !== btn);
+        enabledInputs.forEach(el => el.disabled = true);
+    }
 
     const outputContainer = document.getElementById('lqr-output');
     if (outputContainer) {
@@ -455,6 +468,7 @@ async function solveLQR() {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
         btn.innerHTML = originalHTML;
+        enabledInputs.forEach(el => el.disabled = false);
         if (wasFocused) btn.focus();
     }
 }
@@ -465,12 +479,18 @@ let mpcChartInstance = null;
 // 3. Solve MPC
 async function solveMPC() {
     const btn = document.getElementById('btn-mpc');
+    const form = btn.closest('form');
+    let enabledInputs = [];
     let wasFocused = document.activeElement === btn;
     btn.setCustomValidity('');
     const originalHTML = btn.innerHTML;
     btn.disabled = true;
     btn.setAttribute('aria-busy', 'true');
     btn.innerHTML = '<span aria-hidden="true">⏳</span> Simulating...';
+    if (form) {
+        enabledInputs = Array.from(form.elements).filter(el => !el.disabled && el !== btn);
+        enabledInputs.forEach(el => el.disabled = true);
+    }
 
     const chartContainer = document.getElementById('mpc-chart');
     if (chartContainer) {
@@ -572,6 +592,7 @@ async function solveMPC() {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
         btn.innerHTML = originalHTML;
+        enabledInputs.forEach(el => el.disabled = false);
         if (wasFocused) btn.focus();
     }
 }
