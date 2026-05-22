@@ -185,3 +185,7 @@
 ## 2024-05-20 - Prevent Accidental Scrolling Changes on Number Inputs
 **Learning:** Number inputs naturally increment or decrement when focused and the user scrolls the mouse wheel. In complex forms or long pages, users often click to focus a field, then use the scroll wheel to view the rest of the form, inadvertently changing the number value without realizing it. This causes silent data corruption and user frustration.
 **Action:** Add a global `wheel` event listener to passively blur number inputs (`document.activeElement.blur()`) when the user attempts to scroll the page while a number input is focused, preventing the unintended value change.
+
+## 2024-05-27 - Lock Form Inputs During Processing
+**Learning:** Disabling only the submit button during async submissions leaves inputs active, allowing mid-flight modifications that cause user confusion and state mismatch.
+**Action:** Explicitly disable all <input> elements within the form during processing.
