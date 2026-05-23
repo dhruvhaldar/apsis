@@ -722,6 +722,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.shortcut-modifier').forEach(el => {
             el.innerText = '⌘';
         });
+        document.querySelectorAll('[aria-keyshortcuts="Control+Enter"]').forEach(el => {
+            el.setAttribute('aria-keyshortcuts', 'Meta+Enter');
+        });
     }
 });
 

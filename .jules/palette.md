@@ -189,3 +189,7 @@
 ## 2024-05-27 - Lock Form Inputs During Processing
 **Learning:** Disabling only the submit button during async submissions leaves inputs active, allowing mid-flight modifications that cause user confusion and state mismatch.
 **Action:** Explicitly disable all <input> elements within the form during processing.
+
+## 2025-03-05 - Add programatic keyboard shortcuts
+**Learning:** When adding visual keyboard shortcut hints inside interactive elements (like buttons), wrap the hint in a `<span>` with `aria-hidden="true"` to prevent redundant screen reader announcements, and provide the programmatic equivalent using the `aria-keyshortcuts` attribute on the parent interactive element.
+**Action:** Always pair visual keyboard shortcut hints with the corresponding `aria-keyshortcuts` attribute on the interactive element.
