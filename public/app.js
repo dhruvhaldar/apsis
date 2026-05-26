@@ -154,7 +154,11 @@ async function handleApiError(response) {
 function parseInput(id) {
     const el = document.getElementById(id);
     try {
-        return JSON.parse(el.value);
+        const parsed = JSON.parse(el.value);
+        if (el.dataset.format === 'json' && !Array.isArray(parsed)) {
+            throw new Error('Must be a JSON array');
+        }
+        return parsed;
     } catch (e) {
         el.setCustomValidity('Invalid format. Please use valid JSON array format, e.g., [1, 0] or [[1,0],[0,1]]');
         el.reportValidity();
