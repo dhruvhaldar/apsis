@@ -64,9 +64,11 @@ def solve_pmp_linear_quadratic(A, B, Q, R, x0, xf, tf, num_points=100):
         # array. Returning references to a single globally allocated `bc_res`
         # causes SciPy's Jacobian perturbation to fail. `np.empty` followed
         # by assignment is ~20% faster than `np.concatenate` allocating copies.
+        # Furthermore, use np.subtract with out= parameter to avoid intermediate
+        # array allocations on every boundary evaluation in the hot loop.
         res = np.empty(2 * n_states)
-        res[:n_states] = ya[:n_states] - x0
-        res[n_states:] = yb[:n_states] - xf
+        np.subtract(ya[:n_states], x0, out=res[:n_states])
+        np.subtract(yb[:n_states], xf, out=res[n_states:])
         return res
 
     def bc_jac(ya, yb):
