@@ -364,8 +364,9 @@ h2 {
     top: -100px;
     left: 0;
     padding: 10px 15px;
-    background: var(--accent-dark);
-    color: #fff;
+    background: var(--bg-color);
+    color: var(--accent-color);
+    border: 2px solid var(--accent-color);
     font-weight: bold;
     z-index: 1000;
     transition: top 0.3s ease;
