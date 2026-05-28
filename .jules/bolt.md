@@ -125,3 +125,6 @@
 ## 2024-06-10 - Conditional DOM Attribute Writes in Hot Event Listeners
 **Learning:** In high-frequency event listeners (like `input` or `mousemove`), directly modifying DOM attributes (e.g., `setCustomValidity`, `setAttribute`) on every invocation forces unnecessary JS-to-C++ boundary crossings and synchronously triggers layout/style recalculations, causing main thread lag.
 **Action:** Always wrap DOM attribute writes inside high-frequency listeners with a conditional check (e.g., `if (el.getAttribute('attr') !== 'value')`) to prevent redundant updates and avoid layout thrashing.
+## $(date +%Y-%m-%d) - Prevent Intermediate Allocations with NumPy Out Parameter
+**Learning:** When performing basic arithmetic on NumPy arrays inside tight numerical hot loops (like BVP boundary evaluations), using standard operators (e.g., `res[:n] = ya[:n] - x0`) implicitly allocates temporary arrays in memory to hold the intermediate result before assignment. This creates measurable garbage collection overhead when called thousands of times.
+**Action:** Use NumPy's functional equivalents with the `out=` parameter (e.g., `np.subtract(ya[:n], x0, out=res[:n])`) to write the result directly into a pre-allocated array, completely bypassing temporary memory allocations.
