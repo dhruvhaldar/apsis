@@ -197,3 +197,7 @@
 ## 2026-05-28 - Skip Link Contrast on Focus
 **Learning:** Skip-to-content links that rely entirely on the page's global `--accent-dark` for their background color can violate WCAG contrast requirements (e.g., yielding 3.03:1 when using white text) because they are often designed without consideration for how bright the theme's accents actually are.
 **Action:** Always ensure that hidden accessibility elements like skip links calculate contrast explicitly. Use the deepest background color (e.g., `--bg-color`) combined with an accent border and text to maintain high visibility (15:1+) when focused, instead of relying on solid bright background colors that fail contrast checks against white text.
+
+## 2024-06-11 - Retaining Focus After Async Submissions
+**Learning:** When users submit forms using keyboard shortcuts (like Ctrl+Enter) while focused on an input field, discarding the active element focus during the async fetching and indiscriminately returning focus only to the submit button (or dropping focus to the document body) disrupts keyboard navigation flow and reduces spatial orientation for keyboard users.
+**Action:** When handling async form submissions, always store the currently active element universally (e.g. `document.activeElement`) rather than strictly checking if it is the submit button. Ensure that focus is restored gracefully in the `finally` block using a safety check (`typeof wasFocused.focus === 'function'`).
