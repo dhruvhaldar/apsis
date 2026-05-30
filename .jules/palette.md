@@ -201,3 +201,7 @@
 ## 2024-06-11 - Retaining Focus After Async Submissions
 **Learning:** When users submit forms using keyboard shortcuts (like Ctrl+Enter) while focused on an input field, discarding the active element focus during the async fetching and indiscriminately returning focus only to the submit button (or dropping focus to the document body) disrupts keyboard navigation flow and reduces spatial orientation for keyboard users.
 **Action:** When handling async form submissions, always store the currently active element universally (e.g. `document.activeElement`) rather than strictly checking if it is the submit button. Ensure that focus is restored gracefully in the `finally` block using a safety check (`typeof wasFocused.focus === 'function'`).
+
+## 2026-05-30 - Disable smooth scrolling globally for reduced motion
+**Learning:** `scroll-behavior: smooth` is often applied globally (`html { scroll-behavior: smooth; }`). Using a generic `@media (prefers-reduced-motion: reduce)` block that simply disables component animations or transitions will miss this global property. Smooth scrolling must be explicitly reverted to `auto` for users with vestibular disorders.
+**Action:** When working on CSS bases or resetting styles, ensure `html { scroll-behavior: auto !important; }` exists within the `@media (prefers-reduced-motion: reduce)` block to prevent sudden vestibular discomfort.

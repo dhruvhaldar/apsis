@@ -401,6 +401,9 @@ h2 {
 }
 
 @media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto !important;
+    }
     .panel {
         animation: none !important;
         transition: none !important;
@@ -409,7 +412,8 @@ h2 {
         transform: none !important;
     }
     .ui-btn, .ui-btn:hover, .ui-btn:focus-visible, .ui-btn:active,
-    .icon-btn, .icon-btn:hover, .icon-btn:focus-visible, .icon-btn:active {
+    .icon-btn, .icon-btn:hover, .icon-btn:focus-visible, .icon-btn:active,
+    .skip-link, .ui-input {
         transition: none !important;
         transform: none !important;
     }
