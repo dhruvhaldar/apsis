@@ -205,3 +205,6 @@
 ## 2026-05-30 - Disable smooth scrolling globally for reduced motion
 **Learning:** `scroll-behavior: smooth` is often applied globally (`html { scroll-behavior: smooth; }`). Using a generic `@media (prefers-reduced-motion: reduce)` block that simply disables component animations or transitions will miss this global property. Smooth scrolling must be explicitly reverted to `auto` for users with vestibular disorders.
 **Action:** When working on CSS bases or resetting styles, ensure `html { scroll-behavior: auto !important; }` exists within the `@media (prefers-reduced-motion: reduce)` block to prevent sudden vestibular discomfort.
+## 2026-05-31 - Enable buttons before reportValidity
+**Learning:** HTML5 constraint validation completely ignores disabled elements. Calling `.reportValidity()` on a disabled button silently fails to display the native error tooltip bubble.
+**Action:** Always ensure the interactive element (e.g., submit button) is re-enabled (`disabled = false`) *before* calling `.reportValidity()` during async form error handling.
