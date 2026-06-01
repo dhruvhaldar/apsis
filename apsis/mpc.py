@@ -1,7 +1,12 @@
 import numpy as np
-from gekko import GEKKO
 
 def solve_mpc(A, B, Q, R, x0, N_horizon, dt, u_min=None, u_max=None):
+    # ⚡ Bolt Optimization: Lazy import heavy dependencies.
+    # GEKKO takes ~0.2s to import. Moving this inside the function prevents this
+    # overhead during FastAPI application startup, significantly reducing serverless
+    # cold-start times for the app when hitting other endpoints (like LQR or PMP).
+    from gekko import GEKKO
+
     """
     Solves a model predictive control (MPC) problem using GEKKO over a finite horizon.
     """

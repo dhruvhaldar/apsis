@@ -128,3 +128,7 @@
 ## $(date +%Y-%m-%d) - Prevent Intermediate Allocations with NumPy Out Parameter
 **Learning:** When performing basic arithmetic on NumPy arrays inside tight numerical hot loops (like BVP boundary evaluations), using standard operators (e.g., `res[:n] = ya[:n] - x0`) implicitly allocates temporary arrays in memory to hold the intermediate result before assignment. This creates measurable garbage collection overhead when called thousands of times.
 **Action:** Use NumPy's functional equivalents with the `out=` parameter (e.g., `np.subtract(ya[:n], x0, out=res[:n])`) to write the result directly into a pre-allocated array, completely bypassing temporary memory allocations.
+
+## 2024-06-11 - Lazy Importing Heavy Mathematical Libraries
+**Learning:** Top-level imports of heavy mathematical libraries like `gekko` (~0.2s) and `scipy` (~0.15s) significantly increase application startup time. In serverless environments (like Vercel), this creates severe cold-start latency for all endpoints, even those that do not utilize these specific libraries.
+**Action:** Move heavy imports (e.g., `from gekko import GEKKO`, `from scipy.integrate import solve_bvp`) inside the specific solver functions (like `solve_mpc` and `solve_pmp_linear_quadratic`) to defer the import penalty until the module is actually required by an endpoint request.
