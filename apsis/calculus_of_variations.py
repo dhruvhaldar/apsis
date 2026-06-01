@@ -1,7 +1,11 @@
 import numpy as np
-from scipy.integrate import solve_bvp
 
 def solve_pmp_linear_quadratic(A, B, Q, R, x0, xf, tf, num_points=100):
+    # ⚡ Bolt Optimization: Lazy import heavy dependencies.
+    # scipy takes ~0.15s to import. Moving this inside the function prevents this
+    # overhead during FastAPI application startup, reducing serverless cold-start times.
+    from scipy.integrate import solve_bvp
+
     """
     Solves the optimal control problem using Pontryagin Maximum Principle (TPBVP)
     for a linear system with quadratic cost.
