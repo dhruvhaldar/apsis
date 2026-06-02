@@ -195,6 +195,8 @@ document.addEventListener('focusout', (e) => {
                     if (!Array.isArray(parsed)) {
                         throw new Error('Must be a JSON array');
                     }
+                    // ⚡ Palette UX: Auto-format to provide positive reinforcement and prove it was parsed correctly
+                    e.target.value = JSON.stringify(parsed);
                 }
                 e.target.setCustomValidity('');
                 e.target.setAttribute('aria-invalid', 'false');
