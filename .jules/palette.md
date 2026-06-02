@@ -208,3 +208,7 @@
 ## 2026-05-31 - Enable buttons before reportValidity
 **Learning:** HTML5 constraint validation completely ignores disabled elements. Calling `.reportValidity()` on a disabled button silently fails to display the native error tooltip bubble.
 **Action:** Always ensure the interactive element (e.g., submit button) is re-enabled (`disabled = false`) *before* calling `.reportValidity()` during async form error handling.
+
+## 2024-06-12 - Auto-formatting as Positive Reinforcement
+**Learning:** For strict text inputs (like JSON arrays), relying entirely on color changes (e.g. `:user-valid`) for positive reinforcement leaves the user uncertain about whether their specific formatting (spaces, quotes) was actually parsed correctly by the system.
+**Action:** When validating complex string formats that will be parsed programmatically (like JSON), auto-format the user's input `onfocusout` (e.g., by replacing the input value with `JSON.stringify(parsed)`). This subtle, invisible helper acts as a powerful trust-building UX pattern, proving to the user that the system perfectly understood what they typed.
