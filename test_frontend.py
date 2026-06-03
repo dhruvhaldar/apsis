@@ -1,69 +1,67 @@
 from playwright.sync_api import sync_playwright
 import time
 import sys
+import subprocess
 
 def test_form_inputs_disabled():
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
-        page.goto('http://localhost:8000')
+    server = subprocess.Popen(["python3", "-m", "http.server", "8001", "-d", "public"])
+    time.sleep(1)
 
-        # Check initial state
-        inputs_initially_disabled = page.evaluate('''() => {
-            const form = document.getElementById('pmp-form');
-            const inputs = form.querySelectorAll('input');
-            return Array.from(inputs).every(input => input.disabled === false);
-        }''')
+    try:
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page()
+            page.goto('http://localhost:8001')
 
-        if not inputs_initially_disabled:
-            print("Error: Inputs were disabled initially!")
-            sys.exit(1)
-
-        print("Inputs are initially enabled.")
-
-        # Click the solve button
-        # We need a way to check if inputs are disabled while the fetch is ongoing.
-        # But we don't have control over the backend since there is no backend running here, just the frontend server which will return a 404 for the API endpoint, causing the fetch to fail fast.
-        # So we can run the test script using playwright and mock the route.
-        page.route('**/api/pmp', lambda route: route.fulfill(status=200, json={"t": [0], "x": [[0], [0]], "u": [[0]]}))
-
-        # We want to pause the route response to check the disabled state mid-flight
-        def handle_route(route):
-            # Check the disabled state of inputs while the request is intercepted and pending
-            inputs_disabled_during_fetch = page.evaluate('''() => {
+            # Check initial state
+            inputs_initially_disabled = page.evaluate('''() => {
                 const form = document.getElementById('pmp-form');
                 const inputs = form.querySelectorAll('input');
-                return Array.from(inputs).every(input => input.disabled === true);
+                return Array.from(inputs).every(input => input.disabled === false);
             }''')
-            if not inputs_disabled_during_fetch:
-                print("Error: Inputs are not disabled during fetch!")
-                route.abort()
+
+            if not inputs_initially_disabled:
+                print("Error: Inputs were disabled initially!")
                 sys.exit(1)
-            else:
-                print("Inputs are successfully disabled during fetch.")
-            route.fulfill(status=200, json={"t": [0], "x": [[0], [0]], "u": [[0]]})
 
-        page.route('**/api/pmp', handle_route)
+            print("Inputs are initially enabled.")
 
-        page.click('#btn-pmp')
+            # We want to pause the route response to check the disabled state mid-flight
+            def handle_route(route):
+                # Check the disabled state of inputs while the request is intercepted and pending
+                inputs_disabled_during_fetch = page.evaluate('''() => {
+                    const form = document.getElementById('pmp-form');
+                    const inputs = form.querySelectorAll('input');
+                    return Array.from(inputs).every(input => input.disabled === true);
+                }''')
+                if not inputs_disabled_during_fetch:
+                    print("Error: Inputs are not disabled during fetch!")
+                    route.abort()
+                    sys.exit(1)
+                else:
+                    print("Inputs are successfully disabled during fetch.")
+                route.fulfill(status=200, json={"t": [0], "x": [[0], [0]], "u": [[0]]})
 
-        # Wait for the network idle or fetch to complete
-        page.wait_for_load_state('networkidle')
+            page.route('**/api/pmp', handle_route)
 
-        # Check if inputs are enabled again
-        inputs_enabled_after_fetch = page.evaluate('''() => {
-            const form = document.getElementById('pmp-form');
-            const inputs = form.querySelectorAll('input');
-            return Array.from(inputs).every(input => input.disabled === false);
-        }''')
+            page.click('#btn-pmp')
 
-        if not inputs_enabled_after_fetch:
-            print("Error: Inputs were not enabled after fetch!")
-            sys.exit(1)
+            # Wait for the network idle or fetch to complete
+            page.wait_for_load_state('networkidle')
 
-        print("Inputs are enabled after fetch.")
-        browser.close()
-        print("Test passed successfully.")
+            # Check if inputs are enabled again
+            inputs_enabled_after_fetch = page.evaluate('''() => {
+                const form = document.getElementById('pmp-form');
+                const inputs = form.querySelectorAll('input');
+                return Array.from(inputs).every(input => input.disabled === false);
+            }''')
 
-if __name__ == "__main__":
-    test_form_inputs_disabled()
+            if not inputs_enabled_after_fetch:
+                print("Error: Inputs were not enabled after fetch!")
+                sys.exit(1)
+
+            print("Inputs are enabled after fetch.")
+            browser.close()
+            print("Test passed successfully.")
+    finally:
+        server.terminate()

@@ -212,3 +212,7 @@
 ## 2024-06-12 - Auto-formatting as Positive Reinforcement
 **Learning:** For strict text inputs (like JSON arrays), relying entirely on color changes (e.g. `:user-valid`) for positive reinforcement leaves the user uncertain about whether their specific formatting (spaces, quotes) was actually parsed correctly by the system.
 **Action:** When validating complex string formats that will be parsed programmatically (like JSON), auto-format the user's input `onfocusout` (e.g., by replacing the input value with `JSON.stringify(parsed)`). This subtle, invisible helper acts as a powerful trust-building UX pattern, proving to the user that the system perfectly understood what they typed.
+
+## 2026-06-03 - Enable inputs before reportValidity
+**Learning:** HTML5 validation bubble (triggered by `reportValidity()`) silently fails if the input element is disabled. Since forms typically disable inputs on submission, validation logic running after this state change will not show the bubble unless the input is explicitly re-enabled first.
+**Action:** Always verify that input elements are set to `disabled = false` prior to calling `reportValidity()`.

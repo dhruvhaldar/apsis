@@ -161,6 +161,7 @@ function parseInput(id) {
         return parsed;
     } catch (e) {
         el.setCustomValidity('Invalid format. Please use valid JSON array format, e.g., [1, 0] or [[1,0],[0,1]]');
+        el.disabled = false;
         el.reportValidity();
         el.focus();
         const err = new Error('InputValidationError');
@@ -174,6 +175,7 @@ function parseFloatInput(id) {
     const val = parseFloat(el.value);
     if (isNaN(val)) {
         el.setCustomValidity('Please enter a valid number.');
+        el.disabled = false;
         el.reportValidity();
         el.focus();
         const err = new Error(`Invalid number in ${id}`);
