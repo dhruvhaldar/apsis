@@ -352,6 +352,7 @@ async function solvePMP() {
                     responsive: true,
                     maintainAspectRatio: false,
                     color: '#e0e0e0',
+                    animation: false,
                     scales: {
                         x: { grid: { color: '#333' } },
                         y: { grid: { color: '#333' } }
@@ -561,6 +562,7 @@ async function solveMPC() {
                     responsive: true,
                     maintainAspectRatio: false,
                     color: '#e0e0e0',
+                    animation: false,
                     scales: {
                         x: { grid: { color: '#333' } },
                         y: { grid: { color: '#333' } }

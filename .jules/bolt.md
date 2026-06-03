@@ -132,3 +132,7 @@
 ## 2024-06-11 - Lazy Importing Heavy Mathematical Libraries
 **Learning:** Top-level imports of heavy mathematical libraries like `gekko` (~0.2s) and `scipy` (~0.15s) significantly increase application startup time. In serverless environments (like Vercel), this creates severe cold-start latency for all endpoints, even those that do not utilize these specific libraries.
 **Action:** Move heavy imports (e.g., `from gekko import GEKKO`, `from scipy.integrate import solve_bvp`) inside the specific solver functions (like `solve_mpc` and `solve_pmp_linear_quadratic`) to defer the import penalty until the module is actually required by an endpoint request.
+
+## 2026-06-03 - Disable Default Chart.js Animations for Mathematical Plots
+**Learning:** By default, Chart.js applies a 1000ms slide-in animation to all new datasets. For mathematical trajectory plotting (like PMP and MPC), this aesthetic delay increases "time-to-insight" and needlessly blocks the main thread with an expensive `requestAnimationFrame` interpolation loop for hundreds of data points.
+**Action:** Explicitly set `animation: false` in the Chart.js options for data-dense mathematical visualizations to achieve instant zero-delay rendering and eliminate rendering overhead.

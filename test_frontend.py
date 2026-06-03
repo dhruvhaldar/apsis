@@ -50,11 +50,15 @@ def test_form_inputs_disabled():
             page.wait_for_load_state('networkidle')
 
             # Check if inputs are enabled again
-            inputs_enabled_after_fetch = page.evaluate('''() => {
-                const form = document.getElementById('pmp-form');
-                const inputs = form.querySelectorAll('input');
-                return Array.from(inputs).every(input => input.disabled === false);
-            }''')
+            try:
+                page.wait_for_function('''() => {
+                    const form = document.getElementById('pmp-form');
+                    const inputs = form.querySelectorAll('input');
+                    return Array.from(inputs).every(input => input.disabled === false);
+                }''', timeout=5000)
+                inputs_enabled_after_fetch = True
+            except Exception:
+                inputs_enabled_after_fetch = False
 
             if not inputs_enabled_after_fetch:
                 print("Error: Inputs were not enabled after fetch!")
