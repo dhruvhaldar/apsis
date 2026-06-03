@@ -6,6 +6,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 import logging
 import time
 import hashlib
+import secrets
 from pydantic import BaseModel, Field
 from typing import List, Optional, Annotated, Dict
 
@@ -93,6 +94,7 @@ RATE_LIMIT_MAX_REQUESTS = 50
 MAX_IPS = 10000
 
 rate_limit_store: Dict[str, List[float]] = {}
+IP_HASH_SALT = secrets.token_hex(16)
 
 @app.middleware("http")
 async def rate_limit(request: Request, call_next):
@@ -112,8 +114,9 @@ async def rate_limit(request: Request, call_next):
     else:
         client_ip = request.client.host if request.client else "unknown"
 
-    # 🛡️ Sentinel Security Enhancement: Hash IP addresses to protect PII in memory
-    hashed_ip = hashlib.sha256(client_ip.encode('utf-8')).hexdigest()
+    # 🛡️ Sentinel Security Enhancement: Hash IP addresses to protect PII in memory.
+    # We include a cryptographic salt to prevent rainbow table attacks against low-entropy IPv4 addresses.
+    hashed_ip = hashlib.sha256((client_ip + IP_HASH_SALT).encode('utf-8')).hexdigest()
     current_time = time.time()
 
     # Prevent memory exhaustion in the rate limit store itself
