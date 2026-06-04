@@ -158,9 +158,11 @@ function parseInput(id) {
         if (el.dataset.format === 'json' && !Array.isArray(parsed)) {
             throw new Error('Must be a JSON array');
         }
+        el.setAttribute('aria-invalid', 'false');
         return parsed;
     } catch (e) {
         el.setCustomValidity('Invalid format. Please use valid JSON array format, e.g., [1, 0] or [[1,0],[0,1]]');
+        el.setAttribute('aria-invalid', 'true');
         el.disabled = false;
         el.reportValidity();
         el.focus();
@@ -175,6 +177,7 @@ function parseFloatInput(id) {
     const val = parseFloat(el.value);
     if (isNaN(val)) {
         el.setCustomValidity('Please enter a valid number.');
+        el.setAttribute('aria-invalid', 'true');
         el.disabled = false;
         el.reportValidity();
         el.focus();
@@ -182,6 +185,7 @@ function parseFloatInput(id) {
         err.name = 'InputValidationError';
         throw err;
     }
+    el.setAttribute('aria-invalid', 'false');
     return val;
 }
 
