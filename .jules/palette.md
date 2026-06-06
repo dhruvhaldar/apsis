@@ -216,3 +216,9 @@
 ## 2026-06-03 - Enable inputs before reportValidity
 **Learning:** HTML5 validation bubble (triggered by `reportValidity()`) silently fails if the input element is disabled. Since forms typically disable inputs on submission, validation logic running after this state change will not show the bubble unless the input is explicitly re-enabled first.
 **Action:** Always verify that input elements are set to `disabled = false` prior to calling `reportValidity()`.
+
+## 2024-06-14 - Prevent Focus-Stealing During Async State Restorations
+**Learning:** During async flows (like form submissions or temporary UI feedback loops), elements are often temporarily disabled. Setting `disabled = true` instantly drops keyboard focus to `document.body`. A naive attempt to "fix" this by caching `document.activeElement` before the async operation and blindly calling `.focus()` on it in a `finally` block creates a highly disorienting experience, because if the user proactively tabbed away to another interactive element during the network request, their focus is forcibly stolen back.
+**Action:**
+1. For short feedback loops (like a 2-second "Copied" checkmark on a button), avoid `disabled = true` entirely. Instead, use a custom data attribute (like `dataset.copying = 'true'`) combined with CSS styling and JS logic to ignore rapid clicks while maintaining the native keyboard focus state safely.
+2. For longer async flows (like form submissions where inputs *must* be disabled), only restore focus to the previously active element if the user is truly "lost" by including a safety check: `if (document.activeElement === document.body)`. This correctly restores focus if they were waiting, but respects their new location if they chose to navigate away.

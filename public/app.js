@@ -403,7 +403,10 @@ async function solvePMP() {
         btn.removeAttribute('aria-busy');
         btn.innerHTML = originalHTML;
         enabledInputs.forEach(el => el.disabled = false);
-        if (wasFocused && typeof wasFocused.focus === 'function') { wasFocused.focus(); }
+        // ⚡ Palette UX: Only restore focus if the user hasn't proactively navigated elsewhere
+        if (wasFocused && typeof wasFocused.focus === 'function' && document.activeElement === document.body) {
+            wasFocused.focus();
+        }
     }
 }
 
@@ -486,7 +489,10 @@ async function solveLQR() {
         btn.removeAttribute('aria-busy');
         btn.innerHTML = originalHTML;
         enabledInputs.forEach(el => el.disabled = false);
-        if (wasFocused && typeof wasFocused.focus === 'function') { wasFocused.focus(); }
+        // ⚡ Palette UX: Only restore focus if the user hasn't proactively navigated elsewhere
+        if (wasFocused && typeof wasFocused.focus === 'function' && document.activeElement === document.body) {
+            wasFocused.focus();
+        }
     }
 }
 
@@ -613,7 +619,10 @@ async function solveMPC() {
         btn.removeAttribute('aria-busy');
         btn.innerHTML = originalHTML;
         enabledInputs.forEach(el => el.disabled = false);
-        if (wasFocused && typeof wasFocused.focus === 'function') { wasFocused.focus(); }
+        // ⚡ Palette UX: Only restore focus if the user hasn't proactively navigated elsewhere
+        if (wasFocused && typeof wasFocused.focus === 'function' && document.activeElement === document.body) {
+            wasFocused.focus();
+        }
     }
 }
 
@@ -622,15 +631,14 @@ window.addEventListener('DOMContentLoaded', () => {
     // Setup copy buttons
     document.querySelectorAll('.copy-btn').forEach(copyBtn => {
         copyBtn.addEventListener('click', async function() {
-            if (this.disabled) return;
+            if (this.disabled || this.dataset.copying === 'true') return;
             const targetId = this.dataset.target;
             const valElement = document.getElementById(targetId);
             const val = valElement ? valElement.innerText : null;
 
             if (val && val !== '...') {
                 try {
-                    const wasFocused = document.activeElement === this;
-                    this.disabled = true; // Prevent overlapping rapid clicks
+                    this.dataset.copying = 'true'; // Prevent overlapping rapid clicks without losing focus
                     await navigator.clipboard.writeText(val);
                     const span = this.querySelector('span');
                     const originalLabel = this.getAttribute('aria-label');
@@ -654,13 +662,11 @@ window.addEventListener('DOMContentLoaded', () => {
                         } else {
                             this.removeAttribute('title');
                         }
-                        this.disabled = false;
-                        if (wasFocused) this.focus();
+                        delete this.dataset.copying;
                     }, 2000);
                 } catch (err) {
                     console.error('Failed to copy!', err);
-                    this.disabled = false;
-                    if (wasFocused) this.focus();
+                    delete this.dataset.copying;
                 }
             }
         });
