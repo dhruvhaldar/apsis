@@ -310,7 +310,8 @@ h2 {
     transform: scale(0.9);
 }
 
-.icon-btn:disabled {
+.icon-btn:disabled,
+.icon-btn[data-copying="true"] {
     opacity: 0.5;
     cursor: not-allowed;
     transform: none;
