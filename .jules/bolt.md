@@ -104,17 +104,17 @@
 ## 2024-06-09 - Redundant DOM manipulations on Form Input Events
 **Learning:** Attaching heavy DOM queries (`querySelector`, `querySelectorAll`) and style modifications to high-frequency events like `input` without a state cache causes redundant synchronous execution on every keystroke, which can create noticeable CPU load and delay the main thread.
 **Action:** Use a visual state cache (like `dataset.stale`) and an early return to short-circuit redundant traversals and DOM changes on subsequent key events once the state has already been applied.
-## $(date +%Y-%m-%d) - Debounce WebGL Resize Events
+## 2026-06-07 - Debounce WebGL Resize Events
 **Learning:** When performing heavy canvas or WebGL recalculations (like updateProjectionMatrix and renderer.setSize) in response to window resizing, not debouncing causes severe performance degradation and layout thrashing as the browser attempts to re-render the heavy 3D scene on every single pixel change during a drag.
 **Action:** Always wrap the `resize` event listener in a debounce function (e.g., using a 200ms `setTimeout`) to ensure expensive WebGL resizing only happens once the user has finished resizing the window.
 
-## $(date +%Y-%m-%d) - Disable WebGL Antialiasing for Particle Systems
+## 2026-06-07 - Disable WebGL Antialiasing for Particle Systems
 **Learning:** Initializing `THREE.WebGLRenderer` with `antialias: true` when the scene only contains `THREE.Points` (particle systems) is a pure performance loss. `gl.POINTS` primitives do not benefit from Multi-Sample Anti-Aliasing (MSAA), which only smooths polygon edges. Leaving it enabled forces the browser to needlessly allocate a multisampled render buffer (consuming up to 4x GPU memory and bandwidth) and perform expensive resolve passes on every frame for absolutely zero visual benefit.
 **Action:** When a Three.js or WebGL scene exclusively renders points/particles, always explicitly set `antialias: false` in the renderer constructor to significantly reduce GPU overhead, especially on high-DPI displays or lower-end devices.
-## $(date +%Y-%m-%d) - Pause WebGL Render Loop for Static Scenes
+## 2026-06-07 - Pause WebGL Render Loop for Static Scenes
 **Learning:** Continuously calling `requestAnimationFrame` and `renderer.render` for a static Three.js or WebGL scene (e.g., when `prefers-reduced-motion` is enabled) forces the browser to render 60 identical frames per second, wasting significant CPU and GPU resources.
 **Action:** When an animation loop becomes entirely static based on user preference, pause the loop completely by not calling `requestAnimationFrame`. Only re-render the scene exactly once during initialization, and manually re-render on events that alter the view, like window resizing. Attach an event listener to `prefers-reduced-motion` to resume or cancel the loop dynamically if the user changes their settings.
-## $(date +%Y-%m-%d) - Remove Redundant Visualization Libraries
+## 2026-06-07 - Remove Redundant Visualization Libraries
 **Learning:** Loading multiple large charting or visualization libraries (like Plotly.js at ~3.4MB and Chart.js at ~200KB) creates redundant dependency bloat that severely delays initial page load and increases JS parse/compile time without providing unique functional value for basic line charts.
 **Action:** Consolidate data visualization by removing the larger, redundant dependency (Plotly.js) and standardizing the application on the lighter alternative (Chart.js), reducing the dependency size significantly and improving load speed. Update HTML `<script>` tags, CDN preconnects, CSP headers, and refactor existing chart rendering to use the standard library while caching the chart instance to prevent memory leaks and DOM thrashing.
 
@@ -125,7 +125,7 @@
 ## 2024-06-10 - Conditional DOM Attribute Writes in Hot Event Listeners
 **Learning:** In high-frequency event listeners (like `input` or `mousemove`), directly modifying DOM attributes (e.g., `setCustomValidity`, `setAttribute`) on every invocation forces unnecessary JS-to-C++ boundary crossings and synchronously triggers layout/style recalculations, causing main thread lag.
 **Action:** Always wrap DOM attribute writes inside high-frequency listeners with a conditional check (e.g., `if (el.getAttribute('attr') !== 'value')`) to prevent redundant updates and avoid layout thrashing.
-## $(date +%Y-%m-%d) - Prevent Intermediate Allocations with NumPy Out Parameter
+## 2026-06-07 - Prevent Intermediate Allocations with NumPy Out Parameter
 **Learning:** When performing basic arithmetic on NumPy arrays inside tight numerical hot loops (like BVP boundary evaluations), using standard operators (e.g., `res[:n] = ya[:n] - x0`) implicitly allocates temporary arrays in memory to hold the intermediate result before assignment. This creates measurable garbage collection overhead when called thousands of times.
 **Action:** Use NumPy's functional equivalents with the `out=` parameter (e.g., `np.subtract(ya[:n], x0, out=res[:n])`) to write the result directly into a pre-allocated array, completely bypassing temporary memory allocations.
 
@@ -136,3 +136,7 @@
 ## 2026-06-03 - Disable Default Chart.js Animations for Mathematical Plots
 **Learning:** By default, Chart.js applies a 1000ms slide-in animation to all new datasets. For mathematical trajectory plotting (like PMP and MPC), this aesthetic delay increases "time-to-insight" and needlessly blocks the main thread with an expensive `requestAnimationFrame` interpolation loop for hundreds of data points.
 **Action:** Explicitly set `animation: false` in the Chart.js options for data-dense mathematical visualizations to achieve instant zero-delay rendering and eliminate rendering overhead.
+
+## 2026-06-07 - Bypass request.url parsing in FastAPI Middleware
+**Learning:** When a FastAPI (Starlette) middleware accesses `request.url`, it lazily constructs a `URL` object by dynamically parsing the entire `scope` dictionary. For high-frequency middleware (like rate limiters) that run on every single request, including thousands of static asset requests, this string parsing creates significant CPU overhead and unnecessary memory allocations.
+**Action:** Access `request.scope.get("path", "")` directly instead of `request.url.path` to bypass URL object construction and parsing entirely, drastically reducing middleware overhead for routing checks.
