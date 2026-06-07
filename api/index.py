@@ -99,7 +99,10 @@ IP_HASH_SALT = secrets.token_hex(16)
 @app.middleware("http")
 async def rate_limit(request: Request, call_next):
     # Only rate limit the mathematical endpoints
-    if not request.url.path.startswith("/api/"):
+    # ⚡ Bolt Optimization: Bypass `request.url` in FastAPI middleware.
+    # Accessing `request.url` lazily constructs a URL object by dynamically parsing
+    # the entire `scope` dictionary. Using `request.scope["path"]` avoids this overhead.
+    if not request.scope.get("path", "").startswith("/api/"):
         return await call_next(request)
 
     # 🛡️ Sentinel Security Fix: Use getlist() to handle multiple X-Forwarded-For headers
