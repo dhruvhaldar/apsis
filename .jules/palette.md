@@ -222,3 +222,7 @@
 **Action:**
 1. For short feedback loops (like a 2-second "Copied" checkmark on a button), avoid `disabled = true` entirely. Instead, use a custom data attribute (like `dataset.copying = 'true'`) combined with CSS styling and JS logic to ignore rapid clicks while maintaining the native keyboard focus state safely.
 2. For longer async flows (like form submissions where inputs *must* be disabled), only restore focus to the previously active element if the user is truly "lost" by including a safety check: `if (document.activeElement === document.body)`. This correctly restores focus if they were waiting, but respects their new location if they chose to navigate away.
+
+## 2026-06-05 - Enable inputs before reportValidity on the submit button
+**Learning:** Even if the submit button is enabled, having disabled required inputs within the same form can cause the browser to silently suppress the HTML5 validation bubble when calling `reportValidity()` on the button.
+**Action:** When displaying a custom HTML5 validation bubble on a form's submit button via `btn.reportValidity()`, always ensure that all inputs within the form are re-enabled (`disabled = false`) first.

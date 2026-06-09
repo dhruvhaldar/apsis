@@ -392,11 +392,13 @@ async function solvePMP() {
         if (err.name === 'ValidationError') {
             btn.setCustomValidity(err.message);
             btn.disabled = false;
+            enabledInputs.forEach(el => el.disabled = false);
             btn.reportValidity();
             return;
         }
         btn.setCustomValidity('Failed to solve PMP: ' + err.message);
         btn.disabled = false;
+        enabledInputs.forEach(el => el.disabled = false);
         btn.reportValidity();
     } finally {
         btn.disabled = false;
@@ -478,11 +480,13 @@ async function solveLQR() {
         if (err.name === 'ValidationError') {
             btn.setCustomValidity(err.message);
             btn.disabled = false;
+            enabledInputs.forEach(el => el.disabled = false);
             btn.reportValidity();
             return;
         }
         btn.setCustomValidity('Failed to synthesize LQR: ' + err.message);
         btn.disabled = false;
+        enabledInputs.forEach(el => el.disabled = false);
         btn.reportValidity();
     } finally {
         btn.disabled = false;
@@ -608,11 +612,13 @@ async function solveMPC() {
         if (err.name === 'ValidationError') {
             btn.setCustomValidity(err.message);
             btn.disabled = false;
+            enabledInputs.forEach(el => el.disabled = false);
             btn.reportValidity();
             return;
         }
         btn.setCustomValidity('Failed to simulate MPC: ' + err.message);
         btn.disabled = false;
+        enabledInputs.forEach(el => el.disabled = false);
         btn.reportValidity();
     } finally {
         btn.disabled = false;
