@@ -226,3 +226,7 @@
 ## 2026-06-05 - Enable inputs before reportValidity on the submit button
 **Learning:** Even if the submit button is enabled, having disabled required inputs within the same form can cause the browser to silently suppress the HTML5 validation bubble when calling `reportValidity()` on the button.
 **Action:** When displaying a custom HTML5 validation bubble on a form's submit button via `btn.reportValidity()`, always ensure that all inputs within the form are re-enabled (`disabled = false`) first.
+
+## 2026-06-10 - Focus Visible on Icon Buttons
+**Learning:** Icon buttons that suppress default browser outlines (`outline: none`) and rely purely on `:hover` styles (like a subtle background or scale transform) often lack sufficient visual feedback for keyboard users when focused. Using `:focus-visible` without an explicit `outline` fails to communicate the active element clearly.
+**Action:** When removing default outlines on interactive elements (like `.icon-btn`), always explicitly define a strong focus ring in the `:focus-visible` state (e.g., `outline: 2px solid var(--accent-color); outline-offset: 2px;`) to ensure robust keyboard accessibility.
