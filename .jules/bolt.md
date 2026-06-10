@@ -140,3 +140,7 @@
 ## 2026-06-07 - Bypass request.url parsing in FastAPI Middleware
 **Learning:** When a FastAPI (Starlette) middleware accesses `request.url`, it lazily constructs a `URL` object by dynamically parsing the entire `scope` dictionary. For high-frequency middleware (like rate limiters) that run on every single request, including thousands of static asset requests, this string parsing creates significant CPU overhead and unnecessary memory allocations.
 **Action:** Access `request.scope.get("path", "")` directly instead of `request.url.path` to bypass URL object construction and parsing entirely, drastically reducing middleware overhead for routing checks.
+
+## 2026-06-10 - Prevent Layout Thrashing with textContent vs innerText
+**Learning:** Reading or writing `innerText` forces the browser to calculate the CSS styling and layout of the page because it needs to return/render the text exactly as it appears visually (e.g., applying `text-transform`, hiding `display: none` elements). When used to update simple text elements (like an accessibility announcer or button labels) or read text, this triggers unnecessary synchronous layout recalculations and repaints, creating main thread lag.
+**Action:** Always use `textContent` instead of `innerText` when getting or setting the text of a node. `textContent` simply reads/writes the raw text content of the DOM node without invoking the CSS parser or layout engine, yielding a significant performance improvement.

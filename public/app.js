@@ -376,8 +376,8 @@ async function solvePMP() {
 
         const announcer = document.getElementById('a11y-announcer');
         if (announcer) {
-            announcer.innerText = 'PMP trajectory calculated successfully. Chart updated.';
-            setTimeout(() => { announcer.innerText = ''; }, 3000);
+            announcer.textContent = 'PMP trajectory calculated successfully. Chart updated.';
+            setTimeout(() => { announcer.textContent = ''; }, 3000);
         }
 
     } catch (err) {
@@ -450,8 +450,8 @@ async function solveLQR() {
         document.getElementById('lqr-empty').style.display = 'none';
         document.getElementById('lqr-output').style.display = 'block';
 
-        document.getElementById('lqr-k-val').innerText = JSON.stringify(data.K.map(row => row.map(val => val.toFixed(4))));
-        document.getElementById('lqr-poles-val').innerText = JSON.stringify(data.eigvals.map(val => val.toFixed(4)));
+        document.getElementById('lqr-k-val').textContent = JSON.stringify(data.K.map(row => row.map(val => val.toFixed(4))));
+        document.getElementById('lqr-poles-val').textContent = JSON.stringify(data.eigvals.map(val => val.toFixed(4)));
 
         if (outputContainer) {
             outputContainer.style.opacity = '';
@@ -464,8 +464,8 @@ async function solveLQR() {
 
         const announcer = document.getElementById('a11y-announcer');
         if (announcer) {
-            announcer.innerText = 'LQR synthesis complete. Gain and poles available.';
-            setTimeout(() => { announcer.innerText = ''; }, 3000);
+            announcer.textContent = 'LQR synthesis complete. Gain and poles available.';
+            setTimeout(() => { announcer.textContent = ''; }, 3000);
         }
 
     } catch (err) {
@@ -596,8 +596,8 @@ async function solveMPC() {
 
         const announcer = document.getElementById('a11y-announcer');
         if (announcer) {
-            announcer.innerText = 'MPC simulation complete. Chart updated.';
-            setTimeout(() => { announcer.innerText = ''; }, 3000);
+            announcer.textContent = 'MPC simulation complete. Chart updated.';
+            setTimeout(() => { announcer.textContent = ''; }, 3000);
         }
 
     } catch (err) {
@@ -640,7 +640,7 @@ window.addEventListener('DOMContentLoaded', () => {
             if (this.disabled || this.dataset.copying === 'true') return;
             const targetId = this.dataset.target;
             const valElement = document.getElementById(targetId);
-            const val = valElement ? valElement.innerText : null;
+            const val = valElement ? valElement.textContent : null;
 
             if (val && val !== '...') {
                 try {
@@ -650,18 +650,18 @@ window.addEventListener('DOMContentLoaded', () => {
                     const originalLabel = this.getAttribute('aria-label');
                     const originalTitle = this.getAttribute('title');
 
-                    span.innerText = '✅';
+                    span.textContent = '✅';
                     this.setAttribute('aria-label', 'Copied successfully');
                     this.setAttribute('title', 'Copied successfully!');
 
                     const announcer = document.getElementById('a11y-announcer');
                     if (announcer) {
-                        announcer.innerText = 'Copied successfully!';
-                        setTimeout(() => { announcer.innerText = ''; }, 3000);
+                        announcer.textContent = 'Copied successfully!';
+                        setTimeout(() => { announcer.textContent = ''; }, 3000);
                     }
 
                     setTimeout(() => {
-                        span.innerText = '📋';
+                        span.textContent = '📋';
                         this.setAttribute('aria-label', originalLabel);
                         if (originalTitle !== null) {
                             this.setAttribute('title', originalTitle);
@@ -752,7 +752,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
     if (isMac) {
         document.querySelectorAll('.shortcut-modifier').forEach(el => {
-            el.innerText = '⌘';
+            el.textContent = '⌘';
         });
         document.querySelectorAll('[aria-keyshortcuts="Control+Enter"]').forEach(el => {
             el.setAttribute('aria-keyshortcuts', 'Meta+Enter');
