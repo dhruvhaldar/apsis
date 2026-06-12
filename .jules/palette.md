@@ -230,3 +230,7 @@
 ## 2026-06-10 - Focus Visible on Icon Buttons
 **Learning:** Icon buttons that suppress default browser outlines (`outline: none`) and rely purely on `:hover` styles (like a subtle background or scale transform) often lack sufficient visual feedback for keyboard users when focused. Using `:focus-visible` without an explicit `outline` fails to communicate the active element clearly.
 **Action:** When removing default outlines on interactive elements (like `.icon-btn`), always explicitly define a strong focus ring in the `:focus-visible` state (e.g., `outline: 2px solid var(--accent-color); outline-offset: 2px;`) to ensure robust keyboard accessibility.
+
+## 2026-06-12 - Error State Icons for Color-Blind Accessibility
+**Learning:** Indicating an inline form validation error strictly through a red border and red drop-shadow (`border-color: #ff6b6b`) violates WCAG 1.4.1 (Use of Color). Color-blind users (e.g., protanopia/deuteranopia) may struggle to perceive the error state, especially since the input background remains the same.
+**Action:** Always pair color-based error indicators with a clear visual cue, such as an inline SVG warning icon (`background-image`), ensuring the error state is instantly perceptible regardless of color vision.
