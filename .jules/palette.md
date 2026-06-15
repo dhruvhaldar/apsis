@@ -234,3 +234,7 @@
 ## 2026-06-12 - Error State Icons for Color-Blind Accessibility
 **Learning:** Indicating an inline form validation error strictly through a red border and red drop-shadow (`border-color: #ff6b6b`) violates WCAG 1.4.1 (Use of Color). Color-blind users (e.g., protanopia/deuteranopia) may struggle to perceive the error state, especially since the input background remains the same.
 **Action:** Always pair color-based error indicators with a clear visual cue, such as an inline SVG warning icon (`background-image`), ensuring the error state is instantly perceptible regardless of color vision.
+
+## 2024-11-21 - Touch Interface Redundancy and Mobile Padding
+**Learning:** Keyboard shortcut hints (like "Ctrl+Enter") displayed directly in the UI are incredibly helpful for desktop power users, but they act as confusing, dead visual noise on touch devices (mobile/tablets) where hardware keyboards are absent. Additionally, macro structural paddings (like `padding: 20px` on a `.container` plus `padding: 30px` on an inner `.panel`) cascade beautifully on desktop but quickly starve critical horizontal space on narrow mobile screens, shrinking complex interactive elements (like data-dense charts) down to an unreadable size.
+**Action:** Always wrap desktop-specific UI elements (like shortcut hints) in `@media (hover: none) and (pointer: coarse) { display: none; }` to hide them on touch devices. Furthermore, explicitly reduce macro container and panel paddings inside `@media (max-width: 600px)` blocks to maximize available interactive space for mobile users.
