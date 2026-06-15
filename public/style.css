@@ -356,6 +356,22 @@ h2 {
     pointer-events: none;
 }
 
+@media (max-width: 600px) {
+    .container {
+        padding: 10px;
+    }
+    .panel {
+        padding: 15px;
+        border-radius: 15px;
+    }
+}
+
+@media (hover: none) and (pointer: coarse) {
+    .shortcut-hint {
+        display: none;
+    }
+}
+
 @media (prefers-reduced-motion: no-preference) {
     @keyframes gentleFloat {
         0% { transform: translateY(0); }
