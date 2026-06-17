@@ -247,6 +247,14 @@ document.addEventListener('input', (e) => {
             e.target.removeAttribute('title'); // Clear tooltip when fixing
         }
 
+        const form = e.target.closest('form');
+        if (form) {
+            const btn = form.querySelector('[type="submit"]');
+            if (btn && btn.validationMessage !== '') {
+                btn.setCustomValidity('');
+            }
+        }
+
         // ⚡ UX Improvement: Mark existing output as stale to prevent confusion
         const section = e.target.closest('section');
         // ⚡ Bolt Optimization: Early return to prevent redundant DOM queries and style recalculations
