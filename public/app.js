@@ -280,14 +280,15 @@ document.addEventListener('input', (e) => {
     const form = e.target.closest('form');
     if (form) {
         const btn = form.querySelector('button[type="submit"]');
-        if (btn) btn.setCustomValidity('');
+        // ⚡ Bolt Optimization: Only update DOM if validation message needs clearing to prevent layout thrashing
+        if (btn && btn.validationMessage !== '') btn.setCustomValidity('');
     }
 });
 
 // Clear submit button validity on click to allow immediate retry
 document.addEventListener('click', (e) => {
     const btn = e.target.closest('button[type="submit"]');
-    if (btn) btn.setCustomValidity('');
+    if (btn && btn.validationMessage !== '') btn.setCustomValidity('');
 });
 
 // ⚡ Bolt Optimization: Cache the Chart.js instance to prevent memory leaks and DOM thrashing
