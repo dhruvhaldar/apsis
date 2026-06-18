@@ -242,3 +242,7 @@
 ## 2026-06-17 - Clear Submit Button Validity on Input
 **Learning:** When the server returns an error, it is sometimes displayed as a validation bubble on the submit button via `btn.setCustomValidity()`. However, when the user begins to interact with the form inputs to correct the issue, the submit button remains programmatically invalid. This can block native form submission attempts (like pressing Enter) even if the user has technically resolved the issue in the inputs.
 **Action:** Always ensure that when a user interacts with form inputs, any `customValidity` previously set on the form's submit button is actively cleared, so that the button's programmatic validity state accurately reflects the new, unsubmitted state of the form.
+
+## 2026-06-18 - Dynamic Aria-Live Announcements for Sequential Actions
+**Learning:** Updating an `aria-live` region with the exact same static text (e.g., "Copied successfully!") fails to trigger a screen reader announcement on subsequent rapid clicks. Screen readers only announce changes to the DOM text node. If the text doesn't mutate, they stay silent, leaving users unaware if their second action succeeded.
+**Action:** Always include dynamic, context-specific text in `aria-live` announcements (e.g., interpolating the specific item name being copied) to ensure the text content mutates and reliably triggers the screen reader on consecutive actions. Additionally, verify that timeout-based clears (`textContent = ''`) do not prematurely erase a subsequent action's message.
