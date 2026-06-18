@@ -383,11 +383,7 @@ async function solvePMP() {
             if (section) delete section.dataset.stale;
         }
 
-        const announcer = document.getElementById('a11y-announcer');
-        if (announcer) {
-            announcer.textContent = 'PMP trajectory calculated successfully. Chart updated.';
-            setTimeout(() => { announcer.textContent = ''; }, 3000);
-        }
+        announceA11y('PMP trajectory calculated successfully. Chart updated.');
 
     } catch (err) {
         console.error(err);
@@ -471,11 +467,7 @@ async function solveLQR() {
             if (section) delete section.dataset.stale;
         }
 
-        const announcer = document.getElementById('a11y-announcer');
-        if (announcer) {
-            announcer.textContent = 'LQR synthesis complete. Gain and poles available.';
-            setTimeout(() => { announcer.textContent = ''; }, 3000);
-        }
+        announceA11y('LQR synthesis complete. Gain and poles available.');
 
     } catch (err) {
         console.error(err);
@@ -603,11 +595,7 @@ async function solveMPC() {
             if (section) delete section.dataset.stale;
         }
 
-        const announcer = document.getElementById('a11y-announcer');
-        if (announcer) {
-            announcer.textContent = 'MPC simulation complete. Chart updated.';
-            setTimeout(() => { announcer.textContent = ''; }, 3000);
-        }
+        announceA11y('MPC simulation complete. Chart updated.');
 
     } catch (err) {
         console.error(err);
@@ -641,6 +629,31 @@ async function solveMPC() {
     }
 }
 
+// ⚡ Palette UX: Accessibility Announcer Helper
+// Handles dynamic screen reader announcements and prevents identical consecutive
+// messages from being ignored by mutating the text with a zero-width space.
+let a11yTimeoutId = null;
+function announceA11y(message) {
+    const announcer = document.getElementById('a11y-announcer');
+    if (!announcer) return;
+
+    // Clear previous timeout to prevent premature erasure of rapid messages
+    if (a11yTimeoutId) {
+        clearTimeout(a11yTimeoutId);
+    }
+
+    // If exact same message, append zero-width space to force DOM mutation
+    if (announcer.textContent === message) {
+        announcer.textContent = message + '\u200B';
+    } else {
+        announcer.textContent = message;
+    }
+
+    a11yTimeoutId = setTimeout(() => {
+        announcer.textContent = '';
+    }, 3000);
+}
+
 // Initialize events and rendering once DOM is loaded
 window.addEventListener('DOMContentLoaded', () => {
     // Setup copy buttons
@@ -663,11 +676,20 @@ window.addEventListener('DOMContentLoaded', () => {
                     this.setAttribute('aria-label', 'Copied successfully');
                     this.setAttribute('title', 'Copied successfully!');
 
-                    const announcer = document.getElementById('a11y-announcer');
-                    if (announcer) {
-                        announcer.textContent = 'Copied successfully!';
-                        setTimeout(() => { announcer.textContent = ''; }, 3000);
+                    // Use the original label (e.g. "Copy Gain K matrix to clipboard") to create a contextual message.
+                    // If the label is like "Copy Gain K matrix to clipboard", we can strip " to clipboard" or "Copy "
+                    // Or just use `originalLabel + ' successfully'` which is safe.
+                    let announceMsg = 'Copied successfully!';
+                    if (originalLabel) {
+                        // Extract what is being copied. Example: "Copy Gain K matrix to clipboard" -> "Gain K matrix"
+                        const match = originalLabel.match(/Copy (.*?) to clipboard/i) || originalLabel.match(/Copy (.*)/i);
+                        if (match && match[1]) {
+                            announceMsg = match[1] + ' copied successfully!';
+                        } else {
+                            announceMsg = originalLabel + ' successfully!';
+                        }
                     }
+                    announceA11y(announceMsg);
 
                     setTimeout(() => {
                         span.textContent = '📋';
