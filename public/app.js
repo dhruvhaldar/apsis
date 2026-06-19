@@ -206,9 +206,11 @@ document.addEventListener('focusout', (e) => {
                 }
                 e.target.setCustomValidity('');
                 e.target.setAttribute('aria-invalid', 'false');
+                e.target.dataset.validJson = 'true';
             } catch (err) {
                 e.target.setCustomValidity('Invalid format. Please use valid JSON array format, e.g., [1, 0] or [[1,0],[0,1]]');
                 e.target.setAttribute('aria-invalid', 'true');
+                delete e.target.dataset.validJson;
             }
         }
 
@@ -234,6 +236,9 @@ document.addEventListener('invalid', (e) => {
 // Clear validation errors when user types
 document.addEventListener('input', (e) => {
     if (e.target && e.target.classList.contains('ui-input')) {
+        if ('validJson' in e.target.dataset) {
+            delete e.target.dataset.validJson;
+        }
         // ⚡ Bolt Optimization: Wrap DOM attribute writes inside high-frequency listeners
         // with a conditional check to prevent redundant JS-to-C++ boundary crossings
         // and avoid triggering synchronous layout thrashing.

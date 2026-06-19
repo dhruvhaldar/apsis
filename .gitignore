@@ -16,4 +16,4 @@ venv.bak/
 *.log
 
 # pytest
-.pytest_cache/
+.pytest_cache/node_modules
