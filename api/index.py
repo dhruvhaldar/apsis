@@ -147,13 +147,18 @@ async def rate_limit(request: Request, call_next):
         rate_limit_store[hashed_ip] = []
 
     # Filter out old requests for current IP
-    requests = [req_time for req_time in rate_limit_store[hashed_ip] if current_time - req_time < RATE_LIMIT_WINDOW]
+    # ⚡ Bolt Optimization: Use in-place pop(0) instead of a list comprehension to avoid
+    # dynamically allocating new lists and re-assigning dictionary keys on every request.
+    requests = rate_limit_store[hashed_ip]
+    min_time = current_time - RATE_LIMIT_WINDOW
+
+    while requests and requests[0] < min_time:
+        requests.pop(0)
 
     if len(requests) >= RATE_LIMIT_MAX_REQUESTS:
         return JSONResponse(status_code=429, content={"detail": "Too many requests. Please try again later."})
 
     requests.append(current_time)
-    rate_limit_store[hashed_ip] = requests
 
     return await call_next(request)
 

@@ -148,3 +148,7 @@
 ## 2024-06-12 - Unconditional DOM Reads/Writes in Hot Listeners
 **Learning:** Performing DOM queries (like `closest` or `querySelector`) and unconditional property writes (like `setCustomValidity('')`) globally at the end of high-frequency events like `input` or `click` causes redundant JS-to-C++ boundary crossings and synchronous layout thrashing. In complex applications, these unoptimized global listeners severely impact "Interaction to Next Paint" (INP) because they execute on every keystroke or click regardless of application state.
 **Action:** Audit high-frequency event listeners (like `input`, `mousemove`, `click`) to ensure all DOM queries and mutations are guarded by conditional state checks (e.g., `if (btn.validationMessage !== '')`) and early returns, so they only interact with the DOM when absolutely necessary.
+
+## 2026-06-19 - In-place Array Mutation for High-Frequency Rate Limiters
+**Learning:** Using a list comprehension (e.g., `[req for req in requests if current_time - req < window]`) inside a high-frequency API middleware (like a rate limiter) implicitly allocates a new list array and forces a dictionary key re-assignment on every request. This constant memory allocation and garbage collection introduces measurable latency.
+**Action:** Always use in-place list mutation techniques, such as a `while` loop that calls `.pop(0)`, to evict stale entries. Since the timestamps are naturally sorted in ascending order, popping from the left provides an extremely fast, allocation-free way to maintain sliding windows for rate limiters.
