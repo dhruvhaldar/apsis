@@ -194,6 +194,12 @@ h2 {
     padding-right: 40px;
 }
 
+.ui-input:user-invalid:focus-visible,
+.ui-input[aria-invalid="true"]:focus-visible {
+    outline: 2px solid #ff6b6b;
+    box-shadow: 0 0 15px rgba(255, 107, 107, 0.4);
+}
+
 /* Ensure native number spinners don't overlap with the validation icons */
 .ui-input[type="number"]:user-invalid::-webkit-inner-spin-button,
 .ui-input[type="number"]:user-invalid::-webkit-outer-spin-button,
@@ -216,6 +222,11 @@ h2 {
     background-position: right 12px center;
     background-size: 20px;
     padding-right: 40px;
+}
+
+.ui-input[data-format="json"][data-valid-json="true"]:focus-visible {
+    outline: 2px solid #50e3c2;
+    box-shadow: 0 0 15px rgba(80, 227, 194, 0.4);
 }
 
 /* Remove number input arrows to prevent overlap with validation icon */
