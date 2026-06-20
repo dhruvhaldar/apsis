@@ -152,3 +152,7 @@
 ## 2026-06-19 - In-place Array Mutation for High-Frequency Rate Limiters
 **Learning:** Using a list comprehension (e.g., `[req for req in requests if current_time - req < window]`) inside a high-frequency API middleware (like a rate limiter) implicitly allocates a new list array and forces a dictionary key re-assignment on every request. This constant memory allocation and garbage collection introduces measurable latency.
 **Action:** Always use in-place list mutation techniques, such as a `while` loop that calls `.pop(0)`, to evict stale entries. Since the timestamps are naturally sorted in ascending order, popping from the left provides an extremely fast, allocation-free way to maintain sliding windows for rate limiters.
+
+## 2026-06-20 - Multiple BaseHTTPMiddlewares in FastAPI
+**Learning:** Every `@app.middleware("http")` (which is a subclass of `BaseHTTPMiddleware`) implicitly creates its own `AnyIO` TaskGroup. Chaining multiple separate middlewares forces the request/response to traverse multiple task groups, which causes severe context-switching overhead and severely degrades performance in FastAPI applications.
+**Action:** Consolidate multiple `@app.middleware("http")` functions (e.g. rate limiters, payload size checkers, header injection) into a single unified middleware function. This reduces the number of TaskGroups instantiated, effectively lowering the ASGI architectural overhead by avoiding unnecessary context-switching.
