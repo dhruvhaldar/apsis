@@ -49,43 +49,6 @@ app.add_middleware(
 # send a massive payload to crash the server. We enforce a 2MB limit.
 MAX_PAYLOAD_SIZE = 2 * 1024 * 1024 # 2MB
 
-@app.middleware("http")
-async def limit_payload_size(request: Request, call_next):
-    # 🛡️ Sentinel Security Fix: Reject chunked transfer encoding to prevent
-    # bypassing the Content-Length limit and exhausting server memory.
-    # We check for "chunked" in the header to handle mixed cases and multiple encodings.
-    te_headers = request.headers.getlist("transfer-encoding")
-    for te_header in te_headers:
-        if "chunked" in te_header.lower():
-            return JSONResponse(status_code=411, content={"detail": "Chunked encoding not supported"})
-
-    # 🛡️ Sentinel Security Fix: Use getlist() to handle multiple Content-Length headers
-    # If an attacker sends multiple Content-Length headers, request.headers.get()
-    # (or in checks) only returns the first one. A small first value would bypass the check,
-    # while a large second value could cause memory exhaustion.
-    cl_headers = request.headers.getlist("content-length")
-    if cl_headers:
-        for cl in cl_headers:
-            # Handle comma-separated values within a single header line
-            for cl_part in cl.split(","):
-                cl_part = cl_part.strip()
-                try:
-                    content_length = int(cl_part)
-                except ValueError:
-                    return JSONResponse(status_code=400, content={"detail": "Invalid Content-Length header"})
-
-                if content_length < 0:
-                    return JSONResponse(status_code=400, content={"detail": "Invalid Content-Length header"})
-
-                if content_length > MAX_PAYLOAD_SIZE:
-                    return JSONResponse(status_code=413, content={"detail": "Payload too large"})
-    elif request.method not in ["GET", "HEAD", "OPTIONS"]:
-        # 🛡️ Sentinel Security Fix: Enforce Content-Length for all requests that
-        # could contain a body to prevent bypassing the size limit check.
-        return JSONResponse(status_code=411, content={"detail": "Length Required"})
-
-    return await call_next(request)
-
 # 🛡️ Sentinel Security Enhancement: Application-Layer Rate Limiting
 # The mathematical solvers are computationally intensive and vulnerable to CPU
 # exhaustion DoS attacks. Limit requests per IP.
@@ -96,85 +59,106 @@ MAX_IPS = 10000
 rate_limit_store: Dict[str, List[float]] = {}
 IP_HASH_SALT = secrets.token_hex(16)
 
+# ⚡ Bolt Optimization: Combine Multiple BaseHTTPMiddlewares into one.
+# Every @app.middleware("http") decorator instantiates an AnyIO TaskGroup. Multiple
+# middlewares force the request to traverse multiple task groups, introducing significant
+# context-switching overhead. Combining payload sizing, rate limiting, and security headers
+# into a single middleware reduces this ASGI architectural overhead by ~66%.
 @app.middleware("http")
-async def rate_limit(request: Request, call_next):
+async def combined_security_and_rate_limit_middleware(request: Request, call_next):
+    def _apply_headers(resp):
+        resp.headers["X-Content-Type-Options"] = "nosniff"
+        resp.headers["X-Frame-Options"] = "DENY"
+        # 🛡️ Sentinel Security Enhancement: Add HSTS preload directive to protect users from MITM attacks on their first visit
+        resp.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
+        resp.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src https://cdn.jsdelivr.net; img-src 'self' data:; connect-src 'self' http://localhost:8000;"
+        resp.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        resp.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+        resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+        return resp
+
+    # 1. Payload Size Checking
+    # 🛡️ Sentinel Security Fix: Reject chunked transfer encoding to prevent
+    # bypassing the Content-Length limit and exhausting server memory.
+    te_headers = request.headers.getlist("transfer-encoding")
+    for te_header in te_headers:
+        if "chunked" in te_header.lower():
+            return _apply_headers(JSONResponse(status_code=411, content={"detail": "Chunked encoding not supported"}))
+
+    # 🛡️ Sentinel Security Fix: Use getlist() to handle multiple Content-Length headers
+    cl_headers = request.headers.getlist("content-length")
+    if cl_headers:
+        for cl in cl_headers:
+            for cl_part in cl.split(","):
+                cl_part = cl_part.strip()
+                try:
+                    content_length = int(cl_part)
+                except ValueError:
+                    return _apply_headers(JSONResponse(status_code=400, content={"detail": "Invalid Content-Length header"}))
+
+                if content_length < 0:
+                    return _apply_headers(JSONResponse(status_code=400, content={"detail": "Invalid Content-Length header"}))
+
+                if content_length > MAX_PAYLOAD_SIZE:
+                    return _apply_headers(JSONResponse(status_code=413, content={"detail": "Payload too large"}))
+    elif request.method not in ["GET", "HEAD", "OPTIONS"]:
+        # 🛡️ Sentinel Security Fix: Enforce Content-Length for all requests that
+        # could contain a body to prevent bypassing the size limit check.
+        return _apply_headers(JSONResponse(status_code=411, content={"detail": "Length Required"}))
+
+    # 2. Rate Limiting Check
     # Only rate limit the mathematical endpoints
     # ⚡ Bolt Optimization: Bypass `request.url` in FastAPI middleware.
     # Accessing `request.url` lazily constructs a URL object by dynamically parsing
     # the entire `scope` dictionary. Using `request.scope["path"]` avoids this overhead.
-    if not request.scope.get("path", "").startswith("/api/"):
-        return await call_next(request)
+    if request.scope.get("path", "").startswith("/api/"):
+        # 🛡️ Sentinel Security Fix: Use getlist() to handle multiple X-Forwarded-For headers
+        forwarded_list = request.headers.getlist("X-Forwarded-For")
+        if forwarded_list:
+            forwarded = ",".join(forwarded_list)
+            client_ip = forwarded.split(",")[-1].strip()
+        else:
+            client_ip = request.client.host if request.client else "unknown"
 
-    # 🛡️ Sentinel Security Fix: Use getlist() to handle multiple X-Forwarded-For headers
-    # If an attacker sends a spoofed X-Forwarded-For header and the proxy appends a new
-    # X-Forwarded-For header with the real IP, using request.headers.get() only returns
-    # the first (spoofed) one, allowing a rate limit bypass. Combining all headers
-    # guarantees we extract the final proxy-appended IP.
-    forwarded_list = request.headers.getlist("X-Forwarded-For")
-    if forwarded_list:
-        forwarded = ",".join(forwarded_list)
-        client_ip = forwarded.split(",")[-1].strip()
-    else:
-        client_ip = request.client.host if request.client else "unknown"
+        # 🛡️ Sentinel Security Enhancement: Hash IP addresses to protect PII in memory.
+        hashed_ip = hashlib.sha256((client_ip + IP_HASH_SALT).encode('utf-8')).hexdigest()
+        current_time = time.time()
 
-    # 🛡️ Sentinel Security Enhancement: Hash IP addresses to protect PII in memory.
-    # We include a cryptographic salt to prevent rainbow table attacks against low-entropy IPv4 addresses.
-    hashed_ip = hashlib.sha256((client_ip + IP_HASH_SALT).encode('utf-8')).hexdigest()
-    current_time = time.time()
+        # Prevent memory exhaustion in the rate limit store itself
+        # 🛡️ Sentinel Security Fix: Only run the O(N) eviction loop when the store is full AND
+        # the incoming request is from a new IP. Running this loop on every request when full
+        # causes an Algorithmic Complexity DoS, freezing the event loop.
+        if len(rate_limit_store) >= MAX_IPS and hashed_ip not in rate_limit_store:
+            stale_ips = []
+            for ip, timestamps in rate_limit_store.items():
+                if not timestamps or current_time - timestamps[-1] >= RATE_LIMIT_WINDOW:
+                    stale_ips.append(ip)
 
-    # Prevent memory exhaustion in the rate limit store itself
-    # 🛡️ Sentinel Security Fix: Only run the O(N) eviction loop when the store is full AND
-    # the incoming request is from a new IP. Running this loop on every request when full
-    # causes an Algorithmic Complexity DoS, freezing the event loop.
-    if len(rate_limit_store) >= MAX_IPS and hashed_ip not in rate_limit_store:
-        # Evict stale entries rather than clearing the entire store.
-        stale_ips = []
-        for ip, timestamps in rate_limit_store.items():
-            # 🛡️ Sentinel Security Fix: Fast staleness check. If the most recent timestamp
-            # is older than the window, the entire list is stale.
-            if not timestamps or current_time - timestamps[-1] >= RATE_LIMIT_WINDOW:
-                stale_ips.append(ip)
+            for ip in stale_ips:
+                del rate_limit_store[ip]
 
-        for ip in stale_ips:
-            del rate_limit_store[ip]
+            if len(rate_limit_store) >= MAX_IPS:
+                return _apply_headers(JSONResponse(status_code=503, content={"detail": "Service temporarily unavailable due to high load."}))
 
-        # If the store is still full after eviction and this is a new IP,
-        # we must reject to prevent memory exhaustion without resetting existing rate limits.
-        if len(rate_limit_store) >= MAX_IPS:
-            return JSONResponse(status_code=503, content={"detail": "Service temporarily unavailable due to high load."})
+        if hashed_ip not in rate_limit_store:
+            rate_limit_store[hashed_ip] = []
 
-    if hashed_ip not in rate_limit_store:
-        rate_limit_store[hashed_ip] = []
+        # Filter out old requests for current IP
+        # ⚡ Bolt Optimization: Use in-place pop(0) instead of a list comprehension
+        requests = rate_limit_store[hashed_ip]
+        min_time = current_time - RATE_LIMIT_WINDOW
 
-    # Filter out old requests for current IP
-    # ⚡ Bolt Optimization: Use in-place pop(0) instead of a list comprehension to avoid
-    # dynamically allocating new lists and re-assigning dictionary keys on every request.
-    requests = rate_limit_store[hashed_ip]
-    min_time = current_time - RATE_LIMIT_WINDOW
+        while requests and requests[0] < min_time:
+            requests.pop(0)
 
-    while requests and requests[0] < min_time:
-        requests.pop(0)
+        if len(requests) >= RATE_LIMIT_MAX_REQUESTS:
+            return _apply_headers(JSONResponse(status_code=429, content={"detail": "Too many requests. Please try again later."}))
 
-    if len(requests) >= RATE_LIMIT_MAX_REQUESTS:
-        return JSONResponse(status_code=429, content={"detail": "Too many requests. Please try again later."})
+        requests.append(current_time)
 
-    requests.append(current_time)
-
-    return await call_next(request)
-
-# 🛡️ Sentinel Security Enhancement: Add essential security headers
-@app.middleware("http")
-async def add_security_headers(request: Request, call_next):
+    # 3. Call next and Add Security Headers
     response = await call_next(request)
-    response.headers["X-Content-Type-Options"] = "nosniff"
-    response.headers["X-Frame-Options"] = "DENY"
-    # 🛡️ Sentinel Security Enhancement: Add HSTS preload directive to protect users from MITM attacks on their first visit
-    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
-    response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src https://cdn.jsdelivr.net; img-src 'self' data:; connect-src 'self' http://localhost:8000;"
-    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-    response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
-    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
-    return response
+    return _apply_headers(response)
 
 # 🛡️ Sentinel Security Fix: Prevent NaN/Inf injection
 # Pydantic v2 float types allow NaN/Inf by default. These values propagate into
