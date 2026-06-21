@@ -254,3 +254,7 @@
 ## 2026-06-20 - Contextual Focus Outlines for Validation States
 **Learning:** Setting a global `:focus-visible` outline color (like the app's default cyan accent) causes visual clashes when the element is in a validation state (like a red border for errors, or a green border for success). Keyboard users see a confusing mix of colors that dilutes the validation feedback.
 **Action:** When defining specific styling for form validation states (like `:user-invalid` or `[data-valid-json="true"]`), always include a corresponding `:focus-visible` rule that specifically overrides the `outline-color` to match the validation state's color (e.g., matching the red or green border), ensuring a cohesive, unambiguous experience during keyboard navigation.
+
+## 2026-06-21 - Accessible Stale State Notifications
+**Learning:** When inputs change and calculated outputs (like charts or text results) are visually dimmed and hidden from the accessibility tree (e.g., using `aria-hidden="true"`) to indicate they are "stale", screen reader users are not informed of this crucial state transition. They may continue expecting the data to be valid or not understand why the content disappeared or requires a form resubmission.
+**Action:** Whenever an interactive output state is marked as "stale" visually, always accompany the visual change with a proactive `aria-live` announcement (e.g., "Input changed. Previous output is now stale. Resubmit to update.") to ensure screen reader users understand the current application state.
