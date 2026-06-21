@@ -266,11 +266,14 @@ document.addEventListener('input', (e) => {
         // on every single keystroke once the section is already marked as stale.
         if (section && section.dataset.stale !== 'true') {
             section.dataset.stale = 'true';
+            let didHideOutput = false;
+
             const chartContainer = section.querySelector('.chart-container');
             if (chartContainer && !chartContainer.querySelector('.empty-state') && !chartContainer.hasAttribute('data-empty')) {
                 chartContainer.style.opacity = '0.5';
                 chartContainer.style.pointerEvents = 'none';
                 chartContainer.setAttribute('aria-hidden', 'true');
+                didHideOutput = true;
             }
             const outputBlock = section.querySelector('.output-block[style*="display: block"]');
             if (outputBlock && outputBlock.id !== 'lqr-empty' && !outputBlock.querySelector('.empty-state') && !outputBlock.hasAttribute('data-empty')) {
@@ -278,6 +281,11 @@ document.addEventListener('input', (e) => {
                 outputBlock.style.pointerEvents = 'none';
                 outputBlock.setAttribute('aria-hidden', 'true');
                 outputBlock.querySelectorAll('.copy-btn').forEach(btn => btn.disabled = true);
+                didHideOutput = true;
+            }
+
+            if (didHideOutput && typeof announceA11y === 'function') {
+                announceA11y('Input changed. Previous output is now stale. Resubmit to update.');
             }
         }
     }
@@ -736,6 +744,10 @@ window.addEventListener('DOMContentLoaded', () => {
                 container.style.pointerEvents = 'none';
                 container.setAttribute('aria-hidden', 'true');
                 container.querySelectorAll('button, input').forEach(el => el.disabled = true);
+
+                if (typeof announceA11y === 'function') {
+                    announceA11y('Input changed. Previous output is now stale. Resubmit to update.');
+                }
             }
         }
     }
