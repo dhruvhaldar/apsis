@@ -1,4 +1,5 @@
 :root {
+    color-scheme: dark;
     --bg-color: #0b0c10; /* Darker space background */
     --text-color: #c5c6c7;
     --accent-color: #66fcf1;
@@ -6,6 +7,11 @@
 
     --panel-bg-color: rgba(31, 40, 51, 0.85); /* Semi-transparent panel */
     --input-bg-color: rgba(11, 12, 16, 0.6);
+}
+
+::selection {
+    background-color: var(--accent-dark);
+    color: #fff;
 }
 
 @keyframes gradientAnimation {
