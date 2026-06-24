@@ -360,8 +360,7 @@ async function solvePMP() {
                 canvas.id = 'pmp-canvas-inner';
                 canvas.setAttribute('role', 'img');
                 canvas.setAttribute('aria-label', 'Optimal Trajectory Chart showing x1, x2, and u over time');
-                document.getElementById('pmp-chart').innerHTML = '';
-                document.getElementById('pmp-chart').appendChild(canvas);
+                document.getElementById('pmp-chart').replaceChildren(canvas);
             }
 
             pmpChartInstance = new Chart(canvas, {
@@ -572,8 +571,7 @@ async function solveMPC() {
                 canvas.id = 'mpc-canvas-inner';
                 canvas.setAttribute('role', 'img');
                 canvas.setAttribute('aria-label', 'Model Predictive Control Simulation Chart showing predicted states and inputs');
-                document.getElementById('mpc-chart').innerHTML = '';
-                document.getElementById('mpc-chart').appendChild(canvas);
+                document.getElementById('mpc-chart').replaceChildren(canvas);
             }
 
             mpcChartInstance = new Chart(canvas, {
