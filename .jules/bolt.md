@@ -156,3 +156,6 @@
 ## 2026-06-20 - Multiple BaseHTTPMiddlewares in FastAPI
 **Learning:** Every `@app.middleware("http")` (which is a subclass of `BaseHTTPMiddleware`) implicitly creates its own `AnyIO` TaskGroup. Chaining multiple separate middlewares forces the request/response to traverse multiple task groups, which causes severe context-switching overhead and severely degrades performance in FastAPI applications.
 **Action:** Consolidate multiple `@app.middleware("http")` functions (e.g. rate limiters, payload size checkers, header injection) into a single unified middleware function. This reduces the number of TaskGroups instantiated, effectively lowering the ASGI architectural overhead by avoiding unnecessary context-switching.
+## 2026-06-25 - Replace innerHTML with replaceChildren
+**Learning:** Using `innerHTML = ''` followed by `.appendChild(element)` to replace the contents of a DOM node forces the browser to invoke its HTML parser, which is computationally expensive and delays rendering.
+**Action:** Always use `element.replaceChildren(newChild)` instead of `.innerHTML = ''` combined with `appendChild()` to bypass the HTML parser entirely and perform single-pass DOM clearing and insertion, yielding a performance improvement.
