@@ -830,3 +830,10 @@ document.addEventListener('wheel', (e) => {
         document.activeElement.blur();
     }
 }, { passive: true });
+
+// ⚡ Palette: Auto-select input text on focus to make overwriting complex pre-filled values faster
+document.addEventListener('focusin', (e) => {
+    if (e.target && e.target.classList.contains('ui-input')) {
+        e.target.select();
+    }
+});
