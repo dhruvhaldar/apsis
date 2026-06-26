@@ -266,3 +266,7 @@
 ## 2026-06-25 - Auto-Select for Rapid Data Entry
 **Learning:** In scientific or mathematical workbenches where inputs frequently contain complex pre-filled data (like JSON arrays `[1.0, 0.0]` or matrices), forcing users to manually highlight or backspace the entire string to enter a new value introduces significant friction. When users click or tab into these fields, their intent is almost always to replace the entire structure, not edit a single digit.
 **Action:** Always attach a global `focusin` event listener to apply `.select()` on `.ui-input` fields. This auto-selects the entire text, allowing users to seamlessly type over complex default values with a single keystroke, dramatically accelerating data entry.
+
+## 2026-06-26 - Eliminate Duplicate State Announcements via Event Delegation
+**Learning:** When implementing generic UI state changes (like marking sections as 'stale' upon input and triggering screen reader announcements), attaching both a global `input` event listener with delegation and individual form `input` event listeners causes the logic to run twice. This results in conflicting DOM updates and, most importantly, duplicate `aria-live` screen reader announcements which confuse and annoy users.
+**Action:** When implementing generic UI state changes (like marking sections as 'stale' upon input), always rely on a single global event listener using event delegation (`e.target.closest()`). Remove redundant listeners bound to individual forms or elements to prevent duplicate execution and conflicting screen reader announcements.
