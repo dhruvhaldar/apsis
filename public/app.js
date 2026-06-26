@@ -730,38 +730,6 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Helper to dim output containers when input changes
-    function setOutputStale(containerId) {
-        const container = document.getElementById(containerId);
-        // ⚡ Bolt Optimization: Early return to prevent redundant DOM queries and style recalculations
-        // on every single keystroke once the container is already marked as stale.
-        if (container && container.dataset.stale !== 'true') {
-            if (!container.querySelector('.empty-state')) {
-                container.dataset.stale = 'true';
-                container.style.opacity = '0.5';
-                container.style.pointerEvents = 'none';
-                container.setAttribute('aria-hidden', 'true');
-                container.querySelectorAll('button, input').forEach(el => el.disabled = true);
-
-                if (typeof announceA11y === 'function') {
-                    announceA11y('Input changed. Previous output is now stale. Resubmit to update.');
-                }
-            }
-        }
-    }
-
-    // Helper to restore output containers after successful calculation
-    window.clearOutputStale = function(containerId) {
-        const container = document.getElementById(containerId);
-        if (container) {
-            container.style.opacity = '';
-            container.style.pointerEvents = '';
-            container.removeAttribute('aria-hidden');
-            container.querySelectorAll('button, input, .copy-btn').forEach(el => el.disabled = false);
-            delete container.dataset.stale;
-        }
-    };
-
     // Attach form submit listeners
     const pmpForm = document.getElementById('pmp-form');
     if (pmpForm) {
@@ -769,7 +737,6 @@ window.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             solvePMP();
         });
-        pmpForm.addEventListener('input', () => setOutputStale('pmp-chart'));
     }
 
     const lqrForm = document.getElementById('lqr-form');
@@ -778,7 +745,6 @@ window.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             solveLQR();
         });
-        lqrForm.addEventListener('input', () => setOutputStale('lqr-output'));
     }
 
     const mpcForm = document.getElementById('mpc-form');
@@ -787,7 +753,6 @@ window.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             solveMPC();
         });
-        mpcForm.addEventListener('input', () => setOutputStale('mpc-chart'));
     }
 });
 
