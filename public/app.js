@@ -252,7 +252,7 @@ document.addEventListener('input', (e) => {
             e.target.removeAttribute('title'); // Clear tooltip when fixing
         }
 
-        const form = e.target.closest('form');
+        const form = e.target.form;
         if (form) {
             const btn = form.querySelector('[type="submit"]');
             if (btn && btn.validationMessage !== '') {
@@ -290,7 +290,7 @@ document.addEventListener('input', (e) => {
         }
     }
     // Clear form submit button validity on input change to allow retry
-    const form = e.target.closest('form');
+    const form = e.target.form;
     if (form) {
         const btn = form.querySelector('button[type="submit"]');
         // ⚡ Bolt Optimization: Only update DOM if validation message needs clearing to prevent layout thrashing
@@ -310,7 +310,7 @@ let pmpChartInstance = null;
 // 1. Solve PMP
 async function solvePMP() {
     const btn = document.getElementById('btn-pmp');
-    const form = btn.closest('form');
+    const form = btn.form;
     let enabledInputs = [];
     let wasFocused = document.activeElement;
     btn.setCustomValidity('');
@@ -432,7 +432,7 @@ async function solvePMP() {
 // 2. Solve LQR
 async function solveLQR() {
     const btn = document.getElementById('btn-lqr');
-    const form = btn.closest('form');
+    const form = btn.form;
     let enabledInputs = [];
     let wasFocused = document.activeElement;
     btn.setCustomValidity('');
@@ -519,7 +519,7 @@ let mpcChartInstance = null;
 // 3. Solve MPC
 async function solveMPC() {
     const btn = document.getElementById('btn-mpc');
-    const form = btn.closest('form');
+    const form = btn.form;
     let enabledInputs = [];
     let wasFocused = document.activeElement;
     btn.setCustomValidity('');
@@ -776,7 +776,7 @@ document.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         const activeElement = document.activeElement;
         if (activeElement) {
-            const form = activeElement.closest('form');
+            const form = activeElement.form || activeElement.closest('form');
             if (form) {
                 // Prevent default Enter behavior
                 e.preventDefault();
