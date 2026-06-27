@@ -159,3 +159,7 @@
 ## 2026-06-25 - Replace innerHTML with replaceChildren
 **Learning:** Using `innerHTML = ''` followed by `.appendChild(element)` to replace the contents of a DOM node forces the browser to invoke its HTML parser, which is computationally expensive and delays rendering.
 **Action:** Always use `element.replaceChildren(newChild)` instead of `.innerHTML = ''` combined with `appendChild()` to bypass the HTML parser entirely and perform single-pass DOM clearing and insertion, yielding a performance improvement.
+
+## 2026-06-25 - Avoid DOM querying using .closest('form')
+**Learning:** In high-frequency event listeners (like `input` or `keydown`), redundantly traversing the DOM using `e.target.closest('form')` or duplicate `querySelector` calls introduces significant CPU overhead and layout thrashing, which delays the main thread and impacts the Interaction to Next Paint (INP).
+**Action:** When needing a reference to the form an element belongs to, always use the native O(1) `element.form` property rather than `.closest('form')`. Additionally, eliminate duplicate DOM queries and consolidate state updates to avoid redundant traversals.
