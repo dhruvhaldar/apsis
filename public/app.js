@@ -318,6 +318,8 @@ async function solvePMP() {
     btn.disabled = true;
     btn.setAttribute('aria-busy', 'true');
     btn.innerHTML = '<span aria-hidden="true">⏳</span> Solving...';
+    const originalTitle = btn.getAttribute('title');
+    btn.title = 'Computation in progress...';
     if (form) {
         enabledInputs = Array.from(form.elements).filter(el => !el.disabled && el !== btn);
         enabledInputs.forEach(el => el.disabled = true);
@@ -421,6 +423,11 @@ async function solvePMP() {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
         btn.innerHTML = originalHTML;
+        if (originalTitle !== null) {
+            btn.setAttribute('title', originalTitle);
+        } else {
+            btn.removeAttribute('title');
+        }
         enabledInputs.forEach(el => el.disabled = false);
         // ⚡ Palette UX: Only restore focus if the user hasn't proactively navigated elsewhere
         if (wasFocused && typeof wasFocused.focus === 'function' && document.activeElement === document.body) {
@@ -440,6 +447,8 @@ async function solveLQR() {
     btn.disabled = true;
     btn.setAttribute('aria-busy', 'true');
     btn.innerHTML = '<span aria-hidden="true">⏳</span> Synthesizing...';
+    const originalTitle = btn.getAttribute('title');
+    btn.title = 'Computation in progress...';
     if (form) {
         enabledInputs = Array.from(form.elements).filter(el => !el.disabled && el !== btn);
         enabledInputs.forEach(el => el.disabled = true);
@@ -505,6 +514,11 @@ async function solveLQR() {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
         btn.innerHTML = originalHTML;
+        if (originalTitle !== null) {
+            btn.setAttribute('title', originalTitle);
+        } else {
+            btn.removeAttribute('title');
+        }
         enabledInputs.forEach(el => el.disabled = false);
         // ⚡ Palette UX: Only restore focus if the user hasn't proactively navigated elsewhere
         if (wasFocused && typeof wasFocused.focus === 'function' && document.activeElement === document.body) {
@@ -527,6 +541,8 @@ async function solveMPC() {
     btn.disabled = true;
     btn.setAttribute('aria-busy', 'true');
     btn.innerHTML = '<span aria-hidden="true">⏳</span> Simulating...';
+    const originalTitle = btn.getAttribute('title');
+    btn.title = 'Computation in progress...';
     if (form) {
         enabledInputs = Array.from(form.elements).filter(el => !el.disabled && el !== btn);
         enabledInputs.forEach(el => el.disabled = true);
@@ -632,6 +648,11 @@ async function solveMPC() {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
         btn.innerHTML = originalHTML;
+        if (originalTitle !== null) {
+            btn.setAttribute('title', originalTitle);
+        } else {
+            btn.removeAttribute('title');
+        }
         enabledInputs.forEach(el => el.disabled = false);
         // ⚡ Palette UX: Only restore focus if the user hasn't proactively navigated elsewhere
         if (wasFocused && typeof wasFocused.focus === 'function' && document.activeElement === document.body) {
