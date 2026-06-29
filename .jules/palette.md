@@ -278,3 +278,7 @@
 ## 2026-06-28 - Explicitly Explaining Disabled States
 **Learning:** During long async computations, users (especially power users or those using screen readers) might try to hover over or interact with a disabled submit button. Relying solely on a `cursor: wait` or a text change inside the button isn't always enough to explain *why* it is disabled to users who rely on tooltips or native browser hints.
 **Action:** Always set a descriptive `title` attribute on interactive elements while they are temporarily `disabled` (e.g., `btn.title = 'Computation in progress...';`), and ensure you cache and restore the original `title` (or remove it) in the `finally` block. This leverages the browser's native tooltip to provide immediate, context-specific UX about the button's state without adding new UI elements.
+
+## 2026-06-29 - State-Aware Primary Buttons Proactively Guide Users
+**Learning:** In decoupled interfaces where editing a form makes an output visually "stale" (but does not automatically update it), users can lose track of what to do next. Marking the section as stale is good, but without a proactive call-to-action, the next required step can be ambiguous.
+**Action:** When an interactive output is marked as "stale," use a subtle, non-intrusive visual cue (like a CSS pulse animation or static glow for reduced motion) on the primary submit button. This naturally draws the user's eye and proactively guides them to click the button to resolve the stale state.
