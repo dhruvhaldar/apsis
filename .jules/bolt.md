@@ -163,3 +163,7 @@
 ## 2026-06-25 - Avoid DOM querying using .closest('form')
 **Learning:** In high-frequency event listeners (like `input` or `keydown`), redundantly traversing the DOM using `e.target.closest('form')` or duplicate `querySelector` calls introduces significant CPU overhead and layout thrashing, which delays the main thread and impacts the Interaction to Next Paint (INP).
 **Action:** When needing a reference to the form an element belongs to, always use the native O(1) `element.form` property rather than `.closest('form')`. Additionally, eliminate duplicate DOM queries and consolidate state updates to avoid redundant traversals.
+
+## 2026-06-25 - Avoid Duplicated DOM Queries in High-Frequency Listeners
+**Learning:** Running identical DOM queries and logic (like finding the submit button and checking its validity) multiple times within the same high-frequency event listener (like `input`) is redundant and needlessly increases CPU overhead, risking layout thrashing and main thread blocking.
+**Action:** Audit high-frequency event handlers to ensure that identical DOM queries and mutations are consolidated into a single operation, avoiding repeated execution.
