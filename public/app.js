@@ -252,8 +252,19 @@ document.addEventListener('input', (e) => {
             e.target.removeAttribute('title'); // Clear tooltip when fixing
         }
 
+        // Clear form submit button validity on input change to allow retry
+        const form = e.target.form;
+        if (form) {
+            const btn = form.querySelector('button[type="submit"]');
+            // ⚡ Bolt Optimization: Only update DOM if validation message needs clearing to prevent layout thrashing
+            if (btn && btn.validationMessage !== '') btn.setCustomValidity('');
+        }
+
         // ⚡ UX Improvement: Mark existing output as stale to prevent confusion
-        const section = e.target.closest('section');
+        // ⚡ Bolt Optimization: Use the native O(1) form reference to find the parent section
+        // instead of executing an expensive e.target.closest('section') DOM traversal on every input event.
+        const section = form ? form.closest('section') : e.target.closest('section');
+
         // ⚡ Bolt Optimization: Early return to prevent redundant DOM queries and style recalculations
         // on every single keystroke once the section is already marked as stale.
         if (section && section.dataset.stale !== 'true') {
@@ -280,13 +291,6 @@ document.addEventListener('input', (e) => {
                 announceA11y('Input changed. Previous output is now stale. Resubmit to update.');
             }
         }
-    }
-    // Clear form submit button validity on input change to allow retry
-    const form = e.target.form;
-    if (form) {
-        const btn = form.querySelector('button[type="submit"]');
-        // ⚡ Bolt Optimization: Only update DOM if validation message needs clearing to prevent layout thrashing
-        if (btn && btn.validationMessage !== '') btn.setCustomValidity('');
     }
 });
 
