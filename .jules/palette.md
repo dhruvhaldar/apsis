@@ -282,3 +282,7 @@
 ## 2026-06-29 - State-Aware Primary Buttons Proactively Guide Users
 **Learning:** In decoupled interfaces where editing a form makes an output visually "stale" (but does not automatically update it), users can lose track of what to do next. Marking the section as stale is good, but without a proactive call-to-action, the next required step can be ambiguous.
 **Action:** When an interactive output is marked as "stale," use a subtle, non-intrusive visual cue (like a CSS pulse animation or static glow for reduced motion) on the primary submit button. This naturally draws the user's eye and proactively guides them to click the button to resolve the stale state.
+
+## 2026-06-30 - Auto-Scroll to Important Form Responses
+**Learning:** When submitting long forms on mobile or small viewports, appending dynamic visual results (like charts or matrices) at the bottom often pushes them off-screen. Users, unaware that a calculation finished because the result is out of view, might think the application is broken or hang.
+**Action:** Always auto-scroll the newly generated output or chart container directly into view upon successful form submissions. Use `element.scrollIntoView({ behavior: 'smooth', block: 'nearest' })`, but ensure you respect accessibility preferences by dynamically checking `window.matchMedia('(prefers-reduced-motion: reduce)').matches` and falling back to `behavior: 'auto'`.

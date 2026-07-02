@@ -390,6 +390,7 @@ async function solvePMP() {
         }
 
         announceA11y('PMP trajectory calculated successfully. Chart updated.');
+        scrollToOutput(chartContainer);
 
     } catch (err) {
         console.error(err);
@@ -481,6 +482,7 @@ async function solveLQR() {
         }
 
         announceA11y('LQR synthesis complete. Gain and poles available.');
+        scrollToOutput(document.getElementById('lqr-output'));
 
     } catch (err) {
         console.error(err);
@@ -615,6 +617,7 @@ async function solveMPC() {
         }
 
         announceA11y('MPC simulation complete. Chart updated.');
+        scrollToOutput(chartContainer);
 
     } catch (err) {
         console.error(err);
@@ -650,6 +653,16 @@ async function solveMPC() {
         if (wasFocused && typeof wasFocused.focus === 'function' && document.activeElement === document.body) {
             wasFocused.focus();
         }
+    }
+}
+
+// ⚡ Palette UX: Auto-scroll Helper
+// Smoothly scrolls to the generated output so users on mobile/small screens
+// don't miss the result. Respects the user's reduced motion preference.
+function scrollToOutput(element) {
+    if (element) {
+        const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+        element.scrollIntoView({ behavior: behavior, block: 'nearest' });
     }
 }
 
