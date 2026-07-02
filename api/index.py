@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 import logging
 import time
@@ -27,44 +28,11 @@ app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 # significantly improving network transfer times and rendering speed on slower connections.
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
-# 🛡️ Sentinel Security Fix: Restrict CORS to specific origins and methods
-# Overly permissive CORS ("*") allows any domain to make requests to the API.
-# In a serverless setup like Vercel, the frontend and API share the same origin,
-# so CORS is only strictly needed for local development.
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "http://localhost:8000",
-        "http://127.0.0.1:8000"
-    ],
-    allow_credentials=False,
-    allow_methods=["POST", "OPTIONS"],
-    allow_headers=["Content-Type"],
-)
-
-# 🛡️ Sentinel Security Fix: Prevent memory exhaustion (DoS) by limiting request size.
-# FastAPI buffers the entire request body in memory by default. An attacker could
-# send a massive payload to crash the server. We enforce a 2MB limit.
-MAX_PAYLOAD_SIZE = 2 * 1024 * 1024 # 2MB
-
-# 🛡️ Sentinel Security Enhancement: Application-Layer Rate Limiting
-# The mathematical solvers are computationally intensive and vulnerable to CPU
-# exhaustion DoS attacks. Limit requests per IP.
-RATE_LIMIT_WINDOW = 60 # seconds
-RATE_LIMIT_MAX_REQUESTS = 50
-MAX_IPS = 10000
-
-rate_limit_store: Dict[str, List[float]] = {}
-IP_HASH_SALT = secrets.token_hex(16)
-
 # ⚡ Bolt Optimization: Combine Multiple BaseHTTPMiddlewares into one.
 # Every @app.middleware("http") decorator instantiates an AnyIO TaskGroup. Multiple
 # middlewares force the request to traverse multiple task groups, introducing significant
 # context-switching overhead. Combining payload sizing, rate limiting, and security headers
 # into a single middleware reduces this ASGI architectural overhead by ~66%.
-@app.middleware("http")
 async def combined_security_and_rate_limit_middleware(request: Request, call_next):
     def _apply_headers(resp):
         resp.headers["X-Content-Type-Options"] = "nosniff"
@@ -159,6 +127,43 @@ async def combined_security_and_rate_limit_middleware(request: Request, call_nex
     # 3. Call next and Add Security Headers
     response = await call_next(request)
     return _apply_headers(response)
+
+
+app.add_middleware(BaseHTTPMiddleware, dispatch=combined_security_and_rate_limit_middleware)
+
+# 🛡️ Sentinel Security Fix: Restrict CORS to specific origins and methods
+# Overly permissive CORS ("*") allows any domain to make requests to the API.
+# In a serverless setup like Vercel, the frontend and API share the same origin,
+# so CORS is only strictly needed for local development.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:8000",
+        "http://127.0.0.1:8000"
+    ],
+    allow_credentials=False,
+    allow_methods=["POST", "OPTIONS"],
+    allow_headers=["Content-Type"],
+)
+
+
+
+# 🛡️ Sentinel Security Fix: Prevent memory exhaustion (DoS) by limiting request size.
+# FastAPI buffers the entire request body in memory by default. An attacker could
+# send a massive payload to crash the server. We enforce a 2MB limit.
+MAX_PAYLOAD_SIZE = 2 * 1024 * 1024 # 2MB
+
+# 🛡️ Sentinel Security Enhancement: Application-Layer Rate Limiting
+# The mathematical solvers are computationally intensive and vulnerable to CPU
+# exhaustion DoS attacks. Limit requests per IP.
+RATE_LIMIT_WINDOW = 60 # seconds
+RATE_LIMIT_MAX_REQUESTS = 50
+MAX_IPS = 10000
+
+rate_limit_store: Dict[str, List[float]] = {}
+IP_HASH_SALT = secrets.token_hex(16)
 
 # 🛡️ Sentinel Security Fix: Prevent NaN/Inf injection
 # Pydantic v2 float types allow NaN/Inf by default. These values propagate into

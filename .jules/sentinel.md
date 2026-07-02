@@ -117,3 +117,8 @@
 **Vulnerability:** IP addresses were hashed with `hashlib.sha256` before being stored in memory for tracking rate limits. However, the hashes were unsalted.
 **Learning:** IPv4 addresses have very low entropy (only 4 billion possible values). An attacker with access to a memory dump could easily use a rainbow table or brute-force attack to reverse the unsalted SHA-256 hashes and recover the original PII.
 **Prevention:** Always combine low-entropy PII (like IP addresses) with a cryptographically secure random salt (e.g., `secrets.token_hex(16)`) before hashing, even if the hashes are only stored ephemerally in memory.
+
+## 2024-07-02 - FastAPI Custom Middleware CORS Bypass
+**Vulnerability:** HTTP endpoints could return error codes (like 429 Rate Limit Exceeded or 413 Payload Too Large) without appropriate `Access-Control-Allow-Origin` headers, causing the frontend to crash opaquely with a generic CORS error rather than handling the specific error code gracefully.
+**Learning:** In FastAPI (Starlette), middlewares added via `@app.middleware("http")` are executed as the outermost wrapper, meaning they execute *before* `CORSMiddleware` on the incoming request, and *after* it on the outgoing response. Thus, if the custom middleware returns an early response, `CORSMiddleware` is entirely bypassed.
+**Prevention:** Avoid using the `@app.middleware("http")` decorator for middlewares that might return early and require CORS headers. Instead, implement them as standard functions and register them explicitly using `app.add_middleware(BaseHTTPMiddleware, dispatch=...)`. Ensure `app.add_middleware(CORSMiddleware, ...)` is added last in the file, making it the true outermost middleware.
