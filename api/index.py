@@ -10,6 +10,8 @@ import hashlib
 import secrets
 from pydantic import BaseModel, Field
 from typing import List, Optional, Annotated, Dict
+import urllib.parse
+import re
 
 from apsis.calculus_of_variations import solve_pmp_linear_quadratic
 from apsis.lqr import solve_lqr
@@ -79,7 +81,12 @@ async def combined_security_and_rate_limit_middleware(request: Request, call_nex
     # ⚡ Bolt Optimization: Bypass `request.url` in FastAPI middleware.
     # Accessing `request.url` lazily constructs a URL object by dynamically parsing
     # the entire `scope` dictionary. Using `request.scope["path"]` avoids this overhead.
-    if request.scope.get("path", "").startswith("/api/"):
+
+    # 🛡️ Sentinel Security Enhancement: Normalize path before checking to prevent rate limit bypass
+    raw_path = request.scope.get("path", "")
+    normalized_path = re.sub(r'/+', '/', urllib.parse.unquote(raw_path))
+
+    if normalized_path.startswith("/api/"):
         # 🛡️ Sentinel Security Fix: Use getlist() to handle multiple X-Forwarded-For headers
         forwarded_list = request.headers.getlist("X-Forwarded-For")
         if forwarded_list:
