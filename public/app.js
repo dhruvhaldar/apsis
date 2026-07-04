@@ -218,6 +218,11 @@ document.addEventListener('focusout', (e) => {
         if (!e.target.validity.valid) {
             e.target.title = e.target.validationMessage;
             e.target.setAttribute('aria-invalid', 'true');
+            // Proactively announce the error to screen readers
+            if (typeof announceA11y === 'function') {
+                const label = e.target.labels && e.target.labels.length > 0 ? e.target.labels[0].textContent.replace(/\*$/, '').trim() : 'Input';
+                announceA11y(`Error in ${label}: ${e.target.validationMessage}`);
+            }
         } else {
             e.target.removeAttribute('title');
             e.target.setAttribute('aria-invalid', 'false');
