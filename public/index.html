@@ -57,7 +57,7 @@
                         <label for="pmp-tf">Final Time (tf) <span class="required-indicator" aria-hidden="true">*</span></label>
                         <input type="number" id="pmp-tf" class="ui-input" value="10.0" min="0.1" max="1000" step="any" placeholder="e.g. 10.0" required aria-required="true" inputmode="decimal">
                     </div>
-                    <button id="btn-pmp" class="ui-btn" type="submit" aria-keyshortcuts="Control+Enter">Solve PMP <span class="shortcut-hint" aria-hidden="true">(<kbd class="shortcut-modifier">Ctrl</kbd> + <kbd>Enter</kbd>)</span></button>
+                    <button id="btn-pmp" class="ui-btn" type="submit" aria-keyshortcuts="Control+Enter" aria-controls="pmp-chart">Solve PMP <span class="shortcut-hint" aria-hidden="true">(<kbd class="shortcut-modifier">Ctrl</kbd> + <kbd>Enter</kbd>)</span></button>
                 </form>
                 <div class="chart-container" id="pmp-chart">
                     <div class="empty-state">
@@ -91,26 +91,28 @@
                         <label for="lqr-R">Input Cost R Matrix <span class="required-indicator" aria-hidden="true">*</span></label>
                         <input type="text" id="lqr-R" class="ui-input" data-format="json" value="[[1]]" placeholder="e.g. [[1]]" required aria-required="true" maxlength="2000">
                     </div>
-                    <button id="btn-lqr" class="ui-btn" type="submit" aria-keyshortcuts="Control+Enter">Synthesize LQR <span class="shortcut-hint" aria-hidden="true">(<kbd class="shortcut-modifier">Ctrl</kbd> + <kbd>Enter</kbd>)</span></button>
+                    <button id="btn-lqr" class="ui-btn" type="submit" aria-keyshortcuts="Control+Enter" aria-controls="lqr-results">Synthesize LQR <span class="shortcut-hint" aria-hidden="true">(<kbd class="shortcut-modifier">Ctrl</kbd> + <kbd>Enter</kbd>)</span></button>
                 </form>
-                <div class="output-block" id="lqr-empty">
-                    <div class="empty-state">
-                        <div aria-hidden="true">🎵</div>
-                        <div>Synthesize to view gain and poles</div>
+                <div id="lqr-results">
+                    <div class="output-block" id="lqr-empty">
+                        <div class="empty-state">
+                            <div aria-hidden="true">🎵</div>
+                            <div>Synthesize to view gain and poles</div>
+                        </div>
                     </div>
-                </div>
-                <div class="output-block" id="lqr-output" aria-live="polite" style="display: none; position: relative;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <p style="padding-right: 40px; margin: 0;">Gain K: <span id="lqr-k-val">...</span></p>
-                        <button class="icon-btn copy-btn" aria-label="Copy Gain K matrix to clipboard" title="Copy Gain K matrix" data-target="lqr-k-val" style="position: static;">
-                            <span aria-hidden="true">📋</span>
-                        </button>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
-                        <p style="margin: 0;">Closed-loop Poles: <span id="lqr-poles-val">...</span></p>
-                        <button class="icon-btn copy-btn" aria-label="Copy Closed-loop Poles to clipboard" title="Copy Closed-loop Poles" data-target="lqr-poles-val" style="position: static;">
-                            <span aria-hidden="true">📋</span>
-                        </button>
+                    <div class="output-block" id="lqr-output" aria-live="polite" style="display: none; position: relative;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <p style="padding-right: 40px; margin: 0;">Gain K: <span id="lqr-k-val">...</span></p>
+                            <button class="icon-btn copy-btn" aria-label="Copy Gain K matrix to clipboard" title="Copy Gain K matrix" data-target="lqr-k-val" style="position: static;">
+                                <span aria-hidden="true">📋</span>
+                            </button>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                            <p style="margin: 0;">Closed-loop Poles: <span id="lqr-poles-val">...</span></p>
+                            <button class="icon-btn copy-btn" aria-label="Copy Closed-loop Poles to clipboard" title="Copy Closed-loop Poles" data-target="lqr-poles-val" style="position: static;">
+                                <span aria-hidden="true">📋</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -143,7 +145,7 @@
                             </div>
                         </div>
                     </fieldset>
-                    <button id="btn-mpc" class="ui-btn" type="submit" aria-keyshortcuts="Control+Enter">Simulate MPC <span class="shortcut-hint" aria-hidden="true">(<kbd class="shortcut-modifier">Ctrl</kbd> + <kbd>Enter</kbd>)</span></button>
+                    <button id="btn-mpc" class="ui-btn" type="submit" aria-keyshortcuts="Control+Enter" aria-controls="mpc-chart">Simulate MPC <span class="shortcut-hint" aria-hidden="true">(<kbd class="shortcut-modifier">Ctrl</kbd> + <kbd>Enter</kbd>)</span></button>
                 </form>
                 <div class="chart-container" id="mpc-chart">
                     <div class="empty-state">
