@@ -30,6 +30,9 @@ app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 # significantly improving network transfer times and rendering speed on slower connections.
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
+# ⚡ Bolt Optimization: Pre-compile regex for path normalization
+PATH_NORMALIZE_RE = re.compile(r'/+')
+
 # ⚡ Bolt Optimization: Combine Multiple BaseHTTPMiddlewares into one.
 # Every @app.middleware("http") decorator instantiates an AnyIO TaskGroup. Multiple
 # middlewares force the request to traverse multiple task groups, introducing significant
@@ -84,7 +87,11 @@ async def combined_security_and_rate_limit_middleware(request: Request, call_nex
 
     # 🛡️ Sentinel Security Enhancement: Normalize path before checking to prevent rate limit bypass
     raw_path = request.scope.get("path", "")
-    normalized_path = re.sub(r'/+', '/', urllib.parse.unquote(raw_path))
+
+    # ⚡ Bolt Optimization: Avoid unnecessary unquote operations and regex recompilations
+    # unquote() is slow, only call it if there are actually encoded characters.
+    unquoted_path = urllib.parse.unquote(raw_path) if "%" in raw_path else raw_path
+    normalized_path = PATH_NORMALIZE_RE.sub('/', unquoted_path)
 
     if normalized_path.startswith("/api/"):
         # 🛡️ Sentinel Security Fix: Use getlist() to handle multiple X-Forwarded-For headers
