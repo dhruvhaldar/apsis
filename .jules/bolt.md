@@ -172,3 +172,7 @@
 ## 2026-06-25 - Avoid redundant string parsing in high-frequency string normalization
 **Learning:** In high-frequency middleware that runs on every request (like rate limiters), unconditionally calling expensive string parsing functions like `urllib.parse.unquote()` and compiling regex patterns (like `re.sub()`) adds significant CPU overhead per request, even when the input string doesn't require these operations (e.g., standard API paths without URL-encoded characters).
 **Action:** Pre-compile regex patterns globally. Add early returns or conditional checks (e.g. `if '%' in path`) before invoking expensive decoding or string manipulation functions to ensure they only execute when actually needed.
+
+## 2026-06-25 - Avoid redundant string parsing in high-frequency string normalization
+**Learning:** In high-frequency middleware that runs on every request (like rate limiters), unconditionally calling expensive string parsing functions like `urllib.parse.unquote()` and compiling regex patterns (like `re.sub()`) adds significant CPU overhead per request, even when the input string doesn't require these operations (e.g., standard API paths without URL-encoded characters).
+**Action:** Pre-compile regex patterns globally. Add early returns or conditional checks (e.g. `if '//' in path`) before invoking expensive regex `sub` functions to ensure they only execute when actually needed.
