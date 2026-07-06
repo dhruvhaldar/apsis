@@ -318,7 +318,7 @@ async function solvePMP() {
     const originalHTML = btn.innerHTML;
     btn.disabled = true;
     btn.setAttribute('aria-busy', 'true');
-    btn.innerHTML = '<span aria-hidden="true">⏳</span> Solving...';
+    btn.innerHTML = '<span class="spinner" aria-hidden="true"></span> Solving...';
     const originalTitle = btn.getAttribute('title');
     btn.title = 'Computation in progress...';
     if (form) {
@@ -448,7 +448,7 @@ async function solveLQR() {
     const originalHTML = btn.innerHTML;
     btn.disabled = true;
     btn.setAttribute('aria-busy', 'true');
-    btn.innerHTML = '<span aria-hidden="true">⏳</span> Synthesizing...';
+    btn.innerHTML = '<span class="spinner" aria-hidden="true"></span> Synthesizing...';
     const originalTitle = btn.getAttribute('title');
     btn.title = 'Computation in progress...';
     if (form) {
@@ -543,7 +543,7 @@ async function solveMPC() {
     const originalHTML = btn.innerHTML;
     btn.disabled = true;
     btn.setAttribute('aria-busy', 'true');
-    btn.innerHTML = '<span aria-hidden="true">⏳</span> Simulating...';
+    btn.innerHTML = '<span class="spinner" aria-hidden="true"></span> Simulating...';
     const originalTitle = btn.getAttribute('title');
     btn.title = 'Computation in progress...';
     if (form) {
