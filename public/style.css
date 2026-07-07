@@ -517,3 +517,8 @@ section[data-stale="true"] .ui-btn:not(:disabled) {
     vertical-align: middle;
     margin-right: 8px;
 }
+
+abbr[title] {
+    text-decoration: underline dotted var(--accent-dark);
+    cursor: help;
+}

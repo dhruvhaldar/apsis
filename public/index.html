@@ -46,15 +46,15 @@
                 </div>
                 <form id="pmp-form" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="none">
                     <div class="input-group">
-                        <label for="pmp-x0">Initial State (x0) <span class="required-indicator" aria-hidden="true">*</span></label>
+                        <label for="pmp-x0">Initial State (<abbr title="Initial State Vector">x0</abbr>) <span class="required-indicator" aria-hidden="true">*</span></label>
                         <input type="text" id="pmp-x0" class="ui-input" data-format="json" value="[1.0, 0.0]" placeholder="e.g. [1.0, 0.0]" required aria-required="true" maxlength="2000">
                     </div>
                     <div class="input-group">
-                        <label for="pmp-xf">Target State (xf) <span class="required-indicator" aria-hidden="true">*</span></label>
+                        <label for="pmp-xf">Target State (<abbr title="Final Target State Vector">xf</abbr>) <span class="required-indicator" aria-hidden="true">*</span></label>
                         <input type="text" id="pmp-xf" class="ui-input" data-format="json" value="[0.0, 0.0]" placeholder="e.g. [0.0, 0.0]" required aria-required="true" maxlength="2000">
                     </div>
                     <div class="input-group">
-                        <label for="pmp-tf">Final Time (tf) <span class="required-indicator" aria-hidden="true">*</span></label>
+                        <label for="pmp-tf">Final Time (<abbr title="Terminal Time (seconds)">tf</abbr>) <span class="required-indicator" aria-hidden="true">*</span></label>
                         <input type="number" id="pmp-tf" class="ui-input" value="10.0" min="0.1" max="1000" step="any" placeholder="e.g. 10.0" required aria-required="true" inputmode="decimal">
                     </div>
                     <button id="btn-pmp" class="ui-btn" type="submit" aria-keyshortcuts="Control+Enter" aria-controls="pmp-chart">Solve PMP <span class="shortcut-hint" aria-hidden="true">(<kbd class="shortcut-modifier">Ctrl</kbd> + <kbd>Enter</kbd>)</span></button>
@@ -76,19 +76,19 @@
                 </div>
                 <form id="lqr-form" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="none">
                     <div class="input-group">
-                        <label for="lqr-A">System A Matrix <span class="required-indicator" aria-hidden="true">*</span></label>
+                        <label for="lqr-A">System Matrix (<abbr title="State Dynamics Matrix">A</abbr>) <span class="required-indicator" aria-hidden="true">*</span></label>
                         <input type="text" id="lqr-A" class="ui-input" data-format="json" value="[[0, 1], [-1, -1]]" placeholder="e.g. [[0, 1], [-1, -1]]" required aria-required="true" maxlength="2000">
                     </div>
                     <div class="input-group">
-                        <label for="lqr-B">Input B Matrix <span class="required-indicator" aria-hidden="true">*</span></label>
+                        <label for="lqr-B">Input Matrix (<abbr title="Control Input Matrix">B</abbr>) <span class="required-indicator" aria-hidden="true">*</span></label>
                         <input type="text" id="lqr-B" class="ui-input" data-format="json" value="[[0], [1]]" placeholder="e.g. [[0], [1]]" required aria-required="true" maxlength="2000">
                     </div>
                     <div class="input-group">
-                        <label for="lqr-Q">State Cost Q Matrix <span class="required-indicator" aria-hidden="true">*</span></label>
+                        <label for="lqr-Q">State Cost Matrix (<abbr title="State Weighting Matrix">Q</abbr>) <span class="required-indicator" aria-hidden="true">*</span></label>
                         <input type="text" id="lqr-Q" class="ui-input" data-format="json" value="[[1, 0], [0, 1]]" placeholder="e.g. [[1, 0], [0, 1]]" required aria-required="true" maxlength="2000">
                     </div>
                     <div class="input-group">
-                        <label for="lqr-R">Input Cost R Matrix <span class="required-indicator" aria-hidden="true">*</span></label>
+                        <label for="lqr-R">Input Cost Matrix (<abbr title="Control Effort Weighting Matrix">R</abbr>) <span class="required-indicator" aria-hidden="true">*</span></label>
                         <input type="text" id="lqr-R" class="ui-input" data-format="json" value="[[1]]" placeholder="e.g. [[1]]" required aria-required="true" maxlength="2000">
                     </div>
                     <button id="btn-lqr" class="ui-btn" type="submit" aria-keyshortcuts="Control+Enter" aria-controls="lqr-results">Synthesize LQR <span class="shortcut-hint" aria-hidden="true">(<kbd class="shortcut-modifier">Ctrl</kbd> + <kbd>Enter</kbd>)</span></button>
@@ -125,22 +125,22 @@
                 </div>
                 <form id="mpc-form" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="none">
                     <div class="input-group">
-                        <label for="mpc-N">Horizon Steps (N) <span class="required-indicator" aria-hidden="true">*</span></label>
+                        <label for="mpc-N">Horizon Steps (<abbr title="Prediction Horizon Length">N</abbr>) <span class="required-indicator" aria-hidden="true">*</span></label>
                         <input type="number" id="mpc-N" class="ui-input" value="20" min="1" max="200" step="1" placeholder="e.g. 20" required aria-required="true" inputmode="numeric">
                     </div>
                     <div class="input-group">
-                        <label for="mpc-dt">Time Step (dt) <span class="required-indicator" aria-hidden="true">*</span></label>
+                        <label for="mpc-dt">Time Step (<abbr title="Discrete Time Interval">dt</abbr>) <span class="required-indicator" aria-hidden="true">*</span></label>
                         <input type="number" id="mpc-dt" class="ui-input" value="0.5" min="0.1" max="100" step="any" placeholder="e.g. 0.5" required aria-required="true" inputmode="decimal">
                     </div>
                     <fieldset class="input-group" style="border: none; padding: 0; margin: 0; margin-bottom: 20px;">
                         <legend>Input Bounds <span class="required-indicator" aria-hidden="true">*</span></legend>
                         <div style="display: flex; gap: 10px;">
                             <div class="input-group" style="flex: 1; margin-bottom: 0;">
-                                <label for="mpc-umin" style="display: block; margin-bottom: 4px; font-size: 0.8rem;">Min (u_min)</label>
+                                <label for="mpc-umin" style="display: block; margin-bottom: 4px; font-size: 0.8rem;">Min (<abbr title="Minimum Control Input">u_min</abbr>)</label>
                                 <input type="text" id="mpc-umin" class="ui-input" data-format="json" value="[-1.0]" placeholder="e.g. [-1.0]" required aria-required="true" maxlength="2000">
                             </div>
                             <div class="input-group" style="flex: 1; margin-bottom: 0;">
-                                <label for="mpc-umax" style="display: block; margin-bottom: 4px; font-size: 0.8rem;">Max (u_max)</label>
+                                <label for="mpc-umax" style="display: block; margin-bottom: 4px; font-size: 0.8rem;">Max (<abbr title="Maximum Control Input">u_max</abbr>)</label>
                                 <input type="text" id="mpc-umax" class="ui-input" data-format="json" value="[1.0]" placeholder="e.g. [1.0]" required aria-required="true" maxlength="2000">
                             </div>
                         </div>
