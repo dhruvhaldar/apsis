@@ -176,3 +176,10 @@
 ## 2026-06-25 - Avoid redundant string parsing in high-frequency string normalization
 **Learning:** In high-frequency middleware that runs on every request (like rate limiters), unconditionally calling expensive string parsing functions like `urllib.parse.unquote()` and compiling regex patterns (like `re.sub()`) adds significant CPU overhead per request, even when the input string doesn't require these operations (e.g., standard API paths without URL-encoded characters).
 **Action:** Pre-compile regex patterns globally. Add early returns or conditional checks (e.g. `if '//' in path`) before invoking expensive regex `sub` functions to ensure they only execute when actually needed.
+## 2026-06-25 - Avoid Redundant window.matchMedia Calls in Hot Paths
+**Learning:** Calling `window.matchMedia('(prefers-reduced-motion: reduce)')` inside functions that run frequently (like scroll handlers, animation loops, or repeated form submissions) forces the browser to parse the CSS media query string and allocate a new `MediaQueryList` object on every invocation, causing unnecessary CPU overhead and garbage collection.
+**Action:** Always instantiate `window.matchMedia` once globally and reuse the cached `MediaQueryList` object by checking its `.matches` property in hot paths.
+
+## 2026-06-25 - Disable Depth Buffer Writes for Transparent Particle Systems
+**Learning:** When rendering thousands of semi-transparent particles using WebGL/Three.js (`PointsMaterial`), leaving `depthWrite` set to true (the default) forces the GPU to perform unnecessary depth buffer updates for every fragment. Because particles typically do not need to strictly occlude each other, this creates redundant processing overhead.
+**Action:** Always set `depthWrite: false` on materials for transparent particle systems (like background stars or dust) to bypass depth buffer updates and significantly reduce fragment processing load.
