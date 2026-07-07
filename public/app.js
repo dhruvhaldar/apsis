@@ -22,7 +22,11 @@ for (let i = 0; i < particleCount; i++) {
     vertices[i * 3 + 2] = THREE.MathUtils.randFloatSpread(2000);
 }
 geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-const material = new THREE.PointsMaterial({ color: 0x4a90e2, size: 2, transparent: true, opacity: 0.5 });
+// ⚡ Bolt Optimization: Disable depth buffer writes for transparent particle systems.
+// Writing to the depth buffer for semi-transparent particles is unnecessary (since they don't occlude each other strictly)
+// and forces the GPU to perform thousands of redundant fragment operations. Setting depthWrite to false
+// significantly reduces rendering overhead, especially on integrated GPUs.
+const material = new THREE.PointsMaterial({ color: 0x4a90e2, size: 2, transparent: true, opacity: 0.5, depthWrite: false });
 const particles = new THREE.Points(geometry, material);
 scene.add(particles);
 
