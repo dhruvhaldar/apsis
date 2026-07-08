@@ -302,3 +302,7 @@
 ## 2026-07-10 - Domain Jargon Tooltips
 **Learning:** Math-heavy interfaces frequently rely on domain jargon and standard shorthand (e.g. `x0`, `Q`, `tf`). This can be confusing for new users. Explaining them fully in the label clutters the UI and interrupts flow for experts.
 **Action:** Wrap mathematical acronyms or abbreviations in `<abbr title="Full Explanation">var</abbr>` within form labels, and style them consistently (e.g. `text-decoration: underline dotted; cursor: help;`). This adds a native, accessible tooltip without impacting the visual layout.
+
+## 2026-07-15 - Conflicting UX Signals on Empty Required Fields
+**Learning:** Applying positive visual feedback (like a green checkmark) to an empty field simply because it technically passes a format check (like a JSON validation block returning early for empty strings) creates confusing UX if the field is actually required. The user sees a "success" indicator on a field that will ultimately prevent form submission due to being empty.
+**Action:** When implementing custom inline validation (e.g. using `data-valid-json="true"` for positive reinforcement), explicitly ensure the success state is only applied when the field actually contains valid data, not just when it is empty. Clean up success state attributes if the user clears a previously valid field.

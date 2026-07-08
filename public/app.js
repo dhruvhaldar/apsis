@@ -207,10 +207,12 @@ document.addEventListener('focusout', (e) => {
                     }
                     // ⚡ Palette UX: Auto-format to provide positive reinforcement and prove it was parsed correctly
                     e.target.value = JSON.stringify(parsed);
+                    e.target.dataset.validJson = 'true';
+                } else {
+                    delete e.target.dataset.validJson;
                 }
                 e.target.setCustomValidity('');
                 e.target.setAttribute('aria-invalid', 'false');
-                e.target.dataset.validJson = 'true';
             } catch (err) {
                 e.target.setCustomValidity('Invalid format. Please use valid JSON array format, e.g., [1, 0] or [[1,0],[0,1]]');
                 e.target.setAttribute('aria-invalid', 'true');
