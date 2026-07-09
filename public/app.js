@@ -418,12 +418,14 @@ async function solvePMP() {
         }
         if (err.name === 'ValidationError') {
             btn.setCustomValidity(err.message);
+            if (typeof announceA11y === 'function') announceA11y('Error: ' + err.message);
             btn.disabled = false;
             enabledInputs.forEach(el => el.disabled = false);
             btn.reportValidity();
             return;
         }
         btn.setCustomValidity('Failed to solve PMP: ' + err.message);
+        if (typeof announceA11y === 'function') announceA11y('Error: Failed to solve PMP: ' + err.message);
         btn.disabled = false;
         enabledInputs.forEach(el => el.disabled = false);
         btn.reportValidity();
@@ -510,12 +512,14 @@ async function solveLQR() {
         }
         if (err.name === 'ValidationError') {
             btn.setCustomValidity(err.message);
+            if (typeof announceA11y === 'function') announceA11y('Error: ' + err.message);
             btn.disabled = false;
             enabledInputs.forEach(el => el.disabled = false);
             btn.reportValidity();
             return;
         }
         btn.setCustomValidity('Failed to synthesize LQR: ' + err.message);
+        if (typeof announceA11y === 'function') announceA11y('Error: Failed to synthesize LQR: ' + err.message);
         btn.disabled = false;
         enabledInputs.forEach(el => el.disabled = false);
         btn.reportValidity();
@@ -645,12 +649,14 @@ async function solveMPC() {
         }
         if (err.name === 'ValidationError') {
             btn.setCustomValidity(err.message);
+            if (typeof announceA11y === 'function') announceA11y('Error: ' + err.message);
             btn.disabled = false;
             enabledInputs.forEach(el => el.disabled = false);
             btn.reportValidity();
             return;
         }
         btn.setCustomValidity('Failed to simulate MPC: ' + err.message);
+        if (typeof announceA11y === 'function') announceA11y('Error: Failed to simulate MPC: ' + err.message);
         btn.disabled = false;
         enabledInputs.forEach(el => el.disabled = false);
         btn.reportValidity();
