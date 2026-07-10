@@ -682,7 +682,7 @@ async function solveMPC() {
 // don't miss the result. Respects the user's reduced motion preference.
 function scrollToOutput(element) {
     if (element) {
-        const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+        const behavior = prefersReducedMotion.matches ? 'auto' : 'smooth';
         element.scrollIntoView({ behavior: behavior, block: 'nearest' });
     }
 }

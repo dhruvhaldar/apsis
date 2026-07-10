@@ -183,3 +183,6 @@
 ## 2026-06-25 - Disable Depth Buffer Writes for Transparent Particle Systems
 **Learning:** When rendering thousands of semi-transparent particles using WebGL/Three.js (`PointsMaterial`), leaving `depthWrite` set to true (the default) forces the GPU to perform unnecessary depth buffer updates for every fragment. Because particles typically do not need to strictly occlude each other, this creates redundant processing overhead.
 **Action:** Always set `depthWrite: false` on materials for transparent particle systems (like background stars or dust) to bypass depth buffer updates and significantly reduce fragment processing load.
+## 2026-06-25 - Avoid Redundant window.matchMedia Calls in Hot Paths
+**Learning:** Calling `window.matchMedia('(prefers-reduced-motion: reduce)')` inside functions that run frequently (like scroll handlers, animation loops, or repeated form submissions) forces the browser to parse the CSS media query string and allocate a new `MediaQueryList` object on every invocation, causing unnecessary CPU overhead and garbage collection.
+**Action:** Always instantiate `window.matchMedia` once globally and reuse the cached `MediaQueryList` object by checking its `.matches` property in hot paths.
