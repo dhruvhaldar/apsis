@@ -836,6 +836,16 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
+// ⚡ Palette: Allow users to press Escape to blur inputs and return to document navigation
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        const activeElement = document.activeElement;
+        if (activeElement && activeElement.classList.contains('ui-input')) {
+            activeElement.blur();
+        }
+    }
+});
+
 // ⚡ Palette: Prevent accidental value changes on number inputs when scrolling
 document.addEventListener('wheel', (e) => {
     if (document.activeElement.type === 'number' && document.activeElement.classList.contains('ui-input')) {
