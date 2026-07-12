@@ -310,3 +310,7 @@
 ## 2026-07-20 - Explicit Screen Reader Announcements for Form Submit Errors
 **Learning:** When displaying custom validation errors on form submission buttons via `btn.setCustomValidity()` and `btn.reportValidity()`, the visual native HTML5 validation bubble is immediately apparent to sighted users. However, screen readers do not reliably announce this native bubble unless the user manually interacts with or navigates to the button again. This creates a hidden failure state for non-visual users where a form silently fails to submit.
 **Action:** When catching API or validation errors on form submission and displaying them via `reportValidity()`, always simultaneously trigger an explicit `aria-live` announcement (e.g., `announceA11y('Error: ' + err.message)`) to ensure parity between visual and auditory feedback.
+
+## 2024-05-18 - Allow exiting Forms Mode via Escape Key
+**Learning:** Screen reader users and keyboard-only users can get stuck in "Forms Mode" inside complex data entry interfaces. In standard HTML inputs, there is no native way to quickly "escape" the input focus other than tabbing through the rest of the form.
+**Action:** Always add a global `keydown` event listener for the `Escape` key that calls `.blur()` on the currently active input element (or elements matching a specific class like `.ui-input`). This restores the user to regular document flow navigation.
