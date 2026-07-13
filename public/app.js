@@ -819,6 +819,11 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 document.addEventListener('keydown', (e) => {
+    // ⚡ Palette UX: Allow users to exit 'Forms Mode' by pressing Escape
+    if (e.key === 'Escape' && document.activeElement && typeof document.activeElement.blur === 'function') {
+        document.activeElement.blur();
+    }
+
     // Check if Ctrl+Enter or Cmd+Enter is pressed
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         const activeElement = document.activeElement;
