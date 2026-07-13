@@ -122,8 +122,12 @@ async def combined_security_and_rate_limit_middleware(request: Request, call_nex
             for ip in stale_ips:
                 del rate_limit_store[ip]
 
+            # 🛡️ Sentinel Security Fix: Prevent IP spoofing DoS from causing global 503.
+            # If the store is still full after removing stale IPs, evict the oldest inserted IP
+            # (O(1) operation) to make room for legitimate new users, rather than locking everyone out.
             if len(rate_limit_store) >= MAX_IPS:
-                return _apply_headers(JSONResponse(status_code=503, content={"detail": "Service temporarily unavailable due to high load."}))
+                oldest_ip = next(iter(rate_limit_store))
+                del rate_limit_store[oldest_ip]
 
         if hashed_ip not in rate_limit_store:
             rate_limit_store[hashed_ip] = []
