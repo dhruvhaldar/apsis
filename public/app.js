@@ -266,7 +266,16 @@ document.addEventListener('input', (e) => {
         // Clear form submit button validity on input change to allow retry
         const form = e.target.form;
         if (form) {
-            const btn = form.querySelector('button[type="submit"]');
+            let btn = null;
+            // ⚡ Bolt Optimization: Replace expensive querySelector in high-frequency listener
+            // with an O(1) getElementById lookup to prevent main thread blocking.
+            if (form.id) {
+                const baseId = form.id.replace('-form', '');
+                btn = document.getElementById(`btn-${baseId}`);
+            }
+            if (!btn) {
+                btn = form.querySelector('button[type="submit"]');
+            }
             // ⚡ Bolt Optimization: Only update DOM if validation message needs clearing to prevent layout thrashing
             if (btn && btn.validationMessage !== '') btn.setCustomValidity('');
         }
