@@ -183,3 +183,7 @@
 ## 2026-06-25 - Disable Depth Buffer Writes for Transparent Particle Systems
 **Learning:** When rendering thousands of semi-transparent particles using WebGL/Three.js (`PointsMaterial`), leaving `depthWrite` set to true (the default) forces the GPU to perform unnecessary depth buffer updates for every fragment. Because particles typically do not need to strictly occlude each other, this creates redundant processing overhead.
 **Action:** Always set `depthWrite: false` on materials for transparent particle systems (like background stars or dust) to bypass depth buffer updates and significantly reduce fragment processing load.
+
+## 2026-06-25 - Avoid querySelector in high-frequency event listeners
+**Learning:** In high-frequency event listeners (like `input` or `keyup`), repeatedly calling expensive DOM traversal methods like `.querySelector()` adds significant CPU overhead. This can block the main thread and degrade the Interaction to Next Paint (INP), especially when the same result can be derived systematically.
+**Action:** Replace dynamic `.querySelector()` calls with O(1) lookups like `document.getElementById` (e.g., by deriving the element ID) or safely cache element references outside the event listener to ensure minimal latency per event.
