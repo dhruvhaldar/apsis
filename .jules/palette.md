@@ -313,3 +313,11 @@
 ## 2024-05-24 - Escape Key to Exit Forms Mode
 **Learning:** Screen reader and keyboard-only users navigating data-dense interfaces can get trapped in 'Forms Mode' when interacting with inputs. Providing a reliable way to exit Forms Mode and resume document flow navigation improves cognitive accessibility.
 **Action:** Explicitly add a global `keydown` event listener for the `Escape` key that calls `.blur()` on the currently active input to allow users to exit 'Forms Mode' and resume document flow navigation.
+
+## 2026-07-25 - Informing Screen Reader Users about Copy Button Values
+**Learning:** Screen reader users focusing on a "Copy" icon button often don't know the exact value they are copying if the button lacks context. The visual association is obvious to sighted users, but a standalone `aria-label="Copy"` leaves screen reader users guessing about the exact value that will be placed in their clipboard.
+**Action:** Always add `aria-describedby` to copy buttons and link it to the ID of the output container they copy from. This ensures screen reader users hear exactly what value will be copied upon focus.
+
+## 2026-07-25 - Facilitating Text Selection for Complex Outputs
+**Learning:** Users often need to copy long, complex programmatic strings (like JSON arrays or matrices) manually, rather than using the provided "Copy" button. Forcing them to carefully click and drag to select the entire text is error-prone, especially on smaller screens, and often leads to missing brackets or characters.
+**Action:** Always apply `user-select: all` to the container spanning these complex data structures (e.g. `.output-block p span`). This allows sighted users to single-click the text to instantly highlight the entire mathematical matrix/array output, vastly improving the data extraction experience.
