@@ -317,6 +317,11 @@ section[data-stale="true"] .ui-btn:not(:disabled) {
     color: var(--accent-color);
 }
 
+.output-block p span {
+    user-select: all;
+    -webkit-user-select: all;
+}
+
 .icon-btn {
     background: transparent;
     border: none;
