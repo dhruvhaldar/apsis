@@ -321,3 +321,7 @@
 ## 2026-07-25 - Facilitating Text Selection for Complex Outputs
 **Learning:** Users often need to copy long, complex programmatic strings (like JSON arrays or matrices) manually, rather than using the provided "Copy" button. Forcing them to carefully click and drag to select the entire text is error-prone, especially on smaller screens, and often leads to missing brackets or characters.
 **Action:** Always apply `user-select: all` to the container spanning these complex data structures (e.g. `.output-block p span`). This allows sighted users to single-click the text to instantly highlight the entire mathematical matrix/array output, vastly improving the data extraction experience.
+
+## 2026-07-20 - Prevent Data Loss with Session Storage
+**Learning:** Users typing complex JSON arrays or matrices can easily lose their work upon accidental page reload, causing significant frustration.
+**Action:** Use sessionStorage to automatically save and restore complex input fields.

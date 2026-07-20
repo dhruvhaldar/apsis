@@ -197,6 +197,13 @@ function parseFloatInput(id) {
 // This leverages CSS :user-invalid to instantly show feedback without interrupting typing
 document.addEventListener('focusout', (e) => {
     if (e.target && e.target.classList.contains('ui-input')) {
+        // ⚡ Palette UX: Auto-save formatted input values
+        const saveValue = () => {
+            if (e.target.id) {
+                sessionStorage.setItem(`apsis_input_${e.target.id}`, e.target.value);
+            }
+        };
+
         if (e.target.dataset.format === 'json') {
             try {
                 // Only validate if not empty (let native 'required' handle empty state if needed)
@@ -213,11 +220,15 @@ document.addEventListener('focusout', (e) => {
                 }
                 e.target.setCustomValidity('');
                 e.target.setAttribute('aria-invalid', 'false');
+                saveValue();
             } catch (err) {
                 e.target.setCustomValidity('Invalid format. Please use valid JSON array format, e.g., [1, 0] or [[1,0],[0,1]]');
                 e.target.setAttribute('aria-invalid', 'true');
                 delete e.target.dataset.validJson;
+                saveValue();
             }
+        } else {
+            saveValue();
         }
 
         // ⚡ Palette UX: Expose validation message as a tooltip for inline feedback
@@ -247,6 +258,11 @@ document.addEventListener('invalid', (e) => {
 // Clear validation errors when user types
 document.addEventListener('input', (e) => {
     if (e.target && e.target.classList.contains('ui-input')) {
+        // ⚡ Palette UX: Auto-save input values to prevent data loss on accidental reload
+        if (e.target.id) {
+            sessionStorage.setItem(`apsis_input_${e.target.id}`, e.target.value);
+        }
+
         if ('validJson' in e.target.dataset) {
             delete e.target.dataset.validJson;
         }
@@ -723,6 +739,16 @@ function announceA11y(message) {
 
 // Initialize events and rendering once DOM is loaded
 window.addEventListener('DOMContentLoaded', () => {
+    // ⚡ Palette UX: Restore saved input values from sessionStorage
+    document.querySelectorAll('.ui-input').forEach(input => {
+        if (input.id) {
+            const savedValue = sessionStorage.getItem(`apsis_input_${input.id}`);
+            if (savedValue !== null) {
+                input.value = savedValue;
+            }
+        }
+    });
+
     // Setup copy buttons
     document.querySelectorAll('.copy-btn').forEach(copyBtn => {
         copyBtn.addEventListener('click', async function() {
