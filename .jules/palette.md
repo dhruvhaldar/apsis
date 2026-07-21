@@ -321,3 +321,7 @@
 ## 2026-07-25 - Facilitating Text Selection for Complex Outputs
 **Learning:** Users often need to copy long, complex programmatic strings (like JSON arrays or matrices) manually, rather than using the provided "Copy" button. Forcing them to carefully click and drag to select the entire text is error-prone, especially on smaller screens, and often leads to missing brackets or characters.
 **Action:** Always apply `user-select: all` to the container spanning these complex data structures (e.g. `.output-block p span`). This allows sighted users to single-click the text to instantly highlight the entire mathematical matrix/array output, vastly improving the data extraction experience.
+
+## 2026-07-28 - Prevent Data Loss on Accidental Reloads
+**Learning:** Users filling out complex forms (like JSON arrays or matrices) can lose significant effort if they accidentally reload the page or navigate away before submitting. This creates a highly frustrating UX, especially for domain-specific interfaces where data entry is non-trivial.
+**Action:** Always implement a simple auto-save and restore mechanism using `sessionStorage` for `.ui-input` fields. Save the value on the `input` event (keyed by element ID) and restore it during the `DOMContentLoaded` event. This provides an invisible safety net that preserves user work across unintended page reloads.

@@ -247,6 +247,11 @@ document.addEventListener('invalid', (e) => {
 // Clear validation errors when user types
 document.addEventListener('input', (e) => {
     if (e.target && e.target.classList.contains('ui-input')) {
+        // ⚡ Palette UX: Auto-save complex inputs to sessionStorage to prevent data loss
+        if (e.target.id) {
+            sessionStorage.setItem(`apsis_input_${e.target.id}`, e.target.value);
+        }
+
         if ('validJson' in e.target.dataset) {
             delete e.target.dataset.validJson;
         }
@@ -723,6 +728,18 @@ function announceA11y(message) {
 
 // Initialize events and rendering once DOM is loaded
 window.addEventListener('DOMContentLoaded', () => {
+    // ⚡ Palette UX: Restore input values from sessionStorage to prevent data loss on reloads
+    document.querySelectorAll('.ui-input').forEach(input => {
+        if (input.id) {
+            const savedValue = sessionStorage.getItem(`apsis_input_${input.id}`);
+            if (savedValue !== null) {
+                input.value = savedValue;
+                // Dispatch input event to ensure any dynamic validation/formatting runs
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        }
+    });
+
     // Setup copy buttons
     document.querySelectorAll('.copy-btn').forEach(copyBtn => {
         copyBtn.addEventListener('click', async function() {
