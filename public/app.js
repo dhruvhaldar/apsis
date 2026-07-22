@@ -722,7 +722,26 @@ function announceA11y(message) {
 }
 
 // Initialize events and rendering once DOM is loaded
+// ⚡ Palette UX: Save input values to sessionStorage to prevent data loss on accidental reload
+document.addEventListener('input', (e) => {
+    if (e.target && e.target.id && e.target.classList.contains('ui-input')) {
+        sessionStorage.setItem(`apsis-${e.target.id}`, e.target.value);
+    }
+});
+
 window.addEventListener('DOMContentLoaded', () => {
+    // ⚡ Palette UX: Restore input values from sessionStorage
+    document.querySelectorAll('.ui-input').forEach(input => {
+        if (input.id) {
+            const savedValue = sessionStorage.getItem(`apsis-${input.id}`);
+            if (savedValue !== null && savedValue !== input.value) {
+                input.value = savedValue;
+                // Dispatch native input event to ensure dynamic validation and formatting execute
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        }
+    });
+
     // Setup copy buttons
     document.querySelectorAll('.copy-btn').forEach(copyBtn => {
         copyBtn.addEventListener('click', async function() {

@@ -321,3 +321,7 @@
 ## 2026-07-25 - Facilitating Text Selection for Complex Outputs
 **Learning:** Users often need to copy long, complex programmatic strings (like JSON arrays or matrices) manually, rather than using the provided "Copy" button. Forcing them to carefully click and drag to select the entire text is error-prone, especially on smaller screens, and often leads to missing brackets or characters.
 **Action:** Always apply `user-select: all` to the container spanning these complex data structures (e.g. `.output-block p span`). This allows sighted users to single-click the text to instantly highlight the entire mathematical matrix/array output, vastly improving the data extraction experience.
+
+## 2024-07-22 - SessionStorage Form Persistence
+**Learning:** In scientific and mathematically complex forms, users often spend significant time typing or copying multi-dimensional arrays or JSON objects. An accidental page reload instantly wipes this progress, causing severe frustration and data loss.
+**Action:** Use `sessionStorage` to temporarily cache user input data on the `input` event and restore it on `DOMContentLoaded`. Always remember to explicitly dispatch a native `input` event upon restoration (`input.dispatchEvent(new Event('input', { bubbles: true }))`) to guarantee that any dynamic format validation or UI state updates dependent on the `input` event execute correctly.
