@@ -39,7 +39,7 @@
         <main id="main-content" class="grid-layout" tabindex="-1">
             <!-- PMP Panel -->
             <section class="panel pmp-panel" aria-labelledby="pmp-heading">
-                <h2 id="pmp-heading">Pontryagin Maximum Principle</h2>
+                <h2 id="pmp-heading">Pontryagin Maximum Principle <button type="reset" form="pmp-form" class="icon-btn" aria-label="Reset Pontryagin Maximum Principle form" title="Reset form to defaults">↺</button></h2>
                 <div class="math-block" tabindex="0" role="region" aria-label="Pontryagin Maximum Principle Equations">
                     $$ \dot{x} = Ax + Bu $$
                     $$ J = \int_0^{t_f} \frac{1}{2}(x^TQx + u^TRu) dt $$
@@ -69,7 +69,7 @@
 
             <!-- LQR Panel -->
             <section class="panel lqr-panel" aria-labelledby="lqr-heading">
-                <h2 id="lqr-heading">Linear Quadratic Optimization</h2>
+                <h2 id="lqr-heading">Linear Quadratic Optimization <button type="reset" form="lqr-form" class="icon-btn" aria-label="Reset Linear Quadratic Optimization form" title="Reset form to defaults">↺</button></h2>
                 <div class="math-block" tabindex="0" role="region" aria-label="Linear Quadratic Optimization Equations">
                     $$ u = -Kx $$
                     $$ 0 = A^TX + XA - XBR^{-1}B^TX + Q $$
@@ -119,7 +119,7 @@
 
             <!-- MPC Panel -->
             <section class="panel mpc-panel" aria-labelledby="mpc-heading">
-                <h2 id="mpc-heading">Model Predictive Control</h2>
+                <h2 id="mpc-heading">Model Predictive Control <button type="reset" form="mpc-form" class="icon-btn" aria-label="Reset Model Predictive Control form" title="Reset form to defaults">↺</button></h2>
                 <div class="math-block" tabindex="0" role="region" aria-label="Model Predictive Control Equations">
                     $$ \min_u \sum_{k=0}^{N-1} (x_k^TQx_k + u_k^TRu_k) $$
                 </div>
