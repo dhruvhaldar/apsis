@@ -729,6 +729,31 @@ document.addEventListener('input', (e) => {
     }
 });
 
+
+// ⚡ Palette UX: Handle form resets explicitly to clear sessionStorage and restore state
+document.addEventListener('reset', (e) => {
+    if (e.target && e.target.tagName === 'FORM') {
+        const form = e.target;
+        // 1. Clear sessionStorage for all inputs in this form
+        form.querySelectorAll('.ui-input').forEach(input => {
+            if (input.id) {
+                sessionStorage.removeItem(`apsis-${input.id}`);
+            }
+        });
+
+        // 2. Wait for the browser to natively clear the fields, then dispatch input events
+        setTimeout(() => {
+            form.querySelectorAll('.ui-input').forEach(input => {
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+            });
+        }, 0);
+
+        if (typeof announceA11y === 'function') {
+            announceA11y('Form reset to default values.');
+        }
+    }
+});
+
 window.addEventListener('DOMContentLoaded', () => {
     // ⚡ Palette UX: Restore input values from sessionStorage
     document.querySelectorAll('.ui-input').forEach(input => {

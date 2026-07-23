@@ -325,3 +325,7 @@
 ## 2024-07-22 - SessionStorage Form Persistence
 **Learning:** In scientific and mathematically complex forms, users often spend significant time typing or copying multi-dimensional arrays or JSON objects. An accidental page reload instantly wipes this progress, causing severe frustration and data loss.
 **Action:** Use `sessionStorage` to temporarily cache user input data on the `input` event and restore it on `DOMContentLoaded`. Always remember to explicitly dispatch a native `input` event upon restoration (`input.dispatchEvent(new Event('input', { bubbles: true }))`) to guarantee that any dynamic format validation or UI state updates dependent on the `input` event execute correctly.
+
+## 2026-07-28 - Explicit Form Resets to Clear SessionStorage Traps
+**Learning:** Using `sessionStorage` to prevent data loss on accidental reloads is excellent UX, but without a dedicated reset mechanism, it creates a trap. If a user mangles a complex multi-dimensional input (like a matrix) and wants to start over, simply refreshing the page restores the broken state. The well-intentioned auto-save effectively locks them out of returning to the clean default placeholders.
+**Action:** Whenever implementing auto-save or `sessionStorage` recovery for form inputs, always provide an explicit "Reset" button (e.g., `<button type="reset">`). Ensure you attach a `reset` event listener to the form that manually removes the stored `sessionStorage` keys and re-dispatches `input` events so the UI (and validations) immediately reflect the return to default values.
