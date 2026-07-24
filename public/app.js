@@ -733,6 +733,10 @@ document.addEventListener('input', (e) => {
 // ⚡ Palette UX: Handle form resets explicitly to clear sessionStorage and restore state
 document.addEventListener('reset', (e) => {
     if (e.target && e.target.tagName === 'FORM') {
+        if (!window.confirm('Are you sure you want to reset this form? All entered data will be lost.')) {
+            e.preventDefault();
+            return;
+        }
         const form = e.target;
         // 1. Clear sessionStorage for all inputs in this form
         form.querySelectorAll('.ui-input').forEach(input => {
