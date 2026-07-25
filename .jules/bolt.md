@@ -187,3 +187,7 @@
 ## 2026-06-25 - Avoid querySelector in high-frequency event listeners
 **Learning:** In high-frequency event listeners (like `input` or `keyup`), repeatedly calling expensive DOM traversal methods like `.querySelector()` adds significant CPU overhead. This can block the main thread and degrade the Interaction to Next Paint (INP), especially when the same result can be derived systematically.
 **Action:** Replace dynamic `.querySelector()` calls with O(1) lookups like `document.getElementById` (e.g., by deriving the element ID) or safely cache element references outside the event listener to ensure minimal latency per event.
+
+## 2026-06-25 - API Caching with Pydantic Model Canonicalization
+**Learning:** Using `@functools.lru_cache` directly on FastAPI endpoints that accept Pydantic models fails because Pydantic models are unhashable mutable objects.
+**Action:** Extract the expensive solver logic into a helper function decorated with `@functools.lru_cache(maxsize=128)` that accepts a JSON string. In the endpoint, convert the *validated* Pydantic model back to a canonical JSON string using `req.model_dump_json()` and use that as the cache key. This ensures identical semantic requests (e.g., ints vs floats) hit the cache, providing O(1) responses for heavy mathematical computations.
