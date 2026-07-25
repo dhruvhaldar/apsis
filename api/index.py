@@ -12,6 +12,7 @@ from pydantic import BaseModel, Field
 from typing import List, Optional, Annotated, Dict
 import urllib.parse
 import re
+import functools
 
 from apsis.calculus_of_variations import solve_pmp_linear_quadratic
 from apsis.lqr import solve_lqr
@@ -240,17 +241,52 @@ class MPCRequest(BaseModel):
     u_min: Optional[Row] = None
     u_max: Optional[Row] = None
 
+# ⚡ Bolt Optimization: App-level caching for computationally expensive solvers.
+# GEKKO and SciPy BVP solvers are extremely heavy. We cache the results of identical requests
+# to provide O(1) instantaneous responses. By taking a JSON string of the *validated* Pydantic
+# model, we ensure that semantically identical but syntactically different requests
+# (e.g., ints vs floats like `1` vs `1.0`) share the same cache hit.
+@functools.lru_cache(maxsize=128)
+def cached_solve_lqr(req_json: str):
+    req = LQRRequest.model_validate_json(req_json)
+    K, X, eigvals = solve_lqr(req.A, req.B, req.Q, req.R)
+    return {
+        "K": K.tolist(),
+        "X": X.tolist(),
+        "eigvals": eigvals.real.tolist()
+    }
+
+@functools.lru_cache(maxsize=128)
+def cached_solve_pmp(req_json: str):
+    req = PMPRequest.model_validate_json(req_json)
+    t, x_sol, u_sol, lam_sol = solve_pmp_linear_quadratic(
+        req.A, req.B, req.Q, req.R, req.x0, req.xf, req.tf, req.num_points
+    )
+    return {
+        "t": t.tolist(),
+        "x": x_sol.tolist(),
+        "u": u_sol.tolist(),
+        "lambda": lam_sol.tolist()
+    }
+
+@functools.lru_cache(maxsize=128)
+def cached_solve_mpc(req_json: str):
+    req = MPCRequest.model_validate_json(req_json)
+    t, x_sol, u_sol = solve_mpc(
+        req.A, req.B, req.Q, req.R, req.x0, req.N_horizon, req.dt, req.u_min, req.u_max
+    )
+    return {
+        "t": t.tolist(),
+        "x": x_sol.tolist(),
+        "u": u_sol.tolist()
+    }
+
 @app.post("/api/lqr")
 def lqr_endpoint(req: LQRRequest):
     try:
-        K, X, eigvals = solve_lqr(req.A, req.B, req.Q, req.R)
+        content = cached_solve_lqr(req.model_dump_json())
         # ⚡ Bolt Optimization: Use JSONResponse directly to bypass FastAPI's slow recursive jsonable_encoder for large primitive arrays
-        return JSONResponse(content={
-            "K": K.tolist(),
-            "X": X.tolist(),
-            # ⚡ Bolt Optimization: Use vectorized `.real.tolist()` to avoid python-level iteration overhead
-            "eigvals": eigvals.real.tolist()
-        })
+        return JSONResponse(content=content)
     except Exception as e:
         logger.error(f"LQR Error: {e}")
         raise HTTPException(status_code=400, detail="An error occurred during LQR computation")
@@ -258,16 +294,9 @@ def lqr_endpoint(req: LQRRequest):
 @app.post("/api/pmp")
 def pmp_endpoint(req: PMPRequest):
     try:
-        t, x_sol, u_sol, lam_sol = solve_pmp_linear_quadratic(
-            req.A, req.B, req.Q, req.R, req.x0, req.xf, req.tf, req.num_points
-        )
+        content = cached_solve_pmp(req.model_dump_json())
         # ⚡ Bolt Optimization: Use JSONResponse directly to bypass FastAPI's slow recursive jsonable_encoder for large primitive arrays
-        return JSONResponse(content={
-            "t": t.tolist(),
-            "x": x_sol.tolist(),
-            "u": u_sol.tolist(),
-            "lambda": lam_sol.tolist()
-        })
+        return JSONResponse(content=content)
     except Exception as e:
         logger.error(f"PMP Error: {e}")
         raise HTTPException(status_code=400, detail="An error occurred during PMP computation")
@@ -275,15 +304,9 @@ def pmp_endpoint(req: PMPRequest):
 @app.post("/api/mpc")
 def mpc_endpoint(req: MPCRequest):
     try:
-        t, x_sol, u_sol = solve_mpc(
-            req.A, req.B, req.Q, req.R, req.x0, req.N_horizon, req.dt, req.u_min, req.u_max
-        )
+        content = cached_solve_mpc(req.model_dump_json())
         # ⚡ Bolt Optimization: Use JSONResponse directly to bypass FastAPI's slow recursive jsonable_encoder for large primitive arrays
-        return JSONResponse(content={
-            "t": t.tolist(),
-            "x": x_sol.tolist(),
-            "u": u_sol.tolist()
-        })
+        return JSONResponse(content=content)
     except Exception as e:
         logger.error(f"MPC Error: {e}")
         raise HTTPException(status_code=400, detail="An error occurred during MPC computation")
