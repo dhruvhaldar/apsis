@@ -272,6 +272,8 @@ h2 {
     background: linear-gradient(90deg, var(--accent-color), var(--accent-dark));
     box-shadow: 0 0 15px rgba(102, 252, 241, 0.4);
     transform: scale(1.02);
+    color: var(--bg-color);
+    text-shadow: none;
 }
 
 .ui-btn:active {
@@ -306,6 +308,9 @@ h2 {
 section[data-stale="true"] .ui-btn:not(:disabled) {
     animation: solvePulse 2s infinite;
     border-color: var(--accent-color);
+    background: linear-gradient(90deg, var(--accent-color), var(--accent-dark));
+    color: var(--bg-color);
+    text-shadow: none;
 }
 
 .output-block {
@@ -482,6 +487,13 @@ section[data-stale="true"] .ui-btn:not(:disabled) {
     border: 1px solid rgba(255,255,255,0.2);
 }
 
+.ui-btn:hover .shortcut-hint kbd,
+.ui-btn:focus-visible .shortcut-hint kbd,
+section[data-stale="true"] .ui-btn:not(:disabled) .shortcut-hint kbd {
+    background: rgba(255,255,255,0.3);
+    border-color: rgba(0,0,0,0.2);
+}
+
 @media (prefers-reduced-motion: reduce) {
     html {
         scroll-behavior: auto !important;
@@ -527,6 +539,13 @@ section[data-stale="true"] .ui-btn:not(:disabled) {
     animation: spin 1s linear infinite;
     vertical-align: middle;
     margin-right: 8px;
+}
+
+.ui-btn:hover .spinner,
+.ui-btn:focus-visible .spinner,
+section[data-stale="true"] .ui-btn:not(:disabled) .spinner {
+    border-color: rgba(11, 12, 16, 0.3);
+    border-top-color: var(--bg-color);
 }
 
 abbr[title] {
