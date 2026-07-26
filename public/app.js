@@ -321,6 +321,26 @@ document.addEventListener('click', (e) => {
 });
 
 // ⚡ Bolt Optimization: Cache the Chart.js instance to prevent memory leaks and DOM thrashing
+
+// ⚡ Palette UX: Helper to temporarily disable inputs with context
+function toggleInputsState(inputs, isComputing) {
+    inputs.forEach(el => {
+        if (isComputing) {
+            if (el.hasAttribute('title')) el.dataset.origTitle = el.getAttribute('title');
+            el.title = 'Computation in progress...';
+            el.disabled = true;
+        } else {
+            el.disabled = false;
+            if (el.dataset.origTitle !== undefined) {
+                el.title = el.dataset.origTitle;
+                delete el.dataset.origTitle;
+            } else if (el.hasAttribute('title') && el.getAttribute('title') === 'Computation in progress...') {
+                el.removeAttribute('title');
+            }
+        }
+    });
+}
+
 let pmpChartInstance = null;
 
 // 1. Solve PMP
@@ -338,7 +358,7 @@ async function solvePMP() {
     btn.title = 'Computation in progress...';
     if (form) {
         enabledInputs = Array.from(form.elements).filter(el => !el.disabled && el !== btn);
-        enabledInputs.forEach(el => el.disabled = true);
+        toggleInputsState(enabledInputs, true);
     }
 
     const chartContainer = document.getElementById('pmp-chart');
@@ -408,7 +428,7 @@ async function solvePMP() {
             chartContainer.style.opacity = '';
             chartContainer.style.pointerEvents = '';
             chartContainer.removeAttribute('aria-hidden');
-            chartContainer.querySelectorAll('button, input').forEach(el => el.disabled = false);
+            toggleInputsState(chartContainer.querySelectorAll('button, input'), false);
             const section = chartContainer.closest('section');
             if (section) delete section.dataset.stale;
         }
@@ -429,14 +449,14 @@ async function solvePMP() {
             btn.setCustomValidity(err.message);
             if (typeof announceA11y === 'function') announceA11y('Error: ' + err.message);
             btn.disabled = false;
-            enabledInputs.forEach(el => el.disabled = false);
+            toggleInputsState(enabledInputs, false);
             btn.reportValidity();
             return;
         }
         btn.setCustomValidity('Failed to solve PMP: ' + err.message);
         if (typeof announceA11y === 'function') announceA11y('Error: Failed to solve PMP: ' + err.message);
         btn.disabled = false;
-        enabledInputs.forEach(el => el.disabled = false);
+        toggleInputsState(enabledInputs, false);
         btn.reportValidity();
     } finally {
         btn.disabled = false;
@@ -447,7 +467,7 @@ async function solvePMP() {
         } else {
             btn.removeAttribute('title');
         }
-        enabledInputs.forEach(el => el.disabled = false);
+        toggleInputsState(enabledInputs, false);
         // ⚡ Palette UX: Only restore focus if the user hasn't proactively navigated elsewhere
         if (wasFocused && typeof wasFocused.focus === 'function' && document.activeElement === document.body) {
             wasFocused.focus();
@@ -470,7 +490,7 @@ async function solveLQR() {
     btn.title = 'Computation in progress...';
     if (form) {
         enabledInputs = Array.from(form.elements).filter(el => !el.disabled && el !== btn);
-        enabledInputs.forEach(el => el.disabled = true);
+        toggleInputsState(enabledInputs, true);
     }
 
     const outputContainer = document.getElementById('lqr-output');
@@ -502,7 +522,7 @@ async function solveLQR() {
             outputContainer.style.opacity = '';
             outputContainer.style.pointerEvents = '';
             outputContainer.removeAttribute('aria-hidden');
-            outputContainer.querySelectorAll('button, input, .copy-btn').forEach(btn => btn.disabled = false);
+            toggleInputsState(outputContainer.querySelectorAll('button, input, .copy-btn'), false);
             const section = outputContainer.closest('section');
             if (section) delete section.dataset.stale;
         }
@@ -523,14 +543,14 @@ async function solveLQR() {
             btn.setCustomValidity(err.message);
             if (typeof announceA11y === 'function') announceA11y('Error: ' + err.message);
             btn.disabled = false;
-            enabledInputs.forEach(el => el.disabled = false);
+            toggleInputsState(enabledInputs, false);
             btn.reportValidity();
             return;
         }
         btn.setCustomValidity('Failed to synthesize LQR: ' + err.message);
         if (typeof announceA11y === 'function') announceA11y('Error: Failed to synthesize LQR: ' + err.message);
         btn.disabled = false;
-        enabledInputs.forEach(el => el.disabled = false);
+        toggleInputsState(enabledInputs, false);
         btn.reportValidity();
     } finally {
         btn.disabled = false;
@@ -541,7 +561,7 @@ async function solveLQR() {
         } else {
             btn.removeAttribute('title');
         }
-        enabledInputs.forEach(el => el.disabled = false);
+        toggleInputsState(enabledInputs, false);
         // ⚡ Palette UX: Only restore focus if the user hasn't proactively navigated elsewhere
         if (wasFocused && typeof wasFocused.focus === 'function' && document.activeElement === document.body) {
             wasFocused.focus();
@@ -567,7 +587,7 @@ async function solveMPC() {
     btn.title = 'Computation in progress...';
     if (form) {
         enabledInputs = Array.from(form.elements).filter(el => !el.disabled && el !== btn);
-        enabledInputs.forEach(el => el.disabled = true);
+        toggleInputsState(enabledInputs, true);
     }
 
     const chartContainer = document.getElementById('mpc-chart');
@@ -639,7 +659,7 @@ async function solveMPC() {
             chartContainer.style.opacity = '';
             chartContainer.style.pointerEvents = '';
             chartContainer.removeAttribute('aria-hidden');
-            chartContainer.querySelectorAll('button, input').forEach(el => el.disabled = false);
+            toggleInputsState(chartContainer.querySelectorAll('button, input'), false);
             const section = chartContainer.closest('section');
             if (section) delete section.dataset.stale;
         }
@@ -660,14 +680,14 @@ async function solveMPC() {
             btn.setCustomValidity(err.message);
             if (typeof announceA11y === 'function') announceA11y('Error: ' + err.message);
             btn.disabled = false;
-            enabledInputs.forEach(el => el.disabled = false);
+            toggleInputsState(enabledInputs, false);
             btn.reportValidity();
             return;
         }
         btn.setCustomValidity('Failed to simulate MPC: ' + err.message);
         if (typeof announceA11y === 'function') announceA11y('Error: Failed to simulate MPC: ' + err.message);
         btn.disabled = false;
-        enabledInputs.forEach(el => el.disabled = false);
+        toggleInputsState(enabledInputs, false);
         btn.reportValidity();
     } finally {
         btn.disabled = false;
@@ -678,7 +698,7 @@ async function solveMPC() {
         } else {
             btn.removeAttribute('title');
         }
-        enabledInputs.forEach(el => el.disabled = false);
+        toggleInputsState(enabledInputs, false);
         // ⚡ Palette UX: Only restore focus if the user hasn't proactively navigated elsewhere
         if (wasFocused && typeof wasFocused.focus === 'function' && document.activeElement === document.body) {
             wasFocused.focus();
