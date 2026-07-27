@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
+import json
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -250,11 +251,12 @@ class MPCRequest(BaseModel):
 def cached_solve_lqr(req_json: str):
     req = LQRRequest.model_validate_json(req_json)
     K, X, eigvals = solve_lqr(req.A, req.B, req.Q, req.R)
-    return {
+    res = {
         "K": K.tolist(),
         "X": X.tolist(),
         "eigvals": eigvals.real.tolist()
     }
+    return json.dumps(res).encode('utf-8')
 
 @functools.lru_cache(maxsize=128)
 def cached_solve_pmp(req_json: str):
@@ -262,12 +264,13 @@ def cached_solve_pmp(req_json: str):
     t, x_sol, u_sol, lam_sol = solve_pmp_linear_quadratic(
         req.A, req.B, req.Q, req.R, req.x0, req.xf, req.tf, req.num_points
     )
-    return {
+    res = {
         "t": t.tolist(),
         "x": x_sol.tolist(),
         "u": u_sol.tolist(),
         "lambda": lam_sol.tolist()
     }
+    return json.dumps(res).encode('utf-8')
 
 @functools.lru_cache(maxsize=128)
 def cached_solve_mpc(req_json: str):
@@ -275,18 +278,19 @@ def cached_solve_mpc(req_json: str):
     t, x_sol, u_sol = solve_mpc(
         req.A, req.B, req.Q, req.R, req.x0, req.N_horizon, req.dt, req.u_min, req.u_max
     )
-    return {
+    res = {
         "t": t.tolist(),
         "x": x_sol.tolist(),
         "u": u_sol.tolist()
     }
+    return json.dumps(res).encode('utf-8')
 
 @app.post("/api/lqr")
 def lqr_endpoint(req: LQRRequest):
     try:
         content = cached_solve_lqr(req.model_dump_json())
-        # ⚡ Bolt Optimization: Use JSONResponse directly to bypass FastAPI's slow recursive jsonable_encoder for large primitive arrays
-        return JSONResponse(content=content)
+        # ⚡ Bolt Optimization: Use Response directly with pre-serialized JSON to eliminate serialization overhead on cache hits
+        return Response(content=content, media_type="application/json")
     except Exception as e:
         logger.error(f"LQR Error: {e}")
         raise HTTPException(status_code=400, detail="An error occurred during LQR computation")
@@ -295,8 +299,8 @@ def lqr_endpoint(req: LQRRequest):
 def pmp_endpoint(req: PMPRequest):
     try:
         content = cached_solve_pmp(req.model_dump_json())
-        # ⚡ Bolt Optimization: Use JSONResponse directly to bypass FastAPI's slow recursive jsonable_encoder for large primitive arrays
-        return JSONResponse(content=content)
+        # ⚡ Bolt Optimization: Use Response directly with pre-serialized JSON to eliminate serialization overhead on cache hits
+        return Response(content=content, media_type="application/json")
     except Exception as e:
         logger.error(f"PMP Error: {e}")
         raise HTTPException(status_code=400, detail="An error occurred during PMP computation")
@@ -305,8 +309,8 @@ def pmp_endpoint(req: PMPRequest):
 def mpc_endpoint(req: MPCRequest):
     try:
         content = cached_solve_mpc(req.model_dump_json())
-        # ⚡ Bolt Optimization: Use JSONResponse directly to bypass FastAPI's slow recursive jsonable_encoder for large primitive arrays
-        return JSONResponse(content=content)
+        # ⚡ Bolt Optimization: Use Response directly with pre-serialized JSON to eliminate serialization overhead on cache hits
+        return Response(content=content, media_type="application/json")
     except Exception as e:
         logger.error(f"MPC Error: {e}")
         raise HTTPException(status_code=400, detail="An error occurred during MPC computation")
