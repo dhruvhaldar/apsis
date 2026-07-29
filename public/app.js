@@ -435,6 +435,9 @@ async function solvePMP() {
 
         announceA11y('PMP trajectory calculated successfully. Chart updated.');
         scrollToOutput(chartContainer);
+        flashOutputSuccess('pmp-chart');
+
+
 
     } catch (err) {
         console.error(err);
@@ -529,6 +532,8 @@ async function solveLQR() {
 
         announceA11y('LQR synthesis complete. Gain and poles available.');
         scrollToOutput(document.getElementById('lqr-output'));
+        flashOutputSuccess('lqr-output');
+
 
     } catch (err) {
         console.error(err);
@@ -666,6 +671,9 @@ async function solveMPC() {
 
         announceA11y('MPC simulation complete. Chart updated.');
         scrollToOutput(chartContainer);
+        flashOutputSuccess('mpc-chart');
+
+
 
     } catch (err) {
         console.error(err);
@@ -931,3 +939,22 @@ document.addEventListener('focusin', (e) => {
         e.target.select();
     }
 });
+
+// ⚡ Palette UX: Output Success Flash Helper
+// Provides immediate visual confirmation on output containers that data has been successfully updated,
+// especially useful when the updated data visually resembles the previous state.
+function flashOutputSuccess(elementId) {
+    const el = document.getElementById(elementId);
+    if (el) {
+        // Reset animation by removing and re-adding the class
+        el.classList.remove('highlight-success');
+        // Force reflow to ensure the class removal is processed before re-adding
+        void el.offsetWidth;
+        el.classList.add('highlight-success');
+
+        // Remove class after animation completes (1s) to allow it to trigger again
+        setTimeout(() => {
+            el.classList.remove('highlight-success');
+        }, 1000);
+    }
+}
