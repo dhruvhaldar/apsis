@@ -116,10 +116,11 @@ async def combined_security_and_rate_limit_middleware(request: Request, call_nex
         # the incoming request is from a new IP. Running this loop on every request when full
         # causes an Algorithmic Complexity DoS, freezing the event loop.
         if len(rate_limit_store) >= MAX_IPS and hashed_ip not in rate_limit_store:
-            stale_ips = []
-            for ip, timestamps in rate_limit_store.items():
-                if not timestamps or current_time - timestamps[-1] >= RATE_LIMIT_WINDOW:
-                    stale_ips.append(ip)
+            # ⚡ Bolt Optimization: Use a list comprehension instead of an indexed loop with .append()
+            # to collect stale IPs. This avoids dynamic function lookup overhead for .append()
+            # and performs the loop entirely in C, yielding a small performance boost in this hot path.
+            stale_ips = [ip for ip, timestamps in rate_limit_store.items()
+                         if not timestamps or current_time - timestamps[-1] >= RATE_LIMIT_WINDOW]
 
             for ip in stale_ips:
                 del rate_limit_store[ip]
