@@ -322,6 +322,14 @@ document.addEventListener('click', (e) => {
 
 // ⚡ Bolt Optimization: Cache the Chart.js instance to prevent memory leaks and DOM thrashing
 
+// ⚡ Palette UX: Trigger visual flash confirmation for async output updates
+function triggerUpdateFlash(element) {
+    if (!element) return;
+    element.classList.remove('flash-update');
+    void element.offsetWidth; // Force reflow
+    element.classList.add('flash-update');
+}
+
 // ⚡ Palette UX: Helper to temporarily disable inputs with context
 function toggleInputsState(inputs, isComputing) {
     inputs.forEach(el => {
@@ -431,6 +439,7 @@ async function solvePMP() {
             toggleInputsState(chartContainer.querySelectorAll('button, input'), false);
             const section = chartContainer.closest('section');
             if (section) delete section.dataset.stale;
+            triggerUpdateFlash(chartContainer);
         }
 
         announceA11y('PMP trajectory calculated successfully. Chart updated.');
@@ -525,6 +534,7 @@ async function solveLQR() {
             toggleInputsState(outputContainer.querySelectorAll('button, input, .copy-btn'), false);
             const section = outputContainer.closest('section');
             if (section) delete section.dataset.stale;
+            triggerUpdateFlash(outputContainer);
         }
 
         announceA11y('LQR synthesis complete. Gain and poles available.');
@@ -662,6 +672,7 @@ async function solveMPC() {
             toggleInputsState(chartContainer.querySelectorAll('button, input'), false);
             const section = chartContainer.closest('section');
             if (section) delete section.dataset.stale;
+            triggerUpdateFlash(chartContainer);
         }
 
         announceA11y('MPC simulation complete. Chart updated.');
