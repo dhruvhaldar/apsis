@@ -341,3 +341,7 @@
 ## 2026-08-01 - Explaining Temporarily Disabled States
 **Learning:** When interactive elements (like inputs) are temporarily disabled during long-running asynchronous computations to prevent conflicting edits, users who rely on tooltips or screen readers may encounter disabled fields without understanding why. They just appear broken or unavailable.
 **Action:** When temporarily disabling interactive elements during long async computations, explicitly set a descriptive `title` attribute (e.g., 'Computation in progress...') to explain the disabled state. Always cache any existing `title` (using a data attribute) before changing it, and faithfully restore the original value (or remove the attribute if it didn't exist) in the `finally` block once computation completes.
+
+## 2026-08-01 - Visual Confirmation for Async Updates
+**Learning:** When async updates to an output container result in minimal visual structural changes (like a chart updating with slightly different data), users may not notice the change has occurred, leading to confusion about whether the form submission was successful.
+**Action:** Always provide an explicit, transient visual confirmation (like a subtle CSS keyframe flash) directly on the container to clearly signal to sighted users that new data has been successfully injected.
