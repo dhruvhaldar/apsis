@@ -209,6 +209,10 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         safe_err = err.copy()
         if "input" in safe_err:
             del safe_err["input"]
+        if "ctx" in safe_err:
+            del safe_err["ctx"]
+        if "url" in safe_err:
+            del safe_err["url"]
         safe_errors.append(safe_err)
 
     return JSONResponse(
