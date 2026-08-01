@@ -345,3 +345,7 @@
 ## 2026-08-01 - Visual Confirmation for Async Updates
 **Learning:** When async updates to an output container result in minimal visual structural changes (like a chart updating with slightly different data), users may not notice the change has occurred, leading to confusion about whether the form submission was successful.
 **Action:** Always provide an explicit, transient visual confirmation (like a subtle CSS keyframe flash) directly on the container to clearly signal to sighted users that new data has been successfully injected.
+
+## 2024-08-25 - Forgiving JSON Parsing for Copy-Pasted Data
+**Learning:** When users copy Python lists or matrices into JSON input fields, they often include trailing commas (e.g. `[1.0, 0.0,]`). Standard `JSON.parse()` strictly fails on these, causing unnecessary friction and errors for data that is otherwise perfectly understandable.
+**Action:** Apply 'forgiving JSON parsing' by stripping trailing commas with a regex (e.g., `str.replace(/,\s*(?=[\]}])/g, '')`) before calling `JSON.parse()`. Auto-formatting the input field on blur provides positive reinforcement that the system correctly interpreted their formatting.
