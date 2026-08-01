@@ -158,10 +158,13 @@ async function handleApiError(response) {
 function parseInput(id) {
     const el = document.getElementById(id);
     try {
-        const parsed = JSON.parse(el.value);
+        const forgivingValue = el.value.replace(/,\s*(?=[\]}])/g, '');
+        const parsed = JSON.parse(forgivingValue);
         if (el.dataset.format === 'json' && !Array.isArray(parsed)) {
             throw new Error('Must be a JSON array');
         }
+        // Auto-format the field with the correct formatting
+        el.value = JSON.stringify(parsed);
         el.setAttribute('aria-invalid', 'false');
         return parsed;
     } catch (e) {
@@ -201,7 +204,8 @@ document.addEventListener('focusout', (e) => {
             try {
                 // Only validate if not empty (let native 'required' handle empty state if needed)
                 if (e.target.value.trim() !== '') {
-                    const parsed = JSON.parse(e.target.value);
+                    const forgivingValue = e.target.value.replace(/,\s*(?=[\]}])/g, '');
+                    const parsed = JSON.parse(forgivingValue);
                     if (!Array.isArray(parsed)) {
                         throw new Error('Must be a JSON array');
                     }
