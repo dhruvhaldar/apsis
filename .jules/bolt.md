@@ -198,3 +198,7 @@
 ## 2026-07-28 - Refactoring .append() in Hot Paths
 **Learning:** Using a standard `for` loop with `.append()` to populate a list incurs the overhead of dynamic function lookup for `.append` on every iteration.
 **Action:** For minor performance improvements in Python hot paths, replace standard `for` loops that use `.append()` to construct lists with list comprehensions, which are evaluated in C and bypass this dynamic lookup overhead.
+
+## 2026-08-02 - Refactoring .append() in Hot Paths
+**Learning:** Using a standard `for` loop with `.append()` to populate a list incurs the overhead of dynamic function lookup for `.append` on every iteration.
+**Action:** For minor performance improvements in Python hot paths, replace standard `for` loops that use `.append()` to construct lists with list comprehensions, which are evaluated in C and bypass this dynamic lookup overhead.

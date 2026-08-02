@@ -204,16 +204,11 @@ Matrix = Annotated[List[Row], Field(max_length=20)]
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     errors = exc.errors()
-    safe_errors = []
-    for err in errors:
-        safe_err = err.copy()
-        if "input" in safe_err:
-            del safe_err["input"]
-        if "ctx" in safe_err:
-            del safe_err["ctx"]
-        if "url" in safe_err:
-            del safe_err["url"]
-        safe_errors.append(safe_err)
+    # ⚡ Bolt Optimization: Use list comprehension to avoid dynamic function lookup for .append()
+    safe_errors = [
+        {k: v for k, v in err.items() if k not in ("input", "ctx", "url")}
+        for err in errors
+    ]
 
     return JSONResponse(
         status_code=422,
