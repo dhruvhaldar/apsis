@@ -941,8 +941,21 @@ document.addEventListener('wheel', (e) => {
 }, { passive: true });
 
 // ⚡ Palette: Auto-select input text on focus to make overwriting complex pre-filled values faster
+// However, ensure this only happens for keyboard navigation, not pointer clicks, which should place the cursor normally.
+let isPointerInteraction = false;
+document.addEventListener('mousedown', () => isPointerInteraction = true);
+document.addEventListener('mouseup', () => isPointerInteraction = false);
+document.addEventListener('touchstart', () => isPointerInteraction = true);
+document.addEventListener('touchend', () => isPointerInteraction = false);
+document.addEventListener('pointercancel', () => isPointerInteraction = false);
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') isPointerInteraction = false;
+});
+
 document.addEventListener('focusin', (e) => {
     if (e.target && e.target.classList.contains('ui-input')) {
-        e.target.select();
+        if (!isPointerInteraction) {
+            e.target.select();
+        }
     }
 });

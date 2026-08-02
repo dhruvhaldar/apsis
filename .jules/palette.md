@@ -349,3 +349,7 @@
 ## 2024-08-25 - Forgiving JSON Parsing for Copy-Pasted Data
 **Learning:** When users copy Python lists or matrices into JSON input fields, they often include trailing commas (e.g. `[1.0, 0.0,]`). Standard `JSON.parse()` strictly fails on these, causing unnecessary friction and errors for data that is otherwise perfectly understandable.
 **Action:** Apply 'forgiving JSON parsing' by stripping trailing commas with a regex (e.g., `str.replace(/,\s*(?=[\]}])/g, '')`) before calling `JSON.parse()`. Auto-formatting the input field on blur provides positive reinforcement that the system correctly interpreted their formatting.
+
+## 2026-08-02 - Conditionally Auto-Select Input Text on Focus
+**Learning:** Unconditionally auto-selecting input text on `focusin` (e.g. `e.target.select()`) causes a major UX issue when users click into a field using their mouse or touch device. The entire text gets selected instead of placing the caret at the clicked position, forcing users to click twice to edit specific parts of complex values.
+**Action:** When implementing auto-selection to speed up keyboard-based form navigation, track pointer interactions using global listeners (`mousedown`, `touchstart`, `mouseup`, `touchend`). In the `focusin` handler, only call `.select()` if the focus was triggered by a non-pointer interaction (e.g., keyboard Tab navigation).
