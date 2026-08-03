@@ -75,3 +75,21 @@ def test_rate_limit_multiple_x_forwarded_for():
     # The 51st request from IP 9.9.9.9 should be rate limited, even if spoof header is different
     response = client.post("/api/lqr", json=payload, headers=[("X-Forwarded-For", "2.2.2.2"), ("X-Forwarded-For", "9.9.9.9")])
     assert response.status_code == 429
+def test_rate_limit_path_traversal_bypass():
+    rate_limit_store.clear()
+
+    payload = {
+        "A": [[0, 1], [-1, -1]],
+        "B": [[0], [1]],
+        "Q": [[1, 0], [0, 1]],
+        "R": [[1]]
+    }
+
+    # Send 50 successful requests
+    for _ in range(50):
+        response = client.post("/foo/../api/lqr", json=payload, headers={"X-Forwarded-For": "10.0.0.1"})
+        assert response.status_code == 200
+
+    # The 51st request should be rate limited, confirming the path traversal was caught
+    response = client.post("/foo/../api/lqr", json=payload, headers={"X-Forwarded-For": "10.0.0.1"})
+    assert response.status_code == 429

@@ -14,6 +14,7 @@ from typing import List, Optional, Annotated, Dict
 import urllib.parse
 import re
 import functools
+import posixpath
 
 from apsis.calculus_of_variations import solve_pmp_linear_quadratic
 from apsis.lqr import solve_lqr
@@ -96,7 +97,8 @@ async def combined_security_and_rate_limit_middleware(request: Request, call_nex
 
     # ⚡ Bolt Optimization: Guard regex .sub() with a fast string check to bypass regex
     # overhead for the 99% of requests that are already well-formed.
-    normalized_path = PATH_NORMALIZE_RE.sub('/', unquoted_path) if '//' in unquoted_path else unquoted_path
+    collapsed_path = PATH_NORMALIZE_RE.sub('/', unquoted_path) if '//' in unquoted_path else unquoted_path
+    normalized_path = posixpath.normpath(collapsed_path)
 
     if normalized_path.startswith("/api/"):
         # 🛡️ Sentinel Security Fix: Use getlist() to handle multiple X-Forwarded-For headers
