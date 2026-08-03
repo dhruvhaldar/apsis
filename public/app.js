@@ -251,6 +251,11 @@ document.addEventListener('invalid', (e) => {
 // Clear validation errors when user types
 document.addEventListener('input', (e) => {
     if (e.target && e.target.classList.contains('ui-input')) {
+        // ⚡ Palette UX: Save input values to sessionStorage to prevent data loss on accidental reload
+        if (e.target.id) {
+            sessionStorage.setItem(`apsis-${e.target.id}`, e.target.value);
+        }
+
         if ('validJson' in e.target.dataset) {
             delete e.target.dataset.validJson;
         }
@@ -757,13 +762,6 @@ function announceA11y(message) {
 }
 
 // Initialize events and rendering once DOM is loaded
-// ⚡ Palette UX: Save input values to sessionStorage to prevent data loss on accidental reload
-document.addEventListener('input', (e) => {
-    if (e.target && e.target.id && e.target.classList.contains('ui-input')) {
-        sessionStorage.setItem(`apsis-${e.target.id}`, e.target.value);
-    }
-});
-
 
 // ⚡ Palette UX: Handle form resets explicitly to clear sessionStorage and restore state
 document.addEventListener('reset', (e) => {

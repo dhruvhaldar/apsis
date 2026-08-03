@@ -202,3 +202,6 @@
 ## 2026-08-02 - Refactoring .append() in Hot Paths
 **Learning:** Using a standard `for` loop with `.append()` to populate a list incurs the overhead of dynamic function lookup for `.append` on every iteration.
 **Action:** For minor performance improvements in Python hot paths, replace standard `for` loops that use `.append()` to construct lists with list comprehensions, which are evaluated in C and bypass this dynamic lookup overhead.
+## 2026-08-03 - Consolidate Multiple High-Frequency Listeners
+**Learning:** Attaching multiple separate global event listeners for the same high-frequency event (like `input`) forces the browser to execute multiple JS callbacks and traverse the C++-to-JS boundary repeatedly, degrading Interaction to Next Paint (INP).
+**Action:** Audit and consolidate separate listeners for identical high-frequency events into a single delegated handler to minimize architectural overhead.
