@@ -785,10 +785,52 @@ document.addEventListener('reset', (e) => {
             form.querySelectorAll('.ui-input').forEach(input => {
                 input.dispatchEvent(new Event('input', { bubbles: true }));
             });
+
+            // ⚡ Palette UX: Completely clear output and restore empty state to provide a true clean slate
+            const section = form.closest('section');
+            if (section) {
+                delete section.dataset.stale;
+
+                // Clear charts
+                const chartContainer = section.querySelector('.chart-container');
+                if (chartContainer) {
+                    chartContainer.style.opacity = '';
+                    chartContainer.style.pointerEvents = '';
+                    chartContainer.removeAttribute('aria-hidden');
+
+                    if (section.classList.contains('pmp-panel') && pmpChartInstance) {
+                        pmpChartInstance.destroy();
+                        pmpChartInstance = null;
+                        document.getElementById('pmp-chart').innerHTML = `<div class="empty-state">
+                            <div aria-hidden="true">🚀</div>
+                            <div>Configure parameters and solve to view trajectory</div>
+                        </div>`;
+                    }
+                    if (section.classList.contains('mpc-panel') && mpcChartInstance) {
+                        mpcChartInstance.destroy();
+                        mpcChartInstance = null;
+                        document.getElementById('mpc-chart').innerHTML = `<div class="empty-state">
+                            <div aria-hidden="true">🔮</div>
+                            <div>Configure horizon and simulate to view predictions</div>
+                        </div>`;
+                    }
+                }
+
+                // Clear LQR text output
+                const lqrOutput = section.querySelector('#lqr-output');
+                const lqrEmpty = section.querySelector('#lqr-empty');
+                if (lqrOutput && lqrEmpty) {
+                    lqrOutput.style.display = 'none';
+                    lqrOutput.style.opacity = '';
+                    lqrOutput.style.pointerEvents = '';
+                    lqrOutput.removeAttribute('aria-hidden');
+                    lqrEmpty.style.display = 'block';
+                }
+            }
         }, 0);
 
         if (typeof announceA11y === 'function') {
-            announceA11y('Form reset to default values.');
+            announceA11y('Form reset to default values and output cleared.');
         }
     }
 });
