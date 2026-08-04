@@ -975,6 +975,9 @@ document.addEventListener('keydown', (e) => {
         document.activeElement.blur();
     }
 
+    // ⚡ Bolt Optimization: Consolidate high-frequency event listeners
+    if (e.key === 'Tab') isPointerInteraction = false;
+
     // Check if Ctrl+Enter or Cmd+Enter is pressed
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         const activeElement = document.activeElement;
@@ -1007,9 +1010,6 @@ document.addEventListener('mouseup', () => isPointerInteraction = false);
 document.addEventListener('touchstart', () => isPointerInteraction = true);
 document.addEventListener('touchend', () => isPointerInteraction = false);
 document.addEventListener('pointercancel', () => isPointerInteraction = false);
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Tab') isPointerInteraction = false;
-});
 
 document.addEventListener('focusin', (e) => {
     if (e.target && e.target.classList.contains('ui-input')) {
