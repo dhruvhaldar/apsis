@@ -855,12 +855,13 @@ window.addEventListener('DOMContentLoaded', () => {
             const val = valElement ? valElement.textContent : null;
 
             if (val && val !== '...') {
+                const span = this.querySelector('span');
+                const originalLabel = this.getAttribute('aria-label');
+                const originalTitle = this.getAttribute('title');
+
                 try {
                     this.dataset.copying = 'true'; // Prevent overlapping rapid clicks without losing focus
                     await navigator.clipboard.writeText(val);
-                    const span = this.querySelector('span');
-                    const originalLabel = this.getAttribute('aria-label');
-                    const originalTitle = this.getAttribute('title');
 
                     span.textContent = '✅';
                     this.setAttribute('aria-label', 'Copied successfully');
@@ -893,7 +894,25 @@ window.addEventListener('DOMContentLoaded', () => {
                     }, 2000);
                 } catch (err) {
                     console.error('Failed to copy!', err);
-                    delete this.dataset.copying;
+                    this.dataset.copying = 'true';
+                    this.dataset.copyError = 'true';
+                    span.textContent = '❌';
+                    this.setAttribute('aria-label', 'Failed to copy');
+                    this.setAttribute('title', 'Failed to copy!');
+
+                    announceA11y('Failed to copy. Please try manually.');
+
+                    setTimeout(() => {
+                        span.textContent = '📋';
+                        this.setAttribute('aria-label', originalLabel);
+                        if (originalTitle !== null) {
+                            this.setAttribute('title', originalTitle);
+                        } else {
+                            this.removeAttribute('title');
+                        }
+                        delete this.dataset.copying;
+                        delete this.dataset.copyError;
+                    }, 2000);
                 }
             }
         });

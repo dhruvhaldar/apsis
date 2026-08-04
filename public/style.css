@@ -388,6 +388,23 @@ section[data-stale="true"] .ui-btn:not(:disabled) {
     animation: successPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
+.icon-btn[data-copy-error="true"] {
+    color: #ff6b6b;
+}
+
+@keyframes errorShake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-3px); }
+    50% { transform: translateX(3px); }
+    75% { transform: translateX(-3px); }
+    100% { transform: translateX(0); }
+}
+
+.icon-btn[data-copy-error="true"] span {
+    display: inline-block;
+    animation: errorShake 0.4s ease-in-out forwards;
+}
+
 .copy-btn {
     position: absolute;
     top: 10px;
@@ -511,7 +528,8 @@ section[data-stale="true"] .ui-btn:not(:disabled) .shortcut-hint kbd {
         transition: none !important;
         transform: none !important;
     }
-    .icon-btn[data-copying="true"] span {
+    .icon-btn[data-copying="true"] span,
+    .icon-btn[data-copy-error="true"] span {
         animation: none !important;
     }
     .flash-update {
