@@ -205,3 +205,7 @@
 ## 2026-08-03 - Consolidate Multiple High-Frequency Listeners
 **Learning:** Attaching multiple separate global event listeners for the same high-frequency event (like `input`) forces the browser to execute multiple JS callbacks and traverse the C++-to-JS boundary repeatedly, degrading Interaction to Next Paint (INP).
 **Action:** Audit and consolidate separate listeners for identical high-frequency events into a single delegated handler to minimize architectural overhead.
+
+## 2024-05-24 - Consolidate Multiple High-Frequency Listeners
+**Learning:** Attaching multiple separate global event listeners for the same high-frequency event (like `keydown`) forces the browser to execute multiple JS callbacks and traverse the C++-to-JS boundary repeatedly, degrading Interaction to Next Paint (INP).
+**Action:** Audit and consolidate separate listeners for identical high-frequency events into a single delegated handler to minimize architectural overhead.
