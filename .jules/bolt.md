@@ -209,3 +209,7 @@
 ## 2024-05-24 - Consolidate Multiple High-Frequency Listeners
 **Learning:** Attaching multiple separate global event listeners for the same high-frequency event (like `keydown`) forces the browser to execute multiple JS callbacks and traverse the C++-to-JS boundary repeatedly, degrading Interaction to Next Paint (INP).
 **Action:** Audit and consolidate separate listeners for identical high-frequency events into a single delegated handler to minimize architectural overhead.
+
+## 2024-05-24 - Avoid redundant closest() traversals on high frequency click events
+**Learning:** Calling `e.target.closest('selector')` on high-frequency events (like global click handlers) introduces expensive DOM tree traversal overhead. When searching for form elements, if the target is already an input inside a form, `e.target.form.querySelector` avoids walking up the DOM tree and is more efficient.
+**Action:** In global click handlers targeting form buttons, use `e.target.form ? e.target.form.querySelector(...) : e.target.closest(...)` to optimize the common case where the clicked element is part of a form, reducing architectural overhead.

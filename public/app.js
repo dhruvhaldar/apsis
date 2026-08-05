@@ -328,7 +328,8 @@ document.addEventListener('input', (e) => {
 
 // Clear submit button validity on click to allow immediate retry
 document.addEventListener('click', (e) => {
-    const btn = e.target.closest('button[type="submit"]');
+    // ⚡ Bolt Optimization: Use the O(1) form reference to lookup the submit button instead of an expensive DOM traversal on every click
+    const btn = e.target.form ? e.target.form.querySelector('button[type="submit"]') : e.target.closest('button[type="submit"]');
     if (btn && btn.validationMessage !== '') btn.setCustomValidity('');
 });
 
