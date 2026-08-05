@@ -361,3 +361,7 @@
 ## 2026-08-04 - Explicit Failure States for Clipboard Operations
 **Learning:** Providing a success state (like changing a copy button icon to ✅) for `navigator.clipboard.writeText` is good UX. However, assuming the clipboard API will always succeed and silently swallowing errors in a `catch` block leads to ambiguous UX when it fails (e.g., due to strict browser permissions or missing secure context). The user may click the button, see no feedback, and assume the feature is broken or unresponsive.
 **Action:** Always provide explicit visual (e.g., a ❌ icon and a subtle shake animation) and auditory (`aria-live` announcement) feedback when clipboard operations fail, and gracefully revert the UI back to the default state just like the success path.
+
+## 2026-08-05 - Consistent Validation Feedback on Submission
+**Learning:** When implementing auto-formatting and positive visual feedback (like green checkmarks) for complex inputs on `blur`, users who directly click "Submit" while still focused on the input miss out on this reinforcement. The backend logic parses and formats it, but the UI state lags behind.
+**Action:** When auto-formatting input fields during form submission validation routines (e.g. `parseInput`), explicitly apply the success UI state attributes (like `dataset.validJson = 'true'`) to the element. This ensures the user receives consistent positive visual feedback that their input was understood, regardless of whether they triggered a blur event first.

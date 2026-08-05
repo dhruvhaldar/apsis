@@ -166,6 +166,9 @@ function parseInput(id) {
         // Auto-format the field with the correct formatting
         el.value = JSON.stringify(parsed);
         el.setAttribute('aria-invalid', 'false');
+        if (el.dataset.format === 'json') {
+            el.dataset.validJson = 'true';
+        }
         return parsed;
     } catch (e) {
         el.setCustomValidity('Invalid format. Please use valid JSON array format, e.g., [1, 0] or [[1,0],[0,1]]');
