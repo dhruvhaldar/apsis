@@ -336,10 +336,81 @@ document.addEventListener('input', (e) => {
 });
 
 // Clear submit button validity on click to allow immediate retry
-document.addEventListener('click', (e) => {
+document.addEventListener('click', async (e) => {
     // ⚡ Bolt Optimization: Use the O(1) form reference to lookup the submit button instead of an expensive DOM traversal on every click
     const btn = e.target.form ? e.target.form.querySelector('button[type="submit"]') : e.target.closest('button[type="submit"]');
     if (btn && btn.validationMessage !== '') btn.setCustomValidity('');
+
+    // ⚡ Bolt Optimization: Use event delegation for copy buttons instead of attaching separate listeners to each button
+    const copyBtn = e.target.closest('.copy-btn');
+    if (copyBtn) {
+        if (copyBtn.disabled || copyBtn.dataset.copying === 'true') return;
+        const targetId = copyBtn.dataset.target;
+                    const valElement = document.getElementById(targetId);
+                    const val = valElement ? valElement.textContent : null;
+
+                    if (val && val !== '...') {
+                        const span = copyBtn.querySelector('span');
+                        const originalLabel = copyBtn.getAttribute('aria-label');
+                        const originalTitle = copyBtn.getAttribute('title');
+
+                        try {
+                            copyBtn.dataset.copying = 'true'; // Prevent overlapping rapid clicks without losing focus
+                            await navigator.clipboard.writeText(val);
+
+                            span.textContent = '✅';
+                            copyBtn.setAttribute('aria-label', 'Copied successfully');
+                            copyBtn.setAttribute('title', 'Copied successfully!');
+
+                            // Use the original label (e.g. "Copy Gain K matrix to clipboard") to create a contextual message.
+                            // If the label is like "Copy Gain K matrix to clipboard", we can strip " to clipboard" or "Copy "
+                            // Or just use `originalLabel + ' successfully'` which is safe.
+                            let announceMsg = 'Copied successfully!';
+                            if (originalLabel) {
+                                // Extract what is being copied. Example: "Copy Gain K matrix to clipboard" -> "Gain K matrix"
+                                const match = originalLabel.match(/Copy (.*?) to clipboard/i) || originalLabel.match(/Copy (.*)/i);
+                                if (match && match[1]) {
+                                    announceMsg = match[1] + ' copied successfully!';
+                                } else {
+                                    announceMsg = originalLabel + ' successfully!';
+                                }
+                            }
+                            announceA11y(announceMsg);
+
+                            setTimeout(() => {
+                                span.textContent = '📋';
+                                copyBtn.setAttribute('aria-label', originalLabel);
+                                if (originalTitle !== null) {
+                                    copyBtn.setAttribute('title', originalTitle);
+                                } else {
+                                    copyBtn.removeAttribute('title');
+                                }
+                                delete copyBtn.dataset.copying;
+                            }, 2000);
+                        } catch (err) {
+                            console.error('Failed to copy!', err);
+                            copyBtn.dataset.copying = 'true';
+                            copyBtn.dataset.copyError = 'true';
+                            span.textContent = '❌';
+                            copyBtn.setAttribute('aria-label', 'Failed to copy');
+                            copyBtn.setAttribute('title', 'Failed to copy!');
+
+                            announceA11y('Failed to copy. Please try manually.');
+
+                            setTimeout(() => {
+                                span.textContent = '📋';
+                                copyBtn.setAttribute('aria-label', originalLabel);
+                                if (originalTitle !== null) {
+                                    copyBtn.setAttribute('title', originalTitle);
+                                } else {
+                                    copyBtn.removeAttribute('title');
+                                }
+                                delete copyBtn.dataset.copying;
+                                delete copyBtn.dataset.copyError;
+                            }, 2000);
+                        }
+                    }
+    }
 });
 
 // ⚡ Bolt Optimization: Cache the Chart.js instance to prevent memory leaks and DOM thrashing
@@ -860,76 +931,7 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 
     // Setup copy buttons
-    document.querySelectorAll('.copy-btn').forEach(copyBtn => {
-        copyBtn.addEventListener('click', async function() {
-            if (this.disabled || this.dataset.copying === 'true') return;
-            const targetId = this.dataset.target;
-            const valElement = document.getElementById(targetId);
-            const val = valElement ? valElement.textContent : null;
 
-            if (val && val !== '...') {
-                const span = this.querySelector('span');
-                const originalLabel = this.getAttribute('aria-label');
-                const originalTitle = this.getAttribute('title');
-
-                try {
-                    this.dataset.copying = 'true'; // Prevent overlapping rapid clicks without losing focus
-                    await navigator.clipboard.writeText(val);
-
-                    span.textContent = '✅';
-                    this.setAttribute('aria-label', 'Copied successfully');
-                    this.setAttribute('title', 'Copied successfully!');
-
-                    // Use the original label (e.g. "Copy Gain K matrix to clipboard") to create a contextual message.
-                    // If the label is like "Copy Gain K matrix to clipboard", we can strip " to clipboard" or "Copy "
-                    // Or just use `originalLabel + ' successfully'` which is safe.
-                    let announceMsg = 'Copied successfully!';
-                    if (originalLabel) {
-                        // Extract what is being copied. Example: "Copy Gain K matrix to clipboard" -> "Gain K matrix"
-                        const match = originalLabel.match(/Copy (.*?) to clipboard/i) || originalLabel.match(/Copy (.*)/i);
-                        if (match && match[1]) {
-                            announceMsg = match[1] + ' copied successfully!';
-                        } else {
-                            announceMsg = originalLabel + ' successfully!';
-                        }
-                    }
-                    announceA11y(announceMsg);
-
-                    setTimeout(() => {
-                        span.textContent = '📋';
-                        this.setAttribute('aria-label', originalLabel);
-                        if (originalTitle !== null) {
-                            this.setAttribute('title', originalTitle);
-                        } else {
-                            this.removeAttribute('title');
-                        }
-                        delete this.dataset.copying;
-                    }, 2000);
-                } catch (err) {
-                    console.error('Failed to copy!', err);
-                    this.dataset.copying = 'true';
-                    this.dataset.copyError = 'true';
-                    span.textContent = '❌';
-                    this.setAttribute('aria-label', 'Failed to copy');
-                    this.setAttribute('title', 'Failed to copy!');
-
-                    announceA11y('Failed to copy. Please try manually.');
-
-                    setTimeout(() => {
-                        span.textContent = '📋';
-                        this.setAttribute('aria-label', originalLabel);
-                        if (originalTitle !== null) {
-                            this.setAttribute('title', originalTitle);
-                        } else {
-                            this.removeAttribute('title');
-                        }
-                        delete this.dataset.copying;
-                        delete this.dataset.copyError;
-                    }, 2000);
-                }
-            }
-        });
-    });
 
     // ⚡ Bolt Optimization: Use ignoredTags and ignoredClasses for KaTeX initialization.
     // This prevents KaTeX from scanning heavy, unrelated DOM sub-trees (like Three.js canvases and Chart.js containers),

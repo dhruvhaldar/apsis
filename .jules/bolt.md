@@ -213,3 +213,7 @@
 ## 2024-05-24 - Avoid redundant closest() traversals on high frequency click events
 **Learning:** Calling `e.target.closest('selector')` on high-frequency events (like global click handlers) introduces expensive DOM tree traversal overhead. When searching for form elements, if the target is already an input inside a form, `e.target.form.querySelector` avoids walking up the DOM tree and is more efficient.
 **Action:** In global click handlers targeting form buttons, use `e.target.form ? e.target.form.querySelector(...) : e.target.closest(...)` to optimize the common case where the clicked element is part of a form, reducing architectural overhead.
+
+## 2026-08-08 - Consolidate copy-btn click listeners using delegation
+**Learning:** In a vanilla JS application, attaching individual event listeners to multiple identical elements via `document.querySelectorAll('.copy-btn').forEach(...)` on DOMContentLoaded increases initial execution time and consumes more memory, especially if there are many such elements.
+**Action:** Audit applications to replace repetitive inline event listeners attached in a loop with a single delegated event listener on a parent container or the global document. Use `e.target.closest('.selector')` to trigger the logic, which prevents redundant closure allocations and speeds up page initialization.
