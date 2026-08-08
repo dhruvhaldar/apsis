@@ -248,6 +248,15 @@ document.addEventListener('invalid', (e) => {
     if (e.target && e.target.classList.contains('ui-input')) {
         e.target.title = e.target.validationMessage;
         e.target.setAttribute('aria-invalid', 'true');
+
+        // ⚡ Palette UX: Explicitly announce native HTML5 validation failures
+        // to screen readers, as they otherwise fail silently when the form blocks submission.
+        if (typeof announceA11y === 'function') {
+            const label = e.target.labels && e.target.labels.length > 0
+                ? e.target.labels[0].textContent.replace(/\*$/, '').trim()
+                : 'Input';
+            announceA11y(`Error in ${label}: ${e.target.validationMessage}`);
+        }
     }
 }, true);
 

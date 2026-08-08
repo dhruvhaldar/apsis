@@ -365,3 +365,7 @@
 ## 2026-08-05 - Consistent Validation Feedback on Submission
 **Learning:** When implementing auto-formatting and positive visual feedback (like green checkmarks) for complex inputs on `blur`, users who directly click "Submit" while still focused on the input miss out on this reinforcement. The backend logic parses and formats it, but the UI state lags behind.
 **Action:** When auto-formatting input fields during form submission validation routines (e.g. `parseInput`), explicitly apply the success UI state attributes (like `dataset.validJson = 'true'`) to the element. This ensures the user receives consistent positive visual feedback that their input was understood, regardless of whether they triggered a blur event first.
+
+## 2026-08-08 - Announcing Native Form Validation Failures
+**Learning:** Native HTML5 validation failures (such as a `required` input preventing form submission) do not reliably announce the specific error to screen readers, especially if the user triggers the submission programmatically (e.g., via Enter key) or if focus doesn't natively shift. The visual bubble appears, but screen reader users get no feedback as to why the form didn't submit.
+**Action:** Intercept the native `invalid` event on inputs (using `document.addEventListener('invalid', ... , true)`) and explicitly extract the field's label and `validationMessage` to trigger an `aria-live` announcement. This brings native validation accessibility to parity with custom Javascript validations.
