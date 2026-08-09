@@ -1020,11 +1020,12 @@ document.addEventListener('wheel', (e) => {
 // ⚡ Palette: Auto-select input text on focus to make overwriting complex pre-filled values faster
 // However, ensure this only happens for keyboard navigation, not pointer clicks, which should place the cursor normally.
 let isPointerInteraction = false;
-document.addEventListener('mousedown', () => isPointerInteraction = true);
-document.addEventListener('mouseup', () => isPointerInteraction = false);
-document.addEventListener('touchstart', () => isPointerInteraction = true);
-document.addEventListener('touchend', () => isPointerInteraction = false);
-document.addEventListener('pointercancel', () => isPointerInteraction = false);
+// ⚡ Bolt Optimization: Unify mouse and touch listeners into modern pointer events.
+// This reduces the number of global interaction event listeners from 5 to 3, natively handling
+// both input types and reducing the JS-to-C++ boundary crossing footprint on every interaction.
+document.addEventListener('pointerdown', () => isPointerInteraction = true, { passive: true });
+document.addEventListener('pointerup', () => isPointerInteraction = false, { passive: true });
+document.addEventListener('pointercancel', () => isPointerInteraction = false, { passive: true });
 
 document.addEventListener('focusin', (e) => {
     if (e.target && e.target.classList.contains('ui-input')) {

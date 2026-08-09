@@ -217,3 +217,7 @@
 ## 2026-08-08 - Consolidate copy-btn click listeners using delegation
 **Learning:** In a vanilla JS application, attaching individual event listeners to multiple identical elements via `document.querySelectorAll('.copy-btn').forEach(...)` on DOMContentLoaded increases initial execution time and consumes more memory, especially if there are many such elements.
 **Action:** Audit applications to replace repetitive inline event listeners attached in a loop with a single delegated event listener on a parent container or the global document. Use `e.target.closest('.selector')` to trigger the logic, which prevents redundant closure allocations and speeds up page initialization.
+
+## 2026-08-09 - Unify Mouse and Touch Listeners with Pointer Events
+**Learning:** Attaching separate global event listeners for `mousedown`/`mouseup` and `touchstart`/`touchend` to track user interaction state creates redundant JS-to-C++ boundary crossings and needlessly increases the global event listener footprint.
+**Action:** Unify mouse and touch interaction tracking by exclusively using the modern `pointerdown`, `pointerup`, and `pointercancel` events. This natively consolidates multiple interaction streams, reduces the number of global listeners attached to the document, and guarantees consistent tracking across different device types.
