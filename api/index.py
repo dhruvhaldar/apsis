@@ -9,7 +9,7 @@ import logging
 import time
 import hashlib
 import secrets
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, AfterValidator
 from typing import List, Optional, Annotated, Dict
 import urllib.parse
 import re
@@ -197,7 +197,20 @@ IP_HASH_SALT = secrets.token_hex(16)
 # infinite loops, or crashes. Enforce strict numeric validation for mathematical inputs.
 SafeFloat = Annotated[float, Field(allow_inf_nan=False)]
 Row = Annotated[List[SafeFloat], Field(max_length=20)]
-Matrix = Annotated[List[Row], Field(max_length=20)]
+
+def validate_matrix_shape(v: List[List[float]]) -> List[List[float]]:
+    if not v:
+        return v
+    first_len = len(v[0])
+    for row in v:
+        if len(row) != first_len:
+            raise ValueError("All rows in a matrix must have the same length (inhomogeneous shape detected)")
+    return v
+
+# 🛡️ Sentinel Security Fix: Prevent DoS via 500 server crashes from jagged matrices
+# Validate that all rows have the same length. NumPy array initialization fails
+# on jagged arrays, resulting in generic 500/400 errors instead of proper 422s.
+Matrix = Annotated[List[Row], Field(max_length=20), AfterValidator(validate_matrix_shape)]
 
 # 🛡️ Sentinel Security Fix: Sanitize validation errors to prevent Infinity/NaN JSON serialization crashes
 # Pydantic includes the raw invalid input in the error response. If an attacker sends `Infinity`,
