@@ -15,6 +15,7 @@ import urllib.parse
 import re
 import functools
 import posixpath
+import collections
 
 from apsis.calculus_of_variations import solve_pmp_linear_quadratic
 from apsis.lqr import solve_lqr
@@ -135,15 +136,15 @@ async def combined_security_and_rate_limit_middleware(request: Request, call_nex
                 del rate_limit_store[oldest_ip]
 
         if hashed_ip not in rate_limit_store:
-            rate_limit_store[hashed_ip] = []
+            rate_limit_store[hashed_ip] = collections.deque()
 
         # Filter out old requests for current IP
-        # ⚡ Bolt Optimization: Use in-place pop(0) instead of a list comprehension
+        # ⚡ Bolt Optimization: Use O(1) popleft() instead of an O(N) list pop(0) operation
         requests = rate_limit_store[hashed_ip]
         min_time = current_time - RATE_LIMIT_WINDOW
 
         while requests and requests[0] < min_time:
-            requests.pop(0)
+            requests.popleft()
 
         if len(requests) >= RATE_LIMIT_MAX_REQUESTS:
             return _apply_headers(JSONResponse(status_code=429, content={"detail": "Too many requests. Please try again later."}))
@@ -188,7 +189,7 @@ RATE_LIMIT_WINDOW = 60 # seconds
 RATE_LIMIT_MAX_REQUESTS = 50
 MAX_IPS = 10000
 
-rate_limit_store: Dict[str, List[float]] = {}
+rate_limit_store: Dict[str, collections.deque] = {}
 IP_HASH_SALT = secrets.token_hex(16)
 
 # 🛡️ Sentinel Security Fix: Prevent NaN/Inf injection
