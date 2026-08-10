@@ -221,3 +221,6 @@
 ## 2026-08-09 - Unify Mouse and Touch Listeners with Pointer Events
 **Learning:** Attaching separate global event listeners for `mousedown`/`mouseup` and `touchstart`/`touchend` to track user interaction state creates redundant JS-to-C++ boundary crossings and needlessly increases the global event listener footprint.
 **Action:** Unify mouse and touch interaction tracking by exclusively using the modern `pointerdown`, `pointerup`, and `pointercancel` events. This natively consolidates multiple interaction streams, reduces the number of global listeners attached to the document, and guarantees consistent tracking across different device types.
+## 2024-05-24 - O(1) Queue Eviction in Hot Paths
+**Learning:** Using a standard Python `list` as a bounded queue and evicting items from the front with `.pop(0)` is an O(N) operation because it requires shifting all subsequent elements in memory. In a high-frequency hot path (like an application-layer rate limiter checking thousands of requests), this list shifting overhead adds up quickly.
+**Action:** Always use `collections.deque` for queue data structures in hot paths, and use `.popleft()` for true O(1) eviction from the front.
