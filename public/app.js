@@ -1034,3 +1034,13 @@ document.addEventListener('focusin', (e) => {
         }
     }
 });
+
+// ⚡ Palette: Allow users to exit "Forms Mode" by pressing Escape
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' || e.key === 'Esc') {
+        const activeElement = document.activeElement;
+        if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA' || activeElement.classList.contains('ui-input'))) {
+            activeElement.blur();
+        }
+    }
+});
