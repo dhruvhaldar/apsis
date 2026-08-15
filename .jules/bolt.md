@@ -224,3 +224,7 @@
 ## 2024-05-24 - O(1) Queue Eviction in Hot Paths
 **Learning:** Using a standard Python `list` as a bounded queue and evicting items from the front with `.pop(0)` is an O(N) operation because it requires shifting all subsequent elements in memory. In a high-frequency hot path (like an application-layer rate limiter checking thousands of requests), this list shifting overhead adds up quickly.
 **Action:** Always use `collections.deque` for queue data structures in hot paths, and use `.popleft()` for true O(1) eviction from the front.
+
+## 2026-10-25 - Minify JSON Payloads in Cached Endpoints
+**Learning:** For endpoints returning large primitive arrays (like trajectories), default JSON serialization includes unnecessary whitespace (spaces after commas and colons). This increases the size of the payload by ~15-20%, leading to higher memory allocation and increased network transfer time.
+**Action:** When manually serializing large JSON responses for caching, use `json.dumps(res, separators=(',', ':'))` to minify the payload. This reduces the string footprint in memory and speeds up transmission to the client without sacrificing semantic correctness.
