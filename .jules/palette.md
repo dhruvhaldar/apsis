@@ -369,3 +369,7 @@
 ## 2026-08-08 - Announcing Native Form Validation Failures
 **Learning:** Native HTML5 validation failures (such as a `required` input preventing form submission) do not reliably announce the specific error to screen readers, especially if the user triggers the submission programmatically (e.g., via Enter key) or if focus doesn't natively shift. The visual bubble appears, but screen reader users get no feedback as to why the form didn't submit.
 **Action:** Intercept the native `invalid` event on inputs (using `document.addEventListener('invalid', ... , true)`) and explicitly extract the field's label and `validationMessage` to trigger an `aria-live` announcement. This brings native validation accessibility to parity with custom Javascript validations.
+
+## 2024-05-15 - Grouped Input Fieldset Accessibility
+**Learning:** When multiple form inputs share a single conceptual visual label (e.g., minimum and maximum bounds), wrapping them in a `<fieldset>` with a `<legend>` is good practice, but the generic visual labels for inner inputs (like 'Min') can be ambiguous for screen reader users.
+**Action:** Provide specific `aria-label` attributes to the individual inner inputs within a `<fieldset>` to ensure complete, unambiguous screen reader association that stands independently of the generic visual label.
