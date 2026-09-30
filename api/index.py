@@ -197,7 +197,7 @@ IP_HASH_SALT = secrets.token_hex(16)
 # underlying numerical solvers (like SciPy and GEKKO), causing internal exceptions,
 # infinite loops, or crashes. Enforce strict numeric validation for mathematical inputs.
 SafeFloat = Annotated[float, Field(allow_inf_nan=False)]
-Row = Annotated[List[SafeFloat], Field(max_length=20)]
+Row = Annotated[List[SafeFloat], Field(min_length=1, max_length=20)]
 
 def validate_matrix_shape(v: List[List[float]]) -> List[List[float]]:
     if not v:
@@ -211,7 +211,7 @@ def validate_matrix_shape(v: List[List[float]]) -> List[List[float]]:
 # 🛡️ Sentinel Security Fix: Prevent DoS via 500 server crashes from jagged matrices
 # Validate that all rows have the same length. NumPy array initialization fails
 # on jagged arrays, resulting in generic 500/400 errors instead of proper 422s.
-Matrix = Annotated[List[Row], Field(max_length=20), AfterValidator(validate_matrix_shape)]
+Matrix = Annotated[List[Row], Field(min_length=1, max_length=20), AfterValidator(validate_matrix_shape)]
 
 # 🛡️ Sentinel Security Fix: Sanitize validation errors to prevent Infinity/NaN JSON serialization crashes
 # Pydantic includes the raw invalid input in the error response. If an attacker sends `Infinity`,

@@ -143,3 +143,8 @@
 **Vulnerability:** The API accepted nested arrays (e.g., `[[1, 2], [3]]`) as input for mathematical endpoints because Pydantic's `List[List[float]]` validates each sublist independently without enforcing homogeneity. When these jagged arrays were passed to `numpy.asarray`, it raised a `ValueError` that bypassed normal validation handling, leading to a 500 Internal Server Error (a potential Application DoS vector).
 **Learning:** Pydantic's nested lists do not guarantee matrix homogeneity. Operations that require structured data, like numpy array creation, will fail unexpectedly on jagged inputs.
 **Prevention:** Explicitly validate nested array structures using a custom validator (e.g., `AfterValidator`) to ensure all sublists are of the same length, converting potential server crashes into standard 422 Unprocessable Entity responses.
+
+## 2026-09-30 - Pydantic Empty Array DoS
+**Vulnerability:** The API endpoints accepted empty arrays (`[]` or `[[]]`) due to missing `min_length` constraints in Pydantic models. When passed to numerical solvers, these empty arrays caused unhandled `IndexError` or `ValueError` exceptions, resulting in generic 400/500 errors that could be leveraged for an Application-Layer DoS.
+**Learning:** Pydantic list fields without explicit `min_length` constraints allow empty lists by default, which can cause downstream crashes in mathematical libraries expecting populated arrays.
+**Prevention:** Always apply `min_length=1` constraints to matrix and row definitions in mathematical APIs to ensure early validation and proper 422 error handling.
