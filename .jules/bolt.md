@@ -227,3 +227,6 @@
 ## 2026-08-25 - Minify JSON payloads with separators
 **Learning:** When manually serializing large JSON payloads (like multi-dimensional arrays or trajectories) in Python, default `json.dumps()` includes whitespace for readability. This increases the payload size unnecessarily, slowing down network transfer times.
 **Action:** Use `json.dumps(res, separators=(',', ':'))` to minify the output. Stripping unnecessary whitespace reduces payload size by ~15-20%, which improves memory allocation efficiency and network transfer speeds.
+## 2024-10-01 - Avoid redundant JSON serialization in fetch wrappers
+**Learning:** When building API request wrappers that implement caching (like `fetchWithCache`), computing a cache key using `JSON.stringify(payload)` and then calling `JSON.stringify(payload)` again for the `fetch` body duplicates a computationally expensive O(N) operation.
+**Action:** Always serialize the payload once and store it in a variable (e.g., `payloadString`), then reuse that variable for both the cache key generation and the HTTP request body to eliminate redundant serialization overhead.
