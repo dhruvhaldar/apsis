@@ -96,7 +96,13 @@ const API_BASE = window.location.origin.includes('localhost') ? 'http://localhos
 const apiCache = new Map();
 
 async function fetchWithCache(endpoint, payload) {
-    const cacheKey = `${endpoint}|${JSON.stringify(payload)}`;
+    // ⚡ Bolt Optimization: Avoid redundant JSON serialization
+    // JSON.stringify is computationally expensive for large nested objects.
+    // We stringify the payload once and reuse it for both the cache key and the fetch body,
+    // eliminating duplicate serialization overhead.
+    const payloadString = JSON.stringify(payload);
+    const cacheKey = `${endpoint}|${payloadString}`;
+
     if (apiCache.has(cacheKey)) {
         return apiCache.get(cacheKey);
     }
@@ -110,7 +116,7 @@ async function fetchWithCache(endpoint, payload) {
         const response = await fetch(`${API_BASE}${endpoint}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
+            body: payloadString,
             signal: controller.signal
         });
         clearTimeout(timeoutId);
