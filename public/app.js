@@ -96,7 +96,9 @@ const API_BASE = window.location.origin.includes('localhost') ? 'http://localhos
 const apiCache = new Map();
 
 async function fetchWithCache(endpoint, payload) {
-    const cacheKey = `${endpoint}|${JSON.stringify(payload)}`;
+    // ⚡ Bolt Optimization: Serialize payload once to avoid redundant JSON.stringify calls
+    const payloadString = JSON.stringify(payload);
+    const cacheKey = `${endpoint}|${payloadString}`;
     if (apiCache.has(cacheKey)) {
         return apiCache.get(cacheKey);
     }
@@ -110,7 +112,7 @@ async function fetchWithCache(endpoint, payload) {
         const response = await fetch(`${API_BASE}${endpoint}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
+            body: payloadString,
             signal: controller.signal
         });
         clearTimeout(timeoutId);
