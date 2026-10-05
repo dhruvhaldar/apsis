@@ -9,7 +9,7 @@ import logging
 import time
 import hashlib
 import secrets
-from pydantic import BaseModel, Field, AfterValidator
+from pydantic import BaseModel, Field, AfterValidator, model_validator
 from typing import List, Optional, Annotated, Dict
 import urllib.parse
 import re
@@ -237,6 +237,24 @@ class LQRRequest(BaseModel):
     Q: Matrix
     R: Matrix
 
+    @model_validator(mode='after')
+    def check_dimensions(self):
+        n = len(self.A)
+        if len(self.A[0]) != n:
+            raise ValueError("Matrix A must be square")
+
+        if len(self.B) != n:
+            raise ValueError("Matrix B must have the same number of rows as A")
+        m = len(self.B[0])
+
+        if len(self.Q) != n or len(self.Q[0]) != n:
+            raise ValueError("Matrix Q must have the same shape as A")
+
+        if len(self.R) != m or len(self.R[0]) != m:
+            raise ValueError("Matrix R must be square with size equal to the number of columns in B")
+
+        return self
+
 class PMPRequest(BaseModel):
     A: Matrix
     B: Matrix
@@ -246,6 +264,30 @@ class PMPRequest(BaseModel):
     xf: Row
     tf: SafeFloat = Field(..., gt=0, le=1000)
     num_points: int = Field(100, ge=2, le=1000)
+
+    @model_validator(mode='after')
+    def check_dimensions(self):
+        n = len(self.A)
+        if len(self.A[0]) != n:
+            raise ValueError("Matrix A must be square")
+
+        if len(self.B) != n:
+            raise ValueError("Matrix B must have the same number of rows as A")
+        m = len(self.B[0])
+
+        if len(self.Q) != n or len(self.Q[0]) != n:
+            raise ValueError("Matrix Q must have the same shape as A")
+
+        if len(self.R) != m or len(self.R[0]) != m:
+            raise ValueError("Matrix R must be square with size equal to the number of columns in B")
+
+        if len(self.x0) != n:
+            raise ValueError("Vector x0 must have the same dimension as the number of rows in A")
+
+        if len(self.xf) != n:
+            raise ValueError("Vector xf must have the same dimension as the number of rows in A")
+
+        return self
 
 class MPCRequest(BaseModel):
     A: Matrix
@@ -257,6 +299,33 @@ class MPCRequest(BaseModel):
     dt: SafeFloat = Field(..., gt=0, le=100)
     u_min: Optional[Row] = None
     u_max: Optional[Row] = None
+
+    @model_validator(mode='after')
+    def check_dimensions(self):
+        n = len(self.A)
+        if len(self.A[0]) != n:
+            raise ValueError("Matrix A must be square")
+
+        if len(self.B) != n:
+            raise ValueError("Matrix B must have the same number of rows as A")
+        m = len(self.B[0])
+
+        if len(self.Q) != n or len(self.Q[0]) != n:
+            raise ValueError("Matrix Q must have the same shape as A")
+
+        if len(self.R) != m or len(self.R[0]) != m:
+            raise ValueError("Matrix R must be square with size equal to the number of columns in B")
+
+        if len(self.x0) != n:
+            raise ValueError("Vector x0 must have the same dimension as the number of rows in A")
+
+        if self.u_min is not None and len(self.u_min) != m:
+            raise ValueError("Vector u_min must have the same dimension as the number of columns in B")
+
+        if self.u_max is not None and len(self.u_max) != m:
+            raise ValueError("Vector u_max must have the same dimension as the number of columns in B")
+
+        return self
 
 # ⚡ Bolt Optimization: App-level caching for computationally expensive solvers.
 # GEKKO and SciPy BVP solvers are extremely heavy. We cache the results of identical requests
