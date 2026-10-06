@@ -227,3 +227,7 @@
 ## 2026-08-25 - Minify JSON payloads with separators
 **Learning:** When manually serializing large JSON payloads (like multi-dimensional arrays or trajectories) in Python, default `json.dumps()` includes whitespace for readability. This increases the payload size unnecessarily, slowing down network transfer times.
 **Action:** Use `json.dumps(res, separators=(',', ':'))` to minify the output. Stripping unnecessary whitespace reduces payload size by ~15-20%, which improves memory allocation efficiency and network transfer speeds.
+
+## 2024-10-06 - Avoid innerHTML for DOM clearing and creation
+**Learning:** To avoid parsing HTML strings and improve DOM manipulation performance, replacing `.innerHTML` with `replaceChildren()` removes unnecessary string parsing overhead when clearing and populating containers.
+**Action:** Always use `element.replaceChildren(newChild)` or `.replaceChildren()` rather than `.innerHTML = ''` and manually build DOM elements instead of feeding raw strings into innerHTML.

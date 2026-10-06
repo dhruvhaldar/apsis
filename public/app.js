@@ -885,18 +885,32 @@ document.addEventListener('reset', (e) => {
                     if (section.classList.contains('pmp-panel') && pmpChartInstance) {
                         pmpChartInstance.destroy();
                         pmpChartInstance = null;
-                        document.getElementById('pmp-chart').innerHTML = `<div class="empty-state">
-                            <div aria-hidden="true">🚀</div>
-                            <div>Configure parameters and solve to view trajectory</div>
-                        </div>`;
+
+                        const emptyState = document.createElement('div');
+                        emptyState.className = 'empty-state';
+                        const icon = document.createElement('div');
+                        icon.setAttribute('aria-hidden', 'true');
+                        icon.textContent = '🚀';
+                        const text = document.createElement('div');
+                        text.textContent = 'Configure parameters and solve to view trajectory';
+                        emptyState.replaceChildren(icon, text);
+
+                        document.getElementById('pmp-chart').replaceChildren(emptyState);
                     }
                     if (section.classList.contains('mpc-panel') && mpcChartInstance) {
                         mpcChartInstance.destroy();
                         mpcChartInstance = null;
-                        document.getElementById('mpc-chart').innerHTML = `<div class="empty-state">
-                            <div aria-hidden="true">🔮</div>
-                            <div>Configure horizon and simulate to view predictions</div>
-                        </div>`;
+
+                        const emptyState = document.createElement('div');
+                        emptyState.className = 'empty-state';
+                        const icon = document.createElement('div');
+                        icon.setAttribute('aria-hidden', 'true');
+                        icon.textContent = '🔮';
+                        const text = document.createElement('div');
+                        text.textContent = 'Configure horizon and simulate to view predictions';
+                        emptyState.replaceChildren(icon, text);
+
+                        document.getElementById('mpc-chart').replaceChildren(emptyState);
                     }
                 }
 
