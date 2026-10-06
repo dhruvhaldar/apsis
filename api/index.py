@@ -52,6 +52,9 @@ async def combined_security_and_rate_limit_middleware(request: Request, call_nex
         resp.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         resp.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
         resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+        # 🛡️ Sentinel Security Enhancement: Enforce strict cross-origin isolation to mitigate side-channel attacks like Spectre.
+        resp.headers["Cross-Origin-Opener-Policy"] = "same-origin"
+        resp.headers["Cross-Origin-Resource-Policy"] = "same-origin"
         return resp
 
     # 1. Payload Size Checking
