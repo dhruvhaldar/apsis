@@ -453,10 +453,15 @@ async function solvePMP() {
     let enabledInputs = [];
     let wasFocused = document.activeElement;
     btn.setCustomValidity('');
-    const originalHTML = btn.innerHTML;
+    // ⚡ Bolt Optimization: Manually build DOM elements and use replaceChildren
+    // instead of innerHTML to avoid HTML string parsing overhead.
+    const originalChildren = Array.from(btn.childNodes);
+    const spinner = document.createElement('span');
+    spinner.className = 'spinner';
+    spinner.setAttribute('aria-hidden', 'true');
     btn.disabled = true;
     btn.setAttribute('aria-busy', 'true');
-    btn.innerHTML = '<span class="spinner" aria-hidden="true"></span> Solving...';
+    btn.replaceChildren(spinner, ' Solving...');
     const originalTitle = btn.getAttribute('title');
     btn.title = 'Computation in progress...';
     if (form) {
@@ -544,7 +549,7 @@ async function solvePMP() {
         console.error(err);
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
-        btn.innerHTML = originalHTML;
+        btn.replaceChildren(...originalChildren);
         if (err.name === 'InputValidationError') {
             wasFocused = null;
             return;
@@ -565,7 +570,7 @@ async function solvePMP() {
     } finally {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
-        btn.innerHTML = originalHTML;
+        btn.replaceChildren(...originalChildren);
         if (originalTitle !== null) {
             btn.setAttribute('title', originalTitle);
         } else {
@@ -586,10 +591,15 @@ async function solveLQR() {
     let enabledInputs = [];
     let wasFocused = document.activeElement;
     btn.setCustomValidity('');
-    const originalHTML = btn.innerHTML;
+    // ⚡ Bolt Optimization: Manually build DOM elements and use replaceChildren
+    // instead of innerHTML to avoid HTML string parsing overhead.
+    const originalChildren = Array.from(btn.childNodes);
+    const spinner = document.createElement('span');
+    spinner.className = 'spinner';
+    spinner.setAttribute('aria-hidden', 'true');
     btn.disabled = true;
     btn.setAttribute('aria-busy', 'true');
-    btn.innerHTML = '<span class="spinner" aria-hidden="true"></span> Synthesizing...';
+    btn.replaceChildren(spinner, ' Synthesizing...');
     const originalTitle = btn.getAttribute('title');
     btn.title = 'Computation in progress...';
     if (form) {
@@ -639,7 +649,7 @@ async function solveLQR() {
         console.error(err);
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
-        btn.innerHTML = originalHTML;
+        btn.replaceChildren(...originalChildren);
         if (err.name === 'InputValidationError') {
             wasFocused = null;
             return;
@@ -660,7 +670,7 @@ async function solveLQR() {
     } finally {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
-        btn.innerHTML = originalHTML;
+        btn.replaceChildren(...originalChildren);
         if (originalTitle !== null) {
             btn.setAttribute('title', originalTitle);
         } else {
@@ -684,10 +694,15 @@ async function solveMPC() {
     let enabledInputs = [];
     let wasFocused = document.activeElement;
     btn.setCustomValidity('');
-    const originalHTML = btn.innerHTML;
+    // ⚡ Bolt Optimization: Manually build DOM elements and use replaceChildren
+    // instead of innerHTML to avoid HTML string parsing overhead.
+    const originalChildren = Array.from(btn.childNodes);
+    const spinner = document.createElement('span');
+    spinner.className = 'spinner';
+    spinner.setAttribute('aria-hidden', 'true');
     btn.disabled = true;
     btn.setAttribute('aria-busy', 'true');
-    btn.innerHTML = '<span class="spinner" aria-hidden="true"></span> Simulating...';
+    btn.replaceChildren(spinner, ' Simulating...');
     const originalTitle = btn.getAttribute('title');
     btn.title = 'Computation in progress...';
     if (form) {
@@ -777,7 +792,7 @@ async function solveMPC() {
         console.error(err);
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
-        btn.innerHTML = originalHTML;
+        btn.replaceChildren(...originalChildren);
         if (err.name === 'InputValidationError') {
             wasFocused = null;
             return;
@@ -798,7 +813,7 @@ async function solveMPC() {
     } finally {
         btn.disabled = false;
         btn.removeAttribute('aria-busy');
-        btn.innerHTML = originalHTML;
+        btn.replaceChildren(...originalChildren);
         if (originalTitle !== null) {
             btn.setAttribute('title', originalTitle);
         } else {
