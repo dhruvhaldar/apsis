@@ -373,3 +373,7 @@
 ## 2024-05-15 - Grouped Input Fieldset Accessibility
 **Learning:** When multiple form inputs share a single conceptual visual label (e.g., minimum and maximum bounds), wrapping them in a `<fieldset>` with a `<legend>` is good practice, but the generic visual labels for inner inputs (like 'Min') can be ambiguous for screen reader users.
 **Action:** Provide specific `aria-label` attributes to the individual inner inputs within a `<fieldset>` to ensure complete, unambiguous screen reader association that stands independently of the generic visual label.
+
+## 2026-10-09 - Primary Button Text Contrast with Bright States
+**Learning:** Using white text (`#fff`) on a dark-ish button background might barely pass contrast requirements initially, but if the button's `:hover` state brightens the background significantly (e.g. transitioning to a bright cyan like `#66fcf1`), the contrast ratio collapses. This creates a severe accessibility failure where the primary call-to-action text becomes virtually invisible upon interaction, especially for users with low vision.
+**Action:** When designing buttons that transition to bright, high-luminance colors on hover, use the deep dark theme background color (e.g., `var(--bg-color)`) for the button text instead of white. This guarantees crisp, compliant contrast (WCAG AA) in both the default and hovered states, and removes the need for muddy `text-shadow` band-aids. Also, ensure nested elements like `<kbd>` tags and CSS `.spinner` loading indicators update their borders/backgrounds to match the new dark text context.
