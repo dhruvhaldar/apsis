@@ -288,12 +288,13 @@ document.addEventListener('input', (e) => {
 
         // Clear form submit button validity on input change to allow retry
         const form = e.target.form;
+        let baseId = null;
         if (form) {
             let btn = null;
             // ⚡ Bolt Optimization: Replace expensive querySelector in high-frequency listener
             // with an O(1) getElementById lookup to prevent main thread blocking.
             if (form.id) {
-                const baseId = form.id.replace('-form', '');
+                baseId = form.id.replace('-form', '');
                 btn = document.getElementById(`btn-${baseId}`);
             }
             if (!btn) {
@@ -314,7 +315,14 @@ document.addEventListener('input', (e) => {
             section.dataset.stale = 'true';
             let didHideOutput = false;
 
-            const chartContainer = section.querySelector('.chart-container');
+            let chartContainer = null;
+            if (baseId) {
+                chartContainer = document.getElementById(`${baseId}-chart`);
+            }
+            if (!chartContainer) {
+                chartContainer = section.querySelector('.chart-container');
+            }
+
             if (chartContainer && !chartContainer.querySelector('.empty-state') && !chartContainer.hasAttribute('data-empty')) {
                 chartContainer.style.opacity = '0.5';
                 chartContainer.style.pointerEvents = 'none';

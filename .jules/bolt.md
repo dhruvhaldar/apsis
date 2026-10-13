@@ -231,3 +231,7 @@
 ## 2024-10-06 - Avoid innerHTML for DOM clearing and creation
 **Learning:** To avoid parsing HTML strings and improve DOM manipulation performance, replacing `.innerHTML` with `replaceChildren()` removes unnecessary string parsing overhead when clearing and populating containers.
 **Action:** Always use `element.replaceChildren(newChild)` or `.replaceChildren()` rather than `.innerHTML = ''` and manually build DOM elements instead of feeding raw strings into innerHTML.
+
+## 2026-10-10 - Fallback for getElementById Replacements
+**Learning:** When optimizing high-frequency DOM access by replacing `.querySelector()` with `.getElementById()` using dynamically derived IDs (like `form.id`), assuming the ID always follows a strict pattern can cause null reference errors if the structure varies.
+**Action:** Always implement a safe fallback to the original `.querySelector()` logic if the `.getElementById()` lookup returns null, ensuring performance wins don't compromise robustness.
