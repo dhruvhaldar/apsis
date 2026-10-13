@@ -235,3 +235,6 @@
 ## 2026-10-10 - Fallback for getElementById Replacements
 **Learning:** When optimizing high-frequency DOM access by replacing `.querySelector()` with `.getElementById()` using dynamically derived IDs (like `form.id`), assuming the ID always follows a strict pattern can cause null reference errors if the structure varies.
 **Action:** Always implement a safe fallback to the original `.querySelector()` logic if the `.getElementById()` lookup returns null, ensuring performance wins don't compromise robustness.
+## 2026-10-24 - Consolidate Form Submit Event Listeners
+**Learning:** Attaching separate `submit` event listeners to each individual form forces the browser to traverse the C++-to-JS boundary repeatedly and consumes more memory for each closure created. This is especially true for initialization logic like `DOMContentLoaded`.
+**Action:** Audit applications to replace repetitive inline `submit` event listeners attached to specific forms with a single delegated event listener on `document`. Use `e.target.id` or `e.target.closest('form')` to trigger specific logic, which prevents redundant closure allocations and speeds up page initialization.

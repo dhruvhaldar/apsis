@@ -982,30 +982,22 @@ window.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Attach form submit listeners
-    const pmpForm = document.getElementById('pmp-form');
-    if (pmpForm) {
-        pmpForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            solvePMP();
-        });
-    }
-
-    const lqrForm = document.getElementById('lqr-form');
-    if (lqrForm) {
-        lqrForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            solveLQR();
-        });
-    }
-
-    const mpcForm = document.getElementById('mpc-form');
-    if (mpcForm) {
-        mpcForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            solveMPC();
-        });
-    }
+    // ⚡ Bolt Optimization: Consolidate form submit listeners into a single global delegated listener.
+    // This prevents attaching separate listeners to each form and traversing the C++-to-JS boundary repeatedly.
+    document.addEventListener('submit', (e) => {
+        if (e.target && e.target.tagName === 'FORM') {
+            if (e.target.id === 'pmp-form') {
+                e.preventDefault();
+                solvePMP();
+            } else if (e.target.id === 'lqr-form') {
+                e.preventDefault();
+                solveLQR();
+            } else if (e.target.id === 'mpc-form') {
+                e.preventDefault();
+                solveMPC();
+            }
+        }
+    });
 });
 
 // ⚡ Palette: Add keyboard shortcuts for power users to quickly submit forms.
