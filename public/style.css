@@ -503,6 +503,7 @@ section[data-stale="true"] .ui-btn:not(:disabled) {
 .ui-btn:focus-visible .shortcut-hint kbd,
 section[data-stale="true"] .ui-btn:not(:disabled) .shortcut-hint kbd {
     background: rgba(11, 12, 16, 0.2);
+    border-color: rgba(11, 12, 16, 0.4);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -559,6 +560,8 @@ section[data-stale="true"] .ui-btn:not(:disabled) .shortcut-hint kbd {
 .ui-btn:hover .spinner,
 .ui-btn:focus-visible .spinner,
 section[data-stale="true"] .ui-btn:not(:disabled) .spinner {
+    border-color: rgba(11, 12, 16, 0.5);
+    border-top-color: var(--bg-color);
 }
 
 abbr[title] {
