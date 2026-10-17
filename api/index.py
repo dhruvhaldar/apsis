@@ -48,9 +48,9 @@ async def combined_security_and_rate_limit_middleware(request: Request, call_nex
         resp.headers["X-Frame-Options"] = "DENY"
         # 🛡️ Sentinel Security Enhancement: Add HSTS preload directive to protect users from MITM attacks on their first visit
         resp.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
-        resp.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src https://cdn.jsdelivr.net; img-src 'self' data:; connect-src 'self' http://localhost:8000;"
+        resp.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src https://cdn.jsdelivr.net; img-src 'self' data:; connect-src 'self' http://localhost:8000; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; upgrade-insecure-requests;"
         resp.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-        resp.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+        resp.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=(), payment=(), usb=(), fullscreen=()"
         resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
         # 🛡️ Sentinel Security Enhancement: Enforce strict cross-origin isolation to mitigate side-channel attacks like Spectre.
         resp.headers["Cross-Origin-Opener-Policy"] = "same-origin"
