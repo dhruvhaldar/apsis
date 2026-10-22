@@ -238,3 +238,7 @@
 ## 2026-10-24 - Consolidate Form Submit Event Listeners
 **Learning:** Attaching separate `submit` event listeners to each individual form forces the browser to traverse the C++-to-JS boundary repeatedly and consumes more memory for each closure created. This is especially true for initialization logic like `DOMContentLoaded`.
 **Action:** Audit applications to replace repetitive inline `submit` event listeners attached to specific forms with a single delegated event listener on `document`. Use `e.target.id` or `e.target.closest('form')` to trigger specific logic, which prevents redundant closure allocations and speeds up page initialization.
+
+## 2024-11-20 - Avoid querySelector in high-frequency event listeners (again)
+**Learning:** In high-frequency event listeners (like `input`), repeatedly calling expensive DOM traversal methods like `.querySelector()` adds significant CPU overhead. This blocks the main thread and degrades Interaction to Next Paint (INP).
+**Action:** Replaced dynamic `.querySelector()` calls with O(1) lookups like `document.getElementById` (e.g., by deriving the element ID from `form.id`) with a safe fallback to `querySelector` to ensure minimal latency per event while maintaining robustness against variable DOM structures.

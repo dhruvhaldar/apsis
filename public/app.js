@@ -329,7 +329,16 @@ document.addEventListener('input', (e) => {
                 chartContainer.setAttribute('aria-hidden', 'true');
                 didHideOutput = true;
             }
-            const outputBlock = section.querySelector('.output-block[style*="display: block"]');
+            let outputBlock = null;
+            if (baseId) {
+                const candidate = document.getElementById(`${baseId}-output`);
+                if (candidate && candidate.style.display === 'block') {
+                    outputBlock = candidate;
+                }
+            }
+            if (!outputBlock) {
+                outputBlock = section.querySelector('.output-block[style*="display: block"]');
+            }
             if (outputBlock && outputBlock.id !== 'lqr-empty' && !outputBlock.querySelector('.empty-state') && !outputBlock.hasAttribute('data-empty')) {
                 outputBlock.style.opacity = '0.5';
                 outputBlock.style.pointerEvents = 'none';
