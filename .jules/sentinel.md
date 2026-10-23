@@ -157,3 +157,8 @@
 **Vulnerability:** The `Content-Security-Policy` and `Permissions-Policy` headers lacked strict directives, potentially leaving the application vulnerable to modern clickjacking attacks, base URI injections, and unnecessary access to sensitive browser APIs like USB and payment.
 **Learning:** Security headers should adhere to defense-in-depth principles. While `X-Frame-Options: DENY` was present, modern browsers rely on `frame-ancestors 'none'` within the CSP for clickjacking protection. Additionally, restricting `form-action` and `base-uri` are critical hygiene practices.
 **Prevention:** Always include `frame-ancestors 'none'`, `form-action 'self'`, `base-uri 'self'`, and `upgrade-insecure-requests` in CSP configurations unless a specific use case dictates otherwise. Furthermore, explicitly deny access to unused browser capabilities (e.g., `payment`, `usb`) in the `Permissions-Policy`.
+
+## $(date +%Y-%m-%d) - Enhance CSP with object-src none
+**Vulnerability:** The Content-Security-Policy header lacked the `object-src 'none'` directive.
+**Learning:** Without `object-src 'none'`, browsers might attempt to load potentially malicious plugins if an attacker finds a way to inject `<object>` or `<embed>` tags.
+**Prevention:** When modifying HTTP security headers such as Content-Security-Policy (CSP), ensure the changes are synchronized across both the edge configuration (`vercel.json`) and the backend application middleware (e.g., `api/index.py`) and include `object-src 'none'` to maintain consistent enforcement and avoid vulnerabilities.
