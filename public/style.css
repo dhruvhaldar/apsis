@@ -271,6 +271,7 @@ h2 {
     background: linear-gradient(90deg, var(--accent-color), var(--accent-dark));
     box-shadow: 0 0 15px rgba(102, 252, 241, 0.4);
     transform: scale(1.02);
+    color: var(--bg-color);
 }
 
 .ui-btn:active {
@@ -306,6 +307,7 @@ section[data-stale="true"] .ui-btn:not(:disabled) {
     animation: solvePulse 2s infinite;
     border-color: var(--accent-color);
     background: linear-gradient(90deg, var(--accent-color), var(--accent-dark));
+    color: var(--bg-color);
 }
 
 .output-block {
