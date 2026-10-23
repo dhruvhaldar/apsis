@@ -381,3 +381,7 @@
 ## 2026-10-15 - Primary Button Text Contrast with Bright Hover States Update
 **Learning:** Using white text (`#fff`) on a dark-ish button background might barely pass contrast requirements initially, but if the button's `:hover` state brightens the background significantly, the contrast ratio collapses. Nested elements like `<kbd>` tags and CSS `.spinner` loading indicators also need their borders and backgrounds updated to match the new dark text context when hovering over the button.
 **Action:** Always ensure that nested elements inside primary buttons, such as `<kbd>` and `.spinner`, have their border and background colors updated to contrast against the bright hover state. For instance, setting a dark `border-color` and `background` for `<kbd>`, and `border-top-color` for `.spinner` to maintain visibility.
+
+## 2026-10-22 - Primary Button Text Contrast with Bright States Fix Update
+**Learning:** Setting nested elements (like `.spinner`) to have white borders against bright button backgrounds causes visual regression, worsening contrast and polish.
+**Action:** When updating contrast for primary buttons with bright backgrounds (like cyan), do not modify the border or background colors of nested elements like `<kbd>` tags and `.spinner` loading indicators. Keep their original dark styling that contrasts properly with the bright background.
