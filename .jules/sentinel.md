@@ -162,3 +162,11 @@
 **Vulnerability:** The Content-Security-Policy header lacked the `object-src 'none'` directive.
 **Learning:** Without `object-src 'none'`, browsers might attempt to load potentially malicious plugins if an attacker finds a way to inject `<object>` or `<embed>` tags.
 **Prevention:** When modifying HTTP security headers such as Content-Security-Policy (CSP), ensure the changes are synchronized across both the edge configuration (`vercel.json`) and the backend application middleware (e.g., `api/index.py`) and include `object-src 'none'` to maintain consistent enforcement and avoid vulnerabilities.
+## $(date +%Y-%m-%d) - Enhance CSP with object-src none
+**Vulnerability:** The Content-Security-Policy header lacked the `object-src 'none'` directive.
+**Learning:** Without `object-src 'none'`, browsers might attempt to load potentially malicious plugins if an attacker finds a way to inject `<object>` or `<embed>` tags.
+**Prevention:** When modifying HTTP security headers such as Content-Security-Policy (CSP), ensure the changes are synchronized across both the edge configuration (`vercel.json`) and the backend application middleware (e.g., `api/index.py`) and include `object-src 'none'` to maintain consistent enforcement and avoid vulnerabilities.
+## $(date +%Y-%m-%d) - Remove unsafe-inline from style-src in CSP
+**Vulnerability:** The Content-Security-Policy (CSP) headers included `'unsafe-inline'` in the `style-src` directive.
+**Learning:** Allowing inline styles with `'unsafe-inline'` exposes the application to CSS injection attacks, which can be chained for data exfiltration or UI redressing.
+**Prevention:** Remove `'unsafe-inline'` from `style-src` in CSP headers across both edge configuration (`vercel.json`) and application middleware (`api/index.py`). Ensure any required inline styling is moved to external CSS files or handled securely.
