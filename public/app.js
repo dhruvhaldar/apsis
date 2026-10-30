@@ -267,7 +267,16 @@ document.addEventListener('input', (e) => {
     if (e.target && e.target.classList.contains('ui-input')) {
         // ⚡ Palette UX: Save input values to sessionStorage to prevent data loss on accidental reload
         if (e.target.id) {
-            sessionStorage.setItem(`apsis-${e.target.id}`, e.target.value);
+            // ⚡ Bolt Optimization: Debounce synchronous sessionStorage writes to prevent main thread blocking
+            // during high-frequency typing, which degrades Interaction to Next Paint (INP).
+            if (!window.sessionDebounceTimers) window.sessionDebounceTimers = {};
+            if (window.sessionDebounceTimers[e.target.id]) {
+                clearTimeout(window.sessionDebounceTimers[e.target.id]);
+            }
+            window.sessionDebounceTimers[e.target.id] = setTimeout(() => {
+                sessionStorage.setItem(`apsis-${e.target.id}`, e.target.value);
+                delete window.sessionDebounceTimers[e.target.id];
+            }, 300);
         }
 
         if ('validJson' in e.target.dataset) {
