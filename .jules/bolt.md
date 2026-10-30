@@ -242,3 +242,7 @@
 ## 2024-11-20 - Avoid querySelector in high-frequency event listeners (again)
 **Learning:** In high-frequency event listeners (like `input`), repeatedly calling expensive DOM traversal methods like `.querySelector()` adds significant CPU overhead. This blocks the main thread and degrades Interaction to Next Paint (INP).
 **Action:** Replaced dynamic `.querySelector()` calls with O(1) lookups like `document.getElementById` (e.g., by deriving the element ID from `form.id`) with a safe fallback to `querySelector` to ensure minimal latency per event while maintaining robustness against variable DOM structures.
+
+## 2026-11-20 - Debounce synchronous sessionStorage writes
+**Learning:** Calling `sessionStorage.setItem` directly inside high-frequency event listeners (like `input`) executes synchronous IPC (Inter-Process Communication) on every keystroke. This blocks the main thread, causing jank during rapid typing and degrading Interaction to Next Paint (INP).
+**Action:** Always debounce synchronous storage APIs (like `sessionStorage` or `localStorage`) when triggering them from high-frequency interactions to preserve main thread responsiveness.
