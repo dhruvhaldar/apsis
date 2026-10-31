@@ -263,11 +263,17 @@ document.addEventListener('invalid', (e) => {
 }, true);
 
 // Clear validation errors when user types
+const storageDebounce = {};
 document.addEventListener('input', (e) => {
     if (e.target && e.target.classList.contains('ui-input')) {
         // ⚡ Palette UX: Save input values to sessionStorage to prevent data loss on accidental reload
         if (e.target.id) {
-            sessionStorage.setItem(`apsis-${e.target.id}`, e.target.value);
+            const id = e.target.id;
+            const value = e.target.value;
+            clearTimeout(storageDebounce[id]);
+            storageDebounce[id] = setTimeout(() => {
+                sessionStorage.setItem(`apsis-${id}`, value);
+            }, 500);
         }
 
         if ('validJson' in e.target.dataset) {
