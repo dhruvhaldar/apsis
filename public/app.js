@@ -262,12 +262,21 @@ document.addEventListener('invalid', (e) => {
     }
 }, true);
 
+// ⚡ Bolt Optimization: Debounce synchronous storage APIs from high-frequency events
+// to preserve main thread responsiveness and Interaction to Next Paint (INP).
+const storageTimeouts = new Map();
+
 // Clear validation errors when user types
 document.addEventListener('input', (e) => {
     if (e.target && e.target.classList.contains('ui-input')) {
         // ⚡ Palette UX: Save input values to sessionStorage to prevent data loss on accidental reload
         if (e.target.id) {
-            sessionStorage.setItem(`apsis-${e.target.id}`, e.target.value);
+            const id = e.target.id;
+            const val = e.target.value;
+            if (storageTimeouts.has(id)) clearTimeout(storageTimeouts.get(id));
+            storageTimeouts.set(id, setTimeout(() => {
+                sessionStorage.setItem(`apsis-${id}`, val);
+            }, 300));
         }
 
         if ('validJson' in e.target.dataset) {
