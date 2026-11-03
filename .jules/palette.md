@@ -385,3 +385,6 @@
 ## 2026-10-22 - Primary Button Text Contrast with Bright States Fix Update
 **Learning:** Setting nested elements (like `.spinner`) to have white borders against bright button backgrounds causes visual regression, worsening contrast and polish.
 **Action:** When updating contrast for primary buttons with bright backgrounds (like cyan), do not modify the border or background colors of nested elements like `<kbd>` tags and `.spinner` loading indicators. Keep their original dark styling that contrasts properly with the bright background.
+## 2026-10-22 - Primary Button Text Contrast with Bright States Fix Update
+**Learning:** Setting nested elements (like `.spinner` and `.shortcut-hint kbd`) to have customized bright-state specific borders or backgrounds inside primary buttons can lead to visual regressions or unnecessary code complexity when the button background handles contrast fine by itself.
+**Action:** When updating contrast for primary buttons with bright backgrounds, completely remove the CSS pseudo-classes targeting nested elements (like `.ui-btn:hover .spinner` or `.ui-btn:focus-visible .shortcut-hint kbd`) that try to manually override their colors. Keep the base styling intact for the nested elements.
