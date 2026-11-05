@@ -242,3 +242,6 @@
 ## 2024-11-20 - Avoid querySelector in high-frequency event listeners (again)
 **Learning:** In high-frequency event listeners (like `input`), repeatedly calling expensive DOM traversal methods like `.querySelector()` adds significant CPU overhead. This blocks the main thread and degrades Interaction to Next Paint (INP).
 **Action:** Replaced dynamic `.querySelector()` calls with O(1) lookups like `document.getElementById` (e.g., by deriving the element ID from `form.id`) with a safe fallback to `querySelector` to ensure minimal latency per event while maintaining robustness against variable DOM structures.
+## 2024-05-18 - Debounce Synchronous Storage APIs
+**Learning:** Saving to `sessionStorage` synchronously on high-frequency events (like `input`) forces the browser to repeatedly traverse the C++ boundary and block the main thread, leading to poor Interaction to Next Paint (INP).
+**Action:** Use a timeout Map to debounce storage API calls in high-frequency event handlers, ensuring responsive UI without losing data.
