@@ -266,8 +266,16 @@ document.addEventListener('invalid', (e) => {
 document.addEventListener('input', (e) => {
     if (e.target && e.target.classList.contains('ui-input')) {
         // ⚡ Palette UX: Save input values to sessionStorage to prevent data loss on accidental reload
+        // ⚡ Bolt Optimization: Debounce synchronous storage APIs to preserve main thread responsiveness
         if (e.target.id) {
-            sessionStorage.setItem(`apsis-${e.target.id}`, e.target.value);
+            if (e.target.dataset.storageTimeout) {
+                clearTimeout(parseInt(e.target.dataset.storageTimeout));
+            }
+            const id = e.target.id;
+            const val = e.target.value;
+            e.target.dataset.storageTimeout = setTimeout(() => {
+                sessionStorage.setItem(`apsis-${id}`, val);
+            }, 300);
         }
 
         if ('validJson' in e.target.dataset) {
