@@ -501,13 +501,6 @@ section[data-stale="true"] .ui-btn:not(:disabled) {
     border: 1px solid rgba(11, 12, 16, 0.3);
 }
 
-.ui-btn:hover .shortcut-hint kbd,
-.ui-btn:focus-visible .shortcut-hint kbd,
-section[data-stale="true"] .ui-btn:not(:disabled) .shortcut-hint kbd {
-    background: rgba(11, 12, 16, 0.2);
-    border-color: rgba(11, 12, 16, 0.4);
-}
-
 @media (prefers-reduced-motion: reduce) {
     html {
         scroll-behavior: auto !important;
@@ -557,13 +550,6 @@ section[data-stale="true"] .ui-btn:not(:disabled) .shortcut-hint kbd {
     animation: spin 1s linear infinite;
     vertical-align: middle;
     margin-right: 8px;
-}
-
-.ui-btn:hover .spinner,
-.ui-btn:focus-visible .spinner,
-section[data-stale="true"] .ui-btn:not(:disabled) .spinner {
-    border-color: rgba(11, 12, 16, 0.5);
-    border-top-color: var(--bg-color);
 }
 
 abbr[title] {
