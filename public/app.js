@@ -262,12 +262,25 @@ document.addEventListener('invalid', (e) => {
     }
 }, true);
 
+// ⚡ Bolt Optimization: Cache for session storage debounce timeouts
+const sessionDebounceTimeouts = new Map();
+
 // Clear validation errors when user types
 document.addEventListener('input', (e) => {
     if (e.target && e.target.classList.contains('ui-input')) {
         // ⚡ Palette UX: Save input values to sessionStorage to prevent data loss on accidental reload
+        // ⚡ Bolt Optimization: Debounce synchronous sessionStorage writes in high-frequency input events
+        // to prevent main thread blocking and preserve Interaction to Next Paint (INP).
         if (e.target.id) {
-            sessionStorage.setItem(`apsis-${e.target.id}`, e.target.value);
+            const inputId = e.target.id;
+            const inputValue = e.target.value;
+            if (sessionDebounceTimeouts.has(inputId)) {
+                clearTimeout(sessionDebounceTimeouts.get(inputId));
+            }
+            sessionDebounceTimeouts.set(inputId, setTimeout(() => {
+                sessionStorage.setItem(`apsis-${inputId}`, inputValue);
+                sessionDebounceTimeouts.delete(inputId);
+            }, 300));
         }
 
         if ('validJson' in e.target.dataset) {
