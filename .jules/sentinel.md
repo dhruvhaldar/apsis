@@ -162,3 +162,7 @@
 **Vulnerability:** The Content-Security-Policy header lacked the `object-src 'none'` directive.
 **Learning:** Without `object-src 'none'`, browsers might attempt to load potentially malicious plugins if an attacker finds a way to inject `<object>` or `<embed>` tags.
 **Prevention:** When modifying HTTP security headers such as Content-Security-Policy (CSP), ensure the changes are synchronized across both the edge configuration (`vercel.json`) and the backend application middleware (e.g., `api/index.py`) and include `object-src 'none'` to maintain consistent enforcement and avoid vulnerabilities.
+## 2024-05-13 - Prevent rate limit bypass via multiple URL encoding
+**Vulnerability:** Rate limit rules were bypassed using double or multiple URL encoding on paths.
+**Learning:** A single unquote does not decode recursively, allowing attackers to obscure malicious paths like %252fapi.
+**Prevention:** Continually unquote raw ASGI paths in a while loop until the string stops changing before applying path normalization and security checks.
