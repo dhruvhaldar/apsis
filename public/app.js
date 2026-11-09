@@ -262,12 +262,24 @@ document.addEventListener('invalid', (e) => {
     }
 }, true);
 
+// ⚡ Bolt Optimization: Debounce sessionStorage writes to prevent main thread blocking
+// during high-frequency input events, improving Interaction to Next Paint (INP).
+const sessionDebounceTimers = new Map();
+
 // Clear validation errors when user types
 document.addEventListener('input', (e) => {
     if (e.target && e.target.classList.contains('ui-input')) {
         // ⚡ Palette UX: Save input values to sessionStorage to prevent data loss on accidental reload
         if (e.target.id) {
-            sessionStorage.setItem(`apsis-${e.target.id}`, e.target.value);
+            const inputId = e.target.id;
+            const inputValue = e.target.value;
+            if (sessionDebounceTimers.has(inputId)) {
+                clearTimeout(sessionDebounceTimers.get(inputId));
+            }
+            sessionDebounceTimers.set(inputId, setTimeout(() => {
+                sessionStorage.setItem(`apsis-${inputId}`, inputValue);
+                sessionDebounceTimers.delete(inputId);
+            }, 300));
         }
 
         if ('validJson' in e.target.dataset) {
