@@ -262,12 +262,24 @@ document.addEventListener('invalid', (e) => {
     }
 }, true);
 
+// ⚡ Bolt Optimization: Map to hold debounce timeouts for synchronous storage APIs
+const storageTimeouts = new Map();
+
 // Clear validation errors when user types
 document.addEventListener('input', (e) => {
     if (e.target && e.target.classList.contains('ui-input')) {
         // ⚡ Palette UX: Save input values to sessionStorage to prevent data loss on accidental reload
+        // ⚡ Bolt Optimization: Debounce synchronous sessionStorage to preserve main thread responsiveness
         if (e.target.id) {
-            sessionStorage.setItem(`apsis-${e.target.id}`, e.target.value);
+            const inputId = e.target.id;
+            const val = e.target.value;
+            if (storageTimeouts.has(inputId)) {
+                clearTimeout(storageTimeouts.get(inputId));
+            }
+            storageTimeouts.set(inputId, setTimeout(() => {
+                sessionStorage.setItem(`apsis-${inputId}`, val);
+                storageTimeouts.delete(inputId);
+            }, 300));
         }
 
         if ('validJson' in e.target.dataset) {
@@ -892,6 +904,10 @@ document.addEventListener('reset', (e) => {
         // 1. Clear sessionStorage for all inputs in this form
         form.querySelectorAll('.ui-input').forEach(input => {
             if (input.id) {
+                if (storageTimeouts.has(input.id)) {
+                    clearTimeout(storageTimeouts.get(input.id));
+                    storageTimeouts.delete(input.id);
+                }
                 sessionStorage.removeItem(`apsis-${input.id}`);
             }
         });
