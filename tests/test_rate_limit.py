@@ -93,3 +93,20 @@ def test_rate_limit_path_traversal_bypass():
     # The 51st request should be rate limited, confirming the path traversal was caught
     response = client.post("/foo/../api/lqr", json=payload, headers={"X-Forwarded-For": "10.0.0.1"})
     assert response.status_code == 429
+
+def test_rate_limit_multiple_url_encode_bypass():
+    rate_limit_store.clear()
+    payload = {
+        "A": [[0, 1], [-1, -1]],
+        "B": [[0], [1]],
+        "Q": [[1, 0], [0, 1]],
+        "R": [[1]]
+    }
+
+    # URL encode "/api/lqr" three times
+    path = "/%252561%252570%252569/lqr"
+    for _ in range(50):
+        client.post(path, json=payload, headers={"X-Forwarded-For": "10.0.0.5"})
+
+    response = client.post(path, json=payload, headers={"X-Forwarded-For": "10.0.0.5"})
+    assert response.status_code == 429
