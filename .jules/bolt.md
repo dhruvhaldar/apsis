@@ -242,3 +242,7 @@
 ## 2024-11-20 - Avoid querySelector in high-frequency event listeners (again)
 **Learning:** In high-frequency event listeners (like `input`), repeatedly calling expensive DOM traversal methods like `.querySelector()` adds significant CPU overhead. This blocks the main thread and degrades Interaction to Next Paint (INP).
 **Action:** Replaced dynamic `.querySelector()` calls with O(1) lookups like `document.getElementById` (e.g., by deriving the element ID from `form.id`) with a safe fallback to `querySelector` to ensure minimal latency per event while maintaining robustness against variable DOM structures.
+
+## 2024-11-21 - Debounce Synchronous Storage APIs
+**Learning:** To preserve main thread responsiveness and Interaction to Next Paint (INP), always debounce synchronous storage APIs (like `sessionStorage` or `localStorage`) when triggering them from high-frequency interactions (e.g., `input` event listeners). When debouncing storage updates for form inputs (e.g., saving to `sessionStorage`), always ensure that any pending timeouts are explicitly cleared during the form's `reset` event. This prevents race conditions where a delayed execution writes stale data back to storage after the form has been cleared.
+**Action:** Always wrap `sessionStorage` and `localStorage` writes inside high-frequency listeners with a debounce function, and clear any pending timeouts during related form `reset` events to prevent stale writes.

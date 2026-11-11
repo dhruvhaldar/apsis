@@ -262,12 +262,23 @@ document.addEventListener('invalid', (e) => {
     }
 }, true);
 
+const storageDebounceTimeouts = new Map();
+
 // Clear validation errors when user types
 document.addEventListener('input', (e) => {
     if (e.target && e.target.classList.contains('ui-input')) {
         // ⚡ Palette UX: Save input values to sessionStorage to prevent data loss on accidental reload
         if (e.target.id) {
-            sessionStorage.setItem(`apsis-${e.target.id}`, e.target.value);
+            const inputId = e.target.id;
+            const inputValue = e.target.value;
+            if (storageDebounceTimeouts.has(inputId)) {
+                clearTimeout(storageDebounceTimeouts.get(inputId));
+            }
+            const timeoutId = setTimeout(() => {
+                sessionStorage.setItem(`apsis-${inputId}`, inputValue);
+                storageDebounceTimeouts.delete(inputId);
+            }, 300);
+            storageDebounceTimeouts.set(inputId, timeoutId);
         }
 
         if ('validJson' in e.target.dataset) {
@@ -892,6 +903,10 @@ document.addEventListener('reset', (e) => {
         // 1. Clear sessionStorage for all inputs in this form
         form.querySelectorAll('.ui-input').forEach(input => {
             if (input.id) {
+                if (storageDebounceTimeouts.has(input.id)) {
+                    clearTimeout(storageDebounceTimeouts.get(input.id));
+                    storageDebounceTimeouts.delete(input.id);
+                }
                 sessionStorage.removeItem(`apsis-${input.id}`);
             }
         });
