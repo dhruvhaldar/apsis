@@ -162,3 +162,8 @@
 **Vulnerability:** The Content-Security-Policy header lacked the `object-src 'none'` directive.
 **Learning:** Without `object-src 'none'`, browsers might attempt to load potentially malicious plugins if an attacker finds a way to inject `<object>` or `<embed>` tags.
 **Prevention:** When modifying HTTP security headers such as Content-Security-Policy (CSP), ensure the changes are synchronized across both the edge configuration (`vercel.json`) and the backend application middleware (e.g., `api/index.py`) and include `object-src 'none'` to maintain consistent enforcement and avoid vulnerabilities.
+
+## $(date +%Y-%m-%d) - Rate Limiter Double URL Encoding Bypass
+**Vulnerability:** The rate limiter middleware unquoted the ASGI request path only once. This allowed an attacker to bypass rate limiting (and potentially other path-based security controls) by double URL-encoding path traversal sequences or special characters (e.g., sending `%252F` instead of `%2F` or `/`). The single `.unquote()` call would resolve it to `%2F`, which didn't match the blocked patterns, but the web framework router would fully decode and resolve it downstream.
+**Learning:** Checking for malicious URL strings is ineffective if the input string hasn't been completely and repeatedly unquoted to its canonical form, as attackers can nest encodings to hide their payload.
+**Prevention:** To prevent rate limit or security rule bypasses via double (or multiple) URL encoding in FastAPI/Starlette middleware, continually unquote raw ASGI paths (e.g., using a `while "%" in path:` loop) until the string stops changing before applying path normalization and security checks.

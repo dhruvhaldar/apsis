@@ -97,7 +97,12 @@ async def combined_security_and_rate_limit_middleware(request: Request, call_nex
 
     # ⚡ Bolt Optimization: Avoid unnecessary unquote operations and regex recompilations
     # unquote() is slow, only call it if there are actually encoded characters.
-    unquoted_path = urllib.parse.unquote(raw_path) if "%" in raw_path else raw_path
+    unquoted_path = raw_path
+    while "%" in unquoted_path:
+        new_path = urllib.parse.unquote(unquoted_path)
+        if new_path == unquoted_path:
+            break
+        unquoted_path = new_path
 
     # ⚡ Bolt Optimization: Guard regex .sub() with a fast string check to bypass regex
     # overhead for the 99% of requests that are already well-formed.
